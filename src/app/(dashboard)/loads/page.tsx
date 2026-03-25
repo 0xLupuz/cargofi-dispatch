@@ -69,9 +69,9 @@ export default function LoadsPage() {
       {showParser && (
         <DocumentParser
           onClose={() => setShowParser(false)}
-          onLoadCreated={(data) => {
+          onLoadCreated={() => {
             setShowParser(false)
-            setShowNew(true)
+            setRefreshKey(k => k + 1)
           }}
         />
       )}
