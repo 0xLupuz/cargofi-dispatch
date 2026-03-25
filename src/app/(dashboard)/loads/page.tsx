@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Package, Plus, RefreshCw } from 'lucide-react'
+import { Package, Plus, RefreshCw, FileSearch } from 'lucide-react'
 import KanbanBoard from '@/components/loads/KanbanBoard'
 import NewLoadModal from '@/components/loads/NewLoadModal'
+import DocumentParser from '@/components/documents/DocumentParser'
 import type { Load } from '@/types'
 
 export default function LoadsPage() {
   const [showNew, setShowNew] = useState(false)
+  const [showParser, setShowParser] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [selectedLoad, setSelectedLoad] = useState<Load | null>(null)
 
@@ -33,6 +35,13 @@ export default function LoadsPage() {
             <RefreshCw className="w-4 h-4" />
           </button>
           <button
+            onClick={() => setShowParser(true)}
+            className="flex items-center gap-2 border border-gray-700 text-gray-300 hover:border-orange-500 hover:text-orange-400 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            <FileSearch className="w-4 h-4" />
+            Parse BOL / Rate Con
+          </button>
+          <button
             onClick={() => setShowNew(true)}
             className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
@@ -55,6 +64,15 @@ export default function LoadsPage() {
         <NewLoadModal
           onClose={() => setShowNew(false)}
           onCreated={handleCreated}
+        />
+      )}
+      {showParser && (
+        <DocumentParser
+          onClose={() => setShowParser(false)}
+          onLoadCreated={(data) => {
+            setShowParser(false)
+            setShowNew(true)
+          }}
         />
       )}
     </div>
