@@ -133,12 +133,15 @@ export default function UnitsPage() {
               {/* Alerts */}
               {alerts.length > 0 && (
                 <div className="space-y-1 pt-2 border-t border-gray-700">
-                  {alerts.map((a, i) => (
-                    <div key={i} className={`flex items-center gap-1.5 text-xs ${a!.cls}`}>
-                      <a!.icon className="w-3.5 h-3.5" />
-                      {a!.text}
-                    </div>
-                  ))}
+                  {alerts.map((a, i) => {
+                    const { icon: Icon, cls, text } = a!
+                    return (
+                      <div key={i} className={`flex items-center gap-1.5 text-xs ${cls}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                        {text}
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </div>

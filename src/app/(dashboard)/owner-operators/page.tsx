@@ -114,12 +114,12 @@ export default function OwnerOperatorsPage() {
                 </div>
 
                 {/* Insurance */}
-                {ins && (
+                {ins && (() => { const Icon = ins.icon; return (
                   <div className={`flex items-center gap-1.5 text-xs ${ins.color}`}>
-                    <ins.icon className="w-3.5 h-3.5" />
+                    <Icon className="w-3.5 h-3.5" />
                     Insurance: {ins.label}
                   </div>
-                )}
+                )})()}
 
                 {/* Compliance dots */}
                 <div className="flex gap-2 mt-3 pt-3 border-t border-gray-700">

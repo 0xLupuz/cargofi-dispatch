@@ -40,7 +40,7 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    const payload = {
+    const payload: Record<string, any> = {
       ...form,
       dispatch_fee_pct: parseFloat(form.dispatch_fee_pct),
       insurance_expiry: form.insurance_expiry || null,

@@ -111,18 +111,18 @@ export default function DriversPage() {
 
                 {/* Expiry alerts */}
                 <div className="space-y-1">
-                  {cdl && (
+                  {cdl && (() => { const Icon = cdl.icon; return (
                     <div className={`flex items-center gap-1.5 text-xs ${cdl.color}`}>
-                      <cdl.icon className="w-3.5 h-3.5" />
+                      <Icon className="w-3.5 h-3.5" />
                       {cdl.label}
                     </div>
-                  )}
-                  {med && (
+                  )})()}
+                  {med && (() => { const Icon = med.icon; return (
                     <div className={`flex items-center gap-1.5 text-xs ${med.color}`}>
-                      <med.icon className="w-3.5 h-3.5" />
+                      <Icon className="w-3.5 h-3.5" />
                       {med.label}
                     </div>
-                  )}
+                  )})()}
                 </div>
               </div>
             )
