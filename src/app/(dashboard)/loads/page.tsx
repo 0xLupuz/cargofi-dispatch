@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Package, Plus, RefreshCw, Zap, LayoutGrid, Clock } from 'lucide-react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import KanbanBoard from '@/components/loads/KanbanBoard'
@@ -17,6 +17,12 @@ export default function LoadsPage() {
   const router = useRouter()
   const initialTab: Tab = searchParams.get('tab') === 'history' ? 'history' : 'board'
   const [tab, setTab] = useState<Tab>(initialTab)
+
+  // Sync tab state when URL changes (e.g. sidebar "Load Finder" click while already on /loads)
+  useEffect(() => {
+    const t: Tab = searchParams.get('tab') === 'history' ? 'history' : 'board'
+    setTab(t)
+  }, [searchParams])
 
   function switchTab(t: Tab) {
     setTab(t)
