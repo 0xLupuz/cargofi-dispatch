@@ -2,8 +2,41 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { MapPin, DollarSign, Truck, User } from 'lucide-react'
+import { MapPin, DollarSign, Truck, User, Clock } from 'lucide-react'
 import type { Load } from '@/types'
+
+function ETABadge({ deliveryDate }: { deliveryDate?: string | null }) {
+  if (!deliveryDate) return null
+
+  const eta   = new Date(deliveryDate + 'T12:00:00')
+  const today = new Date(); today.setHours(0,0,0,0)
+  const etaDay = new Date(eta); etaDay.setHours(0,0,0,0)
+  const diffDays = Math.round((etaDay.getTime() - today.getTime()) / 86400000)
+
+  const label = eta.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
+  let cls = 'text-gray-500'
+  let dot  = 'bg-gray-600'
+
+  if (diffDays < 0) {
+    cls = 'text-red-400 font-semibold'   // overdue
+    dot = 'bg-red-500'
+  } else if (diffDays === 0) {
+    cls = 'text-amber-400 font-semibold' // today
+    dot = 'bg-amber-400'
+  } else if (diffDays === 1) {
+    cls = 'text-amber-300'               // tomorrow
+    dot = 'bg-amber-400'
+  }
+
+  return (
+    <span className={`flex items-center gap-1 text-xs ml-auto ${cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
+      <Clock className="w-3 h-3 flex-shrink-0" />
+      ETA {label}
+    </span>
+  )
+}
 
 const CHECKLIST: { field: keyof Load; label: string }[] = [
   { field: 'rate_con_ok', label: 'Rate Con' },
@@ -76,16 +109,12 @@ export default function LoadCard({ load, onClick, onChecklistToggle }: Props) {
         </div>
       )}
 
-      {/* Broker + dates */}
+      {/* Broker + ETA */}
       <div className="flex items-center justify-between mb-3">
         {load.broker_name && (
-          <span className="text-xs text-gray-500 truncate max-w-[130px]">{load.broker_name}</span>
+          <span className="text-xs text-gray-500 truncate max-w-[120px]">{load.broker_name}</span>
         )}
-        {load.pickup_date && (
-          <span className="text-xs text-gray-600 ml-auto">
-            {new Date(load.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-          </span>
-        )}
+        <ETABadge deliveryDate={load.delivery_date} />
       </div>
 
       {/* OO + Driver */}
