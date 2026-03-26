@@ -2,39 +2,90 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { MapPin, DollarSign, Truck, User, Clock } from 'lucide-react'
-import type { Load } from '@/types'
+import { MapPin, DollarSign, Truck, User, ArrowUpFromLine, Clock, CheckCircle2 } from 'lucide-react'
+import type { Load, TripStatus } from '@/types'
 
-function ETABadge({ deliveryDate }: { deliveryDate?: string | null }) {
-  if (!deliveryDate) return null
+// ─── helpers ──────────────────────────────────────────────────────────────────
 
-  const eta   = new Date(deliveryDate + 'T12:00:00')
+function fmt(dateStr?: string | null): string {
+  if (!dateStr) return '—'
+  return new Date(dateStr + (dateStr.includes('T') ? '' : 'T12:00:00'))
+    .toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function etaColor(dateStr?: string | null): string {
+  if (!dateStr) return 'text-gray-500'
   const today = new Date(); today.setHours(0,0,0,0)
-  const etaDay = new Date(eta); etaDay.setHours(0,0,0,0)
-  const diffDays = Math.round((etaDay.getTime() - today.getTime()) / 86400000)
+  const d = new Date(dateStr + 'T12:00:00'); d.setHours(0,0,0,0)
+  const diff = Math.round((d.getTime() - today.getTime()) / 86400000)
+  if (diff < 0)  return 'text-red-400 font-semibold'
+  if (diff === 0) return 'text-amber-400 font-semibold'
+  if (diff === 1) return 'text-amber-300'
+  return 'text-gray-400'
+}
 
-  const label = eta.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+// ─── DateRow — different info per trip_status ─────────────────────────────────
 
-  let cls = 'text-gray-500'
-  let dot  = 'bg-gray-600'
+function DateRow({ load }: { load: Load }) {
+  const pickupStop   = load.stops?.find(s => s.stop_type === 'pickup')
+  const deliveryStop = load.stops?.find(s => s.stop_type === 'delivery')
 
-  if (diffDays < 0) {
-    cls = 'text-red-400 font-semibold'   // overdue
-    dot = 'bg-red-500'
-  } else if (diffDays === 0) {
-    cls = 'text-amber-400 font-semibold' // today
-    dot = 'bg-amber-400'
-  } else if (diffDays === 1) {
-    cls = 'text-amber-300'               // tomorrow
-    dot = 'bg-amber-400'
+  // Departed = actual_departure_at on pickup stop, fallback to pickup_date
+  const departedAt = pickupStop?.actual_departure_at ?? load.pickup_date ?? null
+
+  // Expected appt = appointment_at on pickup stop, fallback to pickup_date
+  const expectedAt = pickupStop?.appointment_at ?? load.pickup_date ?? null
+
+  // Delivered = actual_arrival_at on delivery stop, fallback to delivery_date
+  const deliveredAt = deliveryStop?.actual_arrival_at ?? load.delivery_date ?? null
+
+  // ETA = appointment_at on delivery stop, fallback to delivery_date
+  const etaAt = deliveryStop?.appointment_at ?? load.delivery_date ?? null
+
+  // ── OPEN ──────────────────────────────────────────────────────────────────
+  if (load.trip_status === 'open') {
+    return (
+      <div className="flex items-center justify-between text-xs">
+        <span className="flex items-center gap-1 text-gray-600">
+          <ArrowUpFromLine className="w-3 h-3" />
+          Departed: <span className="text-gray-600 ml-0.5">N/A</span>
+        </span>
+        <span className="flex items-center gap-1 text-gray-500">
+          <Clock className="w-3 h-3" />
+          Appt: <span className="text-gray-400 ml-0.5">{fmt(expectedAt)}</span>
+        </span>
+      </div>
+    )
   }
 
+  // ── IN TRANSIT ────────────────────────────────────────────────────────────
+  if (load.trip_status === 'in_transit') {
+    return (
+      <div className="flex items-center justify-between text-xs">
+        <span className="flex items-center gap-1 text-gray-500">
+          <ArrowUpFromLine className="w-3 h-3 text-amber-500" />
+          Departed: <span className="text-gray-300 ml-0.5">{fmt(departedAt)}</span>
+        </span>
+        <span className={`flex items-center gap-1 ${etaColor(etaAt)}`}>
+          <Clock className="w-3 h-3" />
+          ETA: <span className="ml-0.5">{fmt(etaAt)}</span>
+        </span>
+      </div>
+    )
+  }
+
+  // ── DELIVERED ─────────────────────────────────────────────────────────────
   return (
-    <span className={`flex items-center gap-1 text-xs ml-auto ${cls}`}>
-      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
-      <Clock className="w-3 h-3 flex-shrink-0" />
-      ETA {label}
-    </span>
+    <div className="flex items-center justify-between text-xs">
+      <span className="flex items-center gap-1 text-gray-500">
+        <ArrowUpFromLine className="w-3 h-3" />
+        Departed: <span className="text-gray-400 ml-0.5">{fmt(departedAt)}</span>
+      </span>
+      <span className="flex items-center gap-1 text-emerald-400">
+        <CheckCircle2 className="w-3 h-3" />
+        Delivered: <span className="ml-0.5">{fmt(deliveredAt)}</span>
+      </span>
+    </div>
   )
 }
 
@@ -109,12 +160,14 @@ export default function LoadCard({ load, onClick, onChecklistToggle }: Props) {
         </div>
       )}
 
-      {/* Broker + ETA */}
-      <div className="flex items-center justify-between mb-3">
-        {load.broker_name && (
-          <span className="text-xs text-gray-500 truncate max-w-[120px]">{load.broker_name}</span>
-        )}
-        <ETABadge deliveryDate={load.delivery_date} />
+      {/* Broker */}
+      {load.broker_name && (
+        <p className="text-xs text-gray-500 truncate mb-1.5">{load.broker_name}</p>
+      )}
+
+      {/* Date row — changes by trip_status */}
+      <div className="mb-3 bg-gray-800/50 rounded-md px-2 py-1.5">
+        <DateRow load={load} />
       </div>
 
       {/* OO + Driver */}
