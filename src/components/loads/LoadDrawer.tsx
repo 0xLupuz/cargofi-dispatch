@@ -7,7 +7,7 @@ import {
   Package, ChevronDown,
 } from 'lucide-react'
 import DocUploader from '@/components/ui/DocUploader'
-import type { Load, KanbanStatus } from '@/types'
+import type { Load, TripStatus } from '@/types'
 
 const LOAD_DOCS = [
   { value: 'rate_con',  label: 'Rate Con' },
@@ -17,16 +17,10 @@ const LOAD_DOCS = [
   { value: 'other',     label: 'Otro' },
 ]
 
-const STATUSES: { value: KanbanStatus; label: string; color: string }[] = [
-  { value: 'available',    label: 'Available',    color: 'bg-gray-600' },
-  { value: 'rate_con',     label: 'Rate Con',     color: 'bg-blue-600' },
-  { value: 'confirmed',    label: 'Confirmed',    color: 'bg-purple-600' },
-  { value: 'in_transit',   label: 'In Transit',   color: 'bg-yellow-500' },
-  { value: 'delivered',    label: 'Delivered',    color: 'bg-orange-500' },
-  { value: 'pod_received', label: 'POD Received', color: 'bg-teal-500' },
-  { value: 'invoiced',     label: 'Invoiced',     color: 'bg-indigo-500' },
-  { value: 'paid',         label: 'Paid',         color: 'bg-green-500' },
-  { value: 'settled',      label: 'Settled',      color: 'bg-green-700' },
+const STATUSES: { value: TripStatus; label: string; color: string }[] = [
+  { value: 'open',       label: 'Open',       color: 'bg-blue-600'    },
+  { value: 'in_transit', label: 'In Transit', color: 'bg-amber-500'   },
+  { value: 'delivered',  label: 'Delivered',  color: 'bg-emerald-600' },
 ]
 
 const DEDUCTION_TYPES = [
@@ -70,7 +64,8 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
       setLoad(data)
       setForm({
         load_number: data.load_number ?? '',
-        kanban_status: data.kanban_status ?? 'confirmed',
+        work_order_number: data.work_order_number ?? '',
+        trip_status: data.trip_status ?? 'open',
         broker_name: data.broker_name ?? '',
         broker_mc: data.broker_mc ?? '',
         broker_email: data.broker_email ?? '',
@@ -165,7 +160,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   const totalDeductions = deductions.reduce((s, d) => s + Number(d.amount), 0)
   const ooNet = rate - dispatchFee - factoringFee - totalDeductions
 
-  const currentStatus = STATUSES.find(s => s.value === form.kanban_status)
+  const currentStatus = STATUSES.find(s => s.value === form.trip_status)
   const tabCls = (t: string) =>
     `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-orange-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
 
@@ -193,11 +188,11 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               <h2 className="text-white font-bold">#{load.load_number}</h2>
               <p className="text-xs text-gray-500">{load.broker_name}</p>
             </div>
-            {/* Status selector */}
+            {/* Trip status selector */}
             <div className="relative">
               <select
-                value={form.kanban_status}
-                onChange={e => setF('kanban_status', e.target.value)}
+                value={form.trip_status}
+                onChange={e => setF('trip_status', e.target.value)}
                 className={`text-xs font-medium rounded-full px-3 py-1 border-0 cursor-pointer appearance-none pr-6 ${currentStatus?.color ?? 'bg-gray-600'} text-white`}
               >
                 {STATUSES.map(s => (
@@ -259,16 +254,20 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                 </div>
               </div>
 
-              {/* Load # + Broker */}
+              {/* Load # (read-only) + WO# + Broker */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className={lbl}>Load #</label>
-                  <input className={inp} value={form.load_number} onChange={e => setF('load_number', e.target.value)} />
+                  <label className={lbl}>Load # <span className="text-gray-700">(auto)</span></label>
+                  <input className={inp + ' opacity-50 cursor-not-allowed'} value={form.load_number} readOnly />
                 </div>
                 <div>
-                  <label className={lbl}>Broker / Customer</label>
-                  <input className={inp} value={form.broker_name} onChange={e => setF('broker_name', e.target.value)} />
+                  <label className={lbl}>Work Order # <span className="text-gray-600">(broker ref)</span></label>
+                  <input className={inp} value={form.work_order_number} onChange={e => setF('work_order_number', e.target.value)} placeholder="WO-12345" />
                 </div>
+              </div>
+              <div>
+                <label className={lbl}>Broker / Customer</label>
+                <input className={inp} value={form.broker_name} onChange={e => setF('broker_name', e.target.value)} />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

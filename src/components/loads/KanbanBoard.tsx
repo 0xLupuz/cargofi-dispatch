@@ -5,58 +5,60 @@ import {
   DndContext, DragOverlay, DragEndEvent, DragStartEvent,
   PointerSensor, useSensor, useSensors, closestCenter,
 } from '@dnd-kit/core'
-import {
-  SortableContext, verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import LoadCard from './LoadCard'
-import type { Load, KanbanStatus } from '@/types'
+import type { Load, TripStatus } from '@/types'
 
-const COLUMNS: { status: KanbanStatus; label: string; accent: string }[] = [
-  { status: 'available',    label: 'Available',    accent: 'border-gray-500' },
-  { status: 'rate_con',     label: 'Rate Con',     accent: 'border-blue-500' },
-  { status: 'confirmed',    label: 'Confirmed',    accent: 'border-purple-500' },
-  { status: 'in_transit',   label: 'In Transit',   accent: 'border-yellow-400' },
-  { status: 'delivered',    label: 'Delivered',    accent: 'border-orange-500' },
-  { status: 'pod_received', label: 'POD Received', accent: 'border-teal-500' },
-  { status: 'invoiced',     label: 'Invoiced',     accent: 'border-indigo-500' },
-  { status: 'paid',         label: 'Paid',         accent: 'border-green-500' },
-  { status: 'settled',      label: 'Settled',      accent: 'border-green-700' },
+const COLUMNS: { status: TripStatus; label: string; accent: string; dot: string }[] = [
+  { status: 'open',       label: 'Open',       accent: 'border-blue-500',   dot: 'bg-blue-500'   },
+  { status: 'in_transit', label: 'In Transit', accent: 'border-amber-400',  dot: 'bg-amber-400'  },
+  { status: 'delivered',  label: 'Delivered',  accent: 'border-emerald-500', dot: 'bg-emerald-500' },
 ]
 
 function DroppableColumn({
-  status, label, accent, loads, onCardClick,
+  status, label, accent, dot, loads, onCardClick, onChecklistToggle,
 }: {
-  status: KanbanStatus
+  status: TripStatus
   label: string
   accent: string
+  dot: string
   loads: Load[]
   onCardClick: (load: Load) => void
+  onChecklistToggle: (loadId: string, field: string, value: boolean) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
-    <div className="flex flex-col w-60 flex-shrink-0">
-      <div className={`flex items-center gap-2 mb-3 pb-2 border-b-2 ${accent}`}>
-        <span className="text-sm font-medium text-gray-200">{label}</span>
-        <span className="text-xs text-gray-500 bg-gray-800 rounded-full px-2 py-0.5">
+    <div className="flex flex-col flex-1 min-w-[280px] max-w-[360px]">
+      {/* Column header */}
+      <div className={`flex items-center gap-2.5 mb-3 pb-2.5 border-b-2 ${accent}`}>
+        <span className={`w-2 h-2 rounded-full ${dot}`} />
+        <span className="text-sm font-semibold text-gray-100">{label}</span>
+        <span className="text-xs text-gray-500 bg-gray-800/80 rounded-full px-2 py-0.5 ml-auto">
           {loads.length}
         </span>
       </div>
 
+      {/* Drop zone */}
       <div
         ref={setNodeRef}
-        className={`flex-1 space-y-2 min-h-[120px] rounded-lg p-1.5 transition-colors ${
-          isOver ? 'bg-gray-800/60 ring-1 ring-orange-500/30' : ''
+        className={`flex-1 space-y-3 min-h-[200px] rounded-xl p-2 transition-colors ${
+          isOver ? 'bg-gray-800/50 ring-1 ring-orange-500/40' : ''
         }`}
       >
         <SortableContext items={loads.map(l => l.id)} strategy={verticalListSortingStrategy}>
           {loads.map(load => (
-            <LoadCard key={load.id} load={load} onClick={onCardClick} />
+            <LoadCard
+              key={load.id}
+              load={load}
+              onClick={onCardClick}
+              onChecklistToggle={onChecklistToggle}
+            />
           ))}
         </SortableContext>
         {loads.length === 0 && (
-          <div className="flex items-center justify-center h-16 text-gray-700 text-xs">
+          <div className="flex items-center justify-center h-20 text-gray-700 text-xs border border-dashed border-gray-800 rounded-lg">
             Drop here
           </div>
         )}
@@ -85,7 +87,7 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
   useEffect(() => { fetchLoads() }, [fetchLoads, refreshKey])
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
   function handleDragStart({ active }: DragStartEvent) {
@@ -97,36 +99,57 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
     if (!over) return
 
     const loadId = active.id as string
-
-    // over.id can be a column status OR another card's UUID (when dropped on top of a card)
     const validStatuses = COLUMNS.map(c => c.status) as string[]
-    let newStatus: KanbanStatus
 
+    let newStatus: TripStatus
     if (validStatuses.includes(over.id as string)) {
-      newStatus = over.id as KanbanStatus
+      newStatus = over.id as TripStatus
     } else {
-      // Dropped on a card — resolve to that card's column
+      // Dropped on another card — use that card's column
       const targetLoad = loads.find(l => l.id === over.id)
       if (!targetLoad) return
-      newStatus = targetLoad.kanban_status
+      newStatus = targetLoad.trip_status
     }
 
     const load = loads.find(l => l.id === loadId)
-    if (!load || load.kanban_status === newStatus) return
+    if (!load || load.trip_status === newStatus) return
 
-    // Optimistic update
-    setLoads(prev =>
-      prev.map(l => l.id === loadId ? { ...l, kanban_status: newStatus } : l)
-    )
+    // Optimistic
+    setLoads(prev => prev.map(l => l.id === loadId ? { ...l, trip_status: newStatus } : l))
 
-    await fetch(`/api/loads/${loadId}`, {
+    const res = await fetch(`/api/loads/${loadId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kanban_status: newStatus }),
+      body: JSON.stringify({ trip_status: newStatus }),
     })
+    if (!res.ok) {
+      // Revert on error
+      setLoads(prev => prev.map(l => l.id === loadId ? { ...l, trip_status: load.trip_status } : l))
+    }
   }
 
-  const byStatus = (status: KanbanStatus) => loads.filter(l => l.kanban_status === status)
+  async function handleChecklistToggle(loadId: string, field: string, value: boolean) {
+    // Optimistic update
+    setLoads(prev => prev.map(l => l.id === loadId ? { ...l, [field]: value } : l))
+
+    const res = await fetch(`/api/loads/${loadId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value }),
+    })
+
+    if (res.ok && field === 'settled_ok' && value === true) {
+      // Auto-archive: remove from board after brief delay
+      setTimeout(() => {
+        setLoads(prev => prev.filter(l => l.id !== loadId))
+      }, 800)
+    } else if (!res.ok) {
+      // Revert
+      setLoads(prev => prev.map(l => l.id === loadId ? { ...l, [field]: !value } : l))
+    }
+  }
+
+  const byStatus = (status: TripStatus) => loads.filter(l => l.trip_status === status)
 
   if (fetching) {
     return (
@@ -143,21 +166,22 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 h-full min-w-max pb-4">
+      <div className="flex gap-5 h-full pb-4">
         {COLUMNS.map(col => (
           <DroppableColumn
             key={col.status}
             {...col}
             loads={byStatus(col.status)}
             onCardClick={onCardClick}
+            onChecklistToggle={handleChecklistToggle}
           />
         ))}
       </div>
 
       <DragOverlay>
         {activeLoad && (
-          <div className="rotate-2 opacity-90">
-            <LoadCard load={activeLoad} onClick={() => {}} />
+          <div className="rotate-1 opacity-90 scale-105">
+            <LoadCard load={activeLoad} onClick={() => {}} onChecklistToggle={() => {}} />
           </div>
         )}
       </DragOverlay>

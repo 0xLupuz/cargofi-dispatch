@@ -14,7 +14,7 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
   const [drivers, setDrivers] = useState<Driver[]>([])
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
-    load_number: '',
+    work_order_number: '',   // Client/broker's reference # (optional)
     owner_operator_id: '',
     driver_id: '',
     broker_name: '',
@@ -58,7 +58,7 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
     setLoading(true)
 
     const payload: any = {
-      load_number: form.load_number,
+      work_order_number: form.work_order_number || null,  // client's ref # (optional)
       owner_operator_id: form.owner_operator_id,
       driver_id: form.driver_id,
       broker_name: form.broker_name,
@@ -72,7 +72,7 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
       delivery_date: form.delivery_date || null,
       bol_number: form.bol_number || null,
       crossing_point: form.crossing_point || null,
-      kanban_status: 'confirmed',
+      trip_status: 'open',  // always starts as Open
     }
 
     const res = await fetch('/api/loads', {
@@ -119,12 +119,13 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
-          {/* Load # + Broker */}
+          {/* Load # auto-generated + WO # + Broker */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={label}>Load #</label>
-              <input className={input} placeholder="CF-001" value={form.load_number}
-                onChange={e => set('load_number', e.target.value)} required />
+              <label className={label}>Work Order # <span className="text-gray-600">(broker ref)</span></label>
+              <input className={input} placeholder="WO-12345, TQL-98765..." value={form.work_order_number}
+                onChange={e => set('work_order_number', e.target.value)} />
+              <p className="text-[10px] text-gray-600 mt-1">Load # CF-XXXX se genera automáticamente</p>
             </div>
             <div>
               <label className={label}>Broker / Customer *</label>

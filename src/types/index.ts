@@ -1,13 +1,8 @@
-export type KanbanStatus =
-  | 'available'      // OO disponible
-  | 'rate_con'       // Rate con recibida, pendiente de confirmar
-  | 'confirmed'      // Carga confirmada
-  | 'in_transit'     // En ruta
-  | 'delivered'      // Entregada, POD pendiente
-  | 'pod_received'   // POD recibido
-  | 'invoiced'       // Factura enviada al broker
-  | 'paid'           // Broker pagó
-  | 'settled'        // OO liquidado
+// Trip status drives the 3-column Kanban board
+export type TripStatus = 'open' | 'in_transit' | 'delivered'
+
+// Legacy — kept for any remaining references; use TripStatus going forward
+export type KanbanStatus = TripStatus
 
 export interface OwnerOperator {
   id: string
@@ -28,9 +23,9 @@ export interface OwnerOperator {
 export interface Driver {
   id: string
   tenant_id: string
-  owner_operator_id?: string  // nullable — driver puede ser independiente
+  owner_operator_id?: string
   name: string
-  phone_whatsapp: string     // para check-ins
+  phone_whatsapp: string
   cdl_number?: string
   cdl_state?: string
   cdl_expiry?: string
@@ -50,6 +45,7 @@ export interface Unit {
   vin?: string
   license_plate?: string
   license_state?: string
+  license_plate_mx?: string
   eld_device_id?: string
   active: boolean
 }
@@ -75,15 +71,30 @@ export interface Deduction {
   id: string
   load_id: string
   description: string
-  amount: number   // negative = deduction from OO settlement
+  amount: number
   type: 'fuel_advance' | 'lumper' | 'tolls' | 'escrow' | 'other'
 }
 
 export interface Load {
   id: string
   tenant_id: string
-  load_number: string
-  kanban_status: KanbanStatus
+
+  // Identifiers
+  load_number: string        // Auto-generated: CF-0001 (CargoFi internal)
+  work_order_number?: string // Client/broker's reference #
+
+  // Trip status (3-column Kanban)
+  trip_status: TripStatus
+
+  // Accounting checklist (shown as progress dots on card)
+  rate_con_ok:  boolean
+  pod_ok:       boolean
+  invoiced_ok:  boolean
+  paid_ok:      boolean
+  settled_ok:   boolean
+
+  // Archive (null = visible on board; set when settlement WA sent)
+  archived_at?: string | null
 
   // Parties
   owner_operator_id: string
@@ -105,8 +116,8 @@ export interface Load {
   dispatch_fee_amount: number
   factoring_fee_pct?: number
   factoring_fee_amount?: number
-  oo_gross: number         // rate - factoring
-  oo_settlement: number   // oo_gross - dispatch_fee - deductions
+  oo_gross: number
+  oo_settlement: number
 
   // Documents
   bol_number?: string
@@ -118,11 +129,11 @@ export interface Load {
   commodity?: string
   weight_lbs?: number
   pieces?: number
-  temp?: string   // for reefer
+  temp?: string
 
   // Cross-border
-  mx_carrier?: string   // CAAT / permiso México
-  crossing_point?: string  // e.g. "Laredo/Nuevo Laredo"
+  mx_carrier?: string
+  crossing_point?: string
 
   // Dates
   pickup_date?: string

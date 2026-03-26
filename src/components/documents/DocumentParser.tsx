@@ -144,7 +144,7 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
       delivery_date: form.delivery_date || null,
       bol_number: form.bol_number || null,
       crossing_point: form.crossing_point || null,
-      kanban_status: 'confirmed',
+      trip_status: 'open',
       raw_rate_con_text: result?.raw_text_summary ?? null,
     }
 

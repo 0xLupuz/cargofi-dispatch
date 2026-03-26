@@ -33,6 +33,17 @@ export async function PATCH(
   const { id } = await params
   const body = await req.json()
 
+  // Auto-archive when settled_ok is set to true
+  // (this is also the trigger point for the WhatsApp settlement message in the future)
+  if (body.settled_ok === true) {
+    body.archived_at = new Date().toISOString()
+  }
+
+  // If un-settling, remove archive
+  if (body.settled_ok === false) {
+    body.archived_at = null
+  }
+
   const { data, error } = await supabase
     .from('loads')
     .update(body)
