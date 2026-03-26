@@ -81,7 +81,6 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
         po_number: data.po_number ?? '',
         crossing_point: data.crossing_point ?? '',
         mx_carrier: data.mx_carrier ?? '',
-        special_instructions: data.special_instructions ?? '',
       })
       setDeductions(data.deductions ?? [])
       setDirty(false)
