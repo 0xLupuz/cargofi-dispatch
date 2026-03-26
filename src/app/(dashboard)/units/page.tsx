@@ -54,10 +54,24 @@ export default function UnitsPage() {
   }
   useEffect(() => { load() }, [])
 
-  async function handleDelete(unit: Unit) {
-    if (!confirm(`¿Eliminar unidad #${unit.unit_number}? Esta acción no se puede deshacer.`)) return
+  // Soft delete — tabla (oculta de la UI, mantiene historial)
+  async function handleSoftDelete(unit: Unit) {
+    if (!confirm(`¿Desactivar unidad #${unit.unit_number}?\n\nEl registro se conserva en la base de datos.`)) return
     const res = await fetch(`/api/units/${unit.id}`, { method: 'DELETE' })
     if (res.ok) setUnits(prev => prev.filter(u => u.id !== unit.id))
+  }
+
+  // Hard delete — modal de edición (borra TODO: registro + documentos + archivos)
+  async function handleHardDelete(unit: Unit) {
+    const confirmed = confirm(
+      `⚠️ ELIMINAR PERMANENTEMENTE\n\nUnidad #${unit.unit_number}\n\nEsto borrará:\n• El registro completo de la unidad\n• Todos sus documentos y archivos\n\nEsta acción es IRREVERSIBLE.\n\n¿Continuar?`
+    )
+    if (!confirmed) return
+    const res = await fetch(`/api/units/${unit.id}`, { method: 'POST' })
+    if (res.ok) {
+      setUnits(prev => prev.filter(u => u.id !== unit.id))
+      setEditing(null)
+    }
   }
 
   function handleSaved(unit: Unit) {
@@ -183,8 +197,8 @@ export default function UnitsPage() {
                         className="text-gray-500 hover:text-orange-400 p-1 rounded transition-colors" title="Editar">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button onClick={() => handleDelete(unit)}
-                        className="text-gray-600 hover:text-red-400 p-1 rounded transition-colors" title="Eliminar">
+                      <button onClick={() => handleSoftDelete(unit)}
+                        className="text-gray-600 hover:text-yellow-400 p-1 rounded transition-colors" title="Desactivar (soft delete)">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -197,7 +211,7 @@ export default function UnitsPage() {
       )}
 
       {showAdd && <UnitModal onClose={() => setShowAdd(false)} onSaved={handleSaved} />}
-      {editing && <UnitModal unit={editing as any} onClose={() => setEditing(null)} onSaved={handleSaved} onDelete={(u) => { handleDelete(u); setEditing(null) }} />}
+      {editing && <UnitModal unit={editing as any} onClose={() => setEditing(null)} onSaved={handleSaved} onDelete={handleHardDelete} />}
     </div>
   )
 }

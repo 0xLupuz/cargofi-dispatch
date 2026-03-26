@@ -247,9 +247,10 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
             {isEdit && onDelete && (
               <button type="button"
                 onClick={() => onDelete(unit!)}
-                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 transition-colors"
-                title="Eliminar unidad">
-                <Trash2 className="w-4 h-4" />
+                className="flex items-center gap-1.5 border border-red-500/40 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 text-xs transition-colors"
+                title="Eliminar permanentemente (borra todos los archivos)">
+                <Trash2 className="w-3.5 h-3.5" />
+                Eliminar
               </button>
             )}
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
