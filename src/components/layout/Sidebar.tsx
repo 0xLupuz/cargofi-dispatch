@@ -41,9 +41,9 @@ const sections: NavSection[] = [
   {
     header: 'Maintenance',
     items: [
-      { label: 'Repair Orders',  href: '/repair-orders',  icon: Wrench,    soon: true },
-      { label: 'Vendors',        href: '/vendors',         icon: Store,     soon: true },
-      { label: 'Item List',      href: '/item-list',       icon: List,      soon: true },
+      { label: 'Repair Orders',  href: '/repair-orders',  icon: Wrench  },
+      { label: 'Vendors',        href: '/vendors',         icon: Store   },
+      { label: 'Item List',      href: '/item-list',       icon: List    },
     ],
   },
   {
