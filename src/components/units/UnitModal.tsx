@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
 import { Field, inputCls, selectCls } from '@/components/ui/Field'
 import DocUploader from '@/components/ui/DocUploader'
+import { Trash2 } from 'lucide-react'
 import type { OwnerOperator } from '@/types'
 
 const UNIT_DOCS = [
@@ -41,9 +42,10 @@ interface Props {
   unit?: Unit
   onClose: () => void
   onSaved: (unit: Unit) => void
+  onDelete?: (unit: Unit) => void
 }
 
-export default function UnitModal({ unit, onClose, onSaved }: Props) {
+export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
   const isEdit = !!unit
   const [oos, setOOs] = useState<OwnerOperator[]>([])
   const [tab, setTab] = useState<'info' | 'docs'>('info')
@@ -242,6 +244,14 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
             </p>
           )}
           <div className="flex gap-3 pt-2">
+            {isEdit && onDelete && (
+              <button type="button"
+                onClick={() => onDelete(unit!)}
+                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 transition-colors"
+                title="Eliminar unidad">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
             <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear unidad'}

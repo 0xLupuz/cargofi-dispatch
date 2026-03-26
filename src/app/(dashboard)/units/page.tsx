@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Container, Plus, Pencil, AlertTriangle, CheckCircle, XCircle, Truck, Ban } from 'lucide-react'
+import { Container, Plus, Pencil, AlertTriangle, CheckCircle, XCircle, Truck, Ban, Trash2 } from 'lucide-react'
 import UnitModal from '@/components/units/UnitModal'
 
 interface Unit {
@@ -53,6 +53,12 @@ export default function UnitsPage() {
     setLoading(false)
   }
   useEffect(() => { load() }, [])
+
+  async function handleDelete(unit: Unit) {
+    if (!confirm(`¿Eliminar unidad #${unit.unit_number}? Esta acción no se puede deshacer.`)) return
+    const res = await fetch(`/api/units/${unit.id}`, { method: 'DELETE' })
+    if (res.ok) setUnits(prev => prev.filter(u => u.id !== unit.id))
+  }
 
   function handleSaved(unit: Unit) {
     setUnits(prev => {
@@ -170,12 +176,18 @@ export default function UnitsPage() {
                     </span>
                   </td>
 
-                  {/* Edit */}
+                  {/* Actions */}
                   <td className="px-4 py-3">
-                    <button onClick={() => setEditing(unit)}
-                      className="text-gray-500 hover:text-orange-400 p-1 rounded transition-colors">
-                      <Pencil className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setEditing(unit)}
+                        className="text-gray-500 hover:text-orange-400 p-1 rounded transition-colors" title="Editar">
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete(unit)}
+                        className="text-gray-600 hover:text-red-400 p-1 rounded transition-colors" title="Eliminar">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -185,7 +197,7 @@ export default function UnitsPage() {
       )}
 
       {showAdd && <UnitModal onClose={() => setShowAdd(false)} onSaved={handleSaved} />}
-      {editing && <UnitModal unit={editing as any} onClose={() => setEditing(null)} onSaved={handleSaved} />}
+      {editing && <UnitModal unit={editing as any} onClose={() => setEditing(null)} onSaved={handleSaved} onDelete={(u) => { handleDelete(u); setEditing(null) }} />}
     </div>
   )
 }
