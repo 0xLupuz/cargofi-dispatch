@@ -97,7 +97,19 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
     if (!over) return
 
     const loadId = active.id as string
-    const newStatus = over.id as KanbanStatus
+
+    // over.id can be a column status OR another card's UUID (when dropped on top of a card)
+    const validStatuses = COLUMNS.map(c => c.status) as string[]
+    let newStatus: KanbanStatus
+
+    if (validStatuses.includes(over.id as string)) {
+      newStatus = over.id as KanbanStatus
+    } else {
+      // Dropped on a card — resolve to that card's column
+      const targetLoad = loads.find(l => l.id === over.id)
+      if (!targetLoad) return
+      newStatus = targetLoad.kanban_status
+    }
 
     const load = loads.find(l => l.id === loadId)
     if (!load || load.kanban_status === newStatus) return
