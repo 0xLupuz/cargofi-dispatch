@@ -5,13 +5,14 @@ import { Package, Plus, RefreshCw, FileSearch } from 'lucide-react'
 import KanbanBoard from '@/components/loads/KanbanBoard'
 import NewLoadModal from '@/components/loads/NewLoadModal'
 import DocumentParser from '@/components/documents/DocumentParser'
+import LoadDrawer from '@/components/loads/LoadDrawer'
 import type { Load } from '@/types'
 
 export default function LoadsPage() {
   const [showNew, setShowNew] = useState(false)
   const [showParser, setShowParser] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
-  const [selectedLoad, setSelectedLoad] = useState<Load | null>(null)
+  const [selectedLoadId, setSelectedLoadId] = useState<string | null>(null)
 
   function handleCreated() {
     setShowNew(false)
@@ -30,7 +31,6 @@ export default function LoadsPage() {
           <button
             onClick={() => setRefreshKey(k => k + 1)}
             className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-            title="Refresh"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -54,25 +54,28 @@ export default function LoadsPage() {
       {/* Kanban Board */}
       <div className="flex-1 overflow-x-auto px-6 py-4">
         <KanbanBoard
-          onCardClick={setSelectedLoad}
+          onCardClick={(load: Load) => setSelectedLoadId(load.id)}
           refreshKey={refreshKey}
         />
       </div>
 
       {/* Modals */}
       {showNew && (
-        <NewLoadModal
-          onClose={() => setShowNew(false)}
-          onCreated={handleCreated}
-        />
+        <NewLoadModal onClose={() => setShowNew(false)} onCreated={handleCreated} />
       )}
       {showParser && (
         <DocumentParser
           onClose={() => setShowParser(false)}
-          onLoadCreated={() => {
-            setShowParser(false)
-            setRefreshKey(k => k + 1)
-          }}
+          onLoadCreated={() => { setShowParser(false); setRefreshKey(k => k + 1) }}
+        />
+      )}
+
+      {/* Load Detail Drawer */}
+      {selectedLoadId && (
+        <LoadDrawer
+          loadId={selectedLoadId}
+          onClose={() => setSelectedLoadId(null)}
+          onUpdated={() => setRefreshKey(k => k + 1)}
         />
       )}
     </div>

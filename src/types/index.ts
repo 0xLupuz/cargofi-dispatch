@@ -60,10 +60,11 @@ export interface Stop {
   stop_type: 'pickup' | 'delivery' | 'hook' | 'drop'
   sequence: number
   facility_name?: string
-  address: string
+  address?: string
   city: string
   state: string
   zip?: string
+  country?: string
   appointment_at?: string
   actual_arrival_at?: string
   actual_departure_at?: string
