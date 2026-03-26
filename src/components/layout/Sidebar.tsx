@@ -1,66 +1,152 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { clsx } from 'clsx'
 import {
-  Truck,
-  UserCheck,
-  DollarSign,
-  Settings,
-  LogOut,
-  Package,
-  Container,
+  LayoutDashboard, Search, Receipt, FileText, Fuel,
+  Wrench, Store, List,
+  Truck, Box, UserCheck, Users, Building2,
+  Settings, LogOut, ChevronRight,
 } from 'lucide-react'
 
-const nav = [
-  { label: 'Loads',            href: '/loads',            icon: Package   },
-  { label: 'Owner Operators',  href: '/owner-operators',  icon: Truck     },
-  { label: 'Drivers',          href: '/drivers',          icon: UserCheck },
-  { label: 'Units',            href: '/units',            icon: Container },
-  { label: 'Settlements',      href: '/settlements',      icon: DollarSign },
+type NavItem = {
+  label: string
+  href: string
+  icon: React.ElementType
+  exact?: boolean   // use exact match for active detection
+  soon?: boolean    // coming soon — renders greyed out, not clickable
+}
+
+type NavSection = {
+  header?: string   // section title; undefined = no header
+  items: NavItem[]
+}
+
+const sections: NavSection[] = [
+  {
+    items: [
+      { label: 'Dashboard',   href: '/loads',             icon: LayoutDashboard, exact: true },
+      { label: 'Load Finder', href: '/loads?tab=history', icon: Search,          exact: true },
+    ],
+  },
+  {
+    header: 'Accounting',
+    items: [
+      { label: 'Settlements',    href: '/settlements',     icon: Receipt   },
+      { label: 'Invoices',       href: '/invoices',        icon: FileText,  soon: true },
+      { label: 'IFTA',           href: '/ifta',            icon: Fuel,      soon: true },
+    ],
+  },
+  {
+    header: 'Maintenance',
+    items: [
+      { label: 'Repair Orders',  href: '/repair-orders',  icon: Wrench,    soon: true },
+      { label: 'Vendors',        href: '/vendors',         icon: Store,     soon: true },
+      { label: 'Item List',      href: '/item-list',       icon: List,      soon: true },
+    ],
+  },
+  {
+    header: 'Fleet Manager',
+    items: [
+      { label: 'Trucks',         href: '/units',           icon: Truck     },
+      { label: 'Trailers',       href: '/trailers',        icon: Box,       soon: true },
+      { label: 'Drivers',        href: '/drivers',         icon: UserCheck  },
+      { label: 'Owner Operators',href: '/owner-operators', icon: Users     },
+      { label: 'Customers',      href: '/customers',       icon: Building2, soon: true },
+      { label: 'Factoring Co.',  href: '/factoring',       icon: Building2, soon: true },
+    ],
+  },
 ]
 
-export default function Sidebar() {
-  const pathname = usePathname()
+function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  if (item.soon) {
+    return (
+      <div className="flex items-center justify-between rounded-md px-3 py-1.5 text-sm text-gray-600 cursor-default select-none">
+        <div className="flex items-center gap-2.5">
+          <item.icon className="w-4 h-4 flex-shrink-0" />
+          {item.label}
+        </div>
+        <span className="text-[9px] font-medium text-gray-700 bg-gray-800 rounded px-1.5 py-0.5 uppercase tracking-wide">
+          Soon
+        </span>
+      </div>
+    )
+  }
 
   return (
-    <aside className="flex h-screen w-56 flex-col bg-gray-950 border-r border-gray-800">
+    <Link
+      href={item.href}
+      className={clsx(
+        'flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors group',
+        active
+          ? 'bg-orange-500/10 text-orange-400'
+          : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+      )}
+    >
+      <item.icon className="w-4 h-4 flex-shrink-0" />
+      {item.label}
+      {active && <ChevronRight className="w-3 h-3 ml-auto opacity-50" />}
+    </Link>
+  )
+}
+
+export default function Sidebar() {
+  const pathname  = usePathname()
+  const searchParams = useSearchParams()
+  const tab = searchParams.get('tab')
+
+  function isActive(item: NavItem): boolean {
+    if (item.exact) {
+      // For Load Finder: active when on /loads AND tab=history
+      if (item.href.includes('tab=history')) {
+        return pathname === '/loads' && tab === 'history'
+      }
+      // For Dashboard: active when on /loads WITHOUT tab=history
+      if (item.href === '/loads') {
+        return pathname === '/loads' && tab !== 'history'
+      }
+      return pathname === item.href
+    }
+    return pathname.startsWith(item.href)
+  }
+
+  return (
+    <aside className="flex h-screen w-56 flex-col bg-gray-950 border-r border-gray-800 flex-shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-2 px-5 py-5 border-b border-gray-800">
-        <div className="w-7 h-7 rounded bg-orange-500 flex items-center justify-center">
+      <div className="flex items-center gap-2.5 px-4 py-4 border-b border-gray-800">
+        <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
           <Truck className="w-4 h-4 text-white" />
         </div>
-        <span className="text-white font-semibold text-sm tracking-wide">CargoFi Dispatch</span>
+        <div className="min-w-0">
+          <p className="text-white font-bold text-sm leading-tight">CargoFi</p>
+          <p className="text-gray-600 text-[10px] leading-tight">Dispatch</p>
+        </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        {nav.map(({ label, href, icon: Icon }) => {
-          const active = pathname.startsWith(href)
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={clsx(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                active
-                  ? 'bg-orange-500/10 text-orange-400'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              )}
-            >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              {label}
-            </Link>
-          )
-        })}
+      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4">
+        {sections.map((section, si) => (
+          <div key={si}>
+            {section.header && (
+              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-600">
+                {section.header}
+              </p>
+            )}
+            <div className="space-y-0.5">
+              {section.items.map(item => (
+                <NavLink key={item.href} item={item} active={isActive(item)} />
+              ))}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-4 border-t border-gray-800 space-y-1">
+      <div className="px-2 py-3 border-t border-gray-800 space-y-0.5">
         <Link
           href="/settings"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-white transition-colors"
         >
           <Settings className="w-4 h-4" />
           Settings
@@ -68,7 +154,7 @@ export default function Sidebar() {
         <form action="/api/auth/logout" method="POST">
           <button
             type="submit"
-            className="w-full flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+            className="w-full flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-white transition-colors"
           >
             <LogOut className="w-4 h-4" />
             Logout
