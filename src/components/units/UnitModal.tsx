@@ -59,6 +59,7 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
     blocked: false, notes: '',
   })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
 
   useEffect(() => {
@@ -67,20 +68,31 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!form.unit_number?.trim()) { setError('El número de unidad es obligatorio'); return }
     setLoading(true)
-    const payload = {
-      ...form,
-      year: form.year ? Number(form.year) : null,
-      owner_operator_id: form.owner_operator_id || null,
-      insurance_expiry: form.insurance_expiry || null,
-      registration_expiry: form.registration_expiry || null,
-      inspection_expiry: form.inspection_expiry || null,
-      cvsa_expiry: form.cvsa_expiry || null,
+    setError('')
+
+    // Convert all empty strings to null (prevents DB type errors on date/text fields)
+    const payload: Record<string, any> = { ...form }
+    Object.keys(payload).forEach(k => {
+      if (payload[k] === '') payload[k] = null
+    })
+    payload.year = payload.year ? Number(payload.year) : null
+
+    try {
+      const res = isEdit
+        ? await fetch(`/api/units/${unit.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        : await fetch('/api/units', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+
+      if (res.ok) {
+        onSaved(await res.json())
+      } else {
+        const err = await res.json()
+        setError(err.error ?? `Error ${res.status}`)
+      }
+    } catch (e: any) {
+      setError(e.message ?? 'Error de red')
     }
-    const res = isEdit
-      ? await fetch(`/api/units/${unit.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      : await fetch('/api/units', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-    if (res.ok) onSaved(await res.json())
     setLoading(false)
   }
 
@@ -100,7 +112,7 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <Field label="# Unidad" required>
-              <input className={inputCls} value={form.unit_number ?? ''} onChange={e => set('unit_number', e.target.value)} required placeholder="259136" />
+              <input className={inputCls} value={form.unit_number ?? ''} onChange={e => { set('unit_number', e.target.value); setError('') }} placeholder="259136" />
             </Field>
             <Field label="Status">
               <select className={selectCls} value={form.status ?? 'available'} onChange={e => set('status', e.target.value)}>
@@ -224,6 +236,11 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
             <textarea className={inputCls + ' resize-none'} rows={2} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)} placeholder="Detalles adicionales..." />
           </Field>
 
+          {error && (
+            <p className="text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">
+              ⚠️ {error}
+            </p>
+          )}
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
             <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
