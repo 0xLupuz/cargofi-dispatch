@@ -4,21 +4,21 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
 import {
-  LayoutDashboard,
   Truck,
-  Users,
   UserCheck,
   DollarSign,
   Settings,
   LogOut,
   Package,
+  Container,
 } from 'lucide-react'
 
 const nav = [
-  { label: 'Loads', href: '/loads', icon: Package },
-  { label: 'Owner Operators', href: '/owner-operators', icon: Truck },
-  { label: 'Drivers', href: '/drivers', icon: UserCheck },
-  { label: 'Settlements', href: '/settlements', icon: DollarSign },
+  { label: 'Loads',            href: '/loads',            icon: Package   },
+  { label: 'Owner Operators',  href: '/owner-operators',  icon: Truck     },
+  { label: 'Drivers',          href: '/drivers',          icon: UserCheck },
+  { label: 'Units',            href: '/units',            icon: Container },
+  { label: 'Settlements',      href: '/settlements',      icon: DollarSign },
 ]
 
 export default function Sidebar() {

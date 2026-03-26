@@ -3,7 +3,18 @@
 import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import { Field, inputCls } from '@/components/ui/Field'
+import DocUploader from '@/components/ui/DocUploader'
 import type { OwnerOperator } from '@/types'
+
+const OO_DOCS = [
+  { value: 'passport',  label: 'Pasaporte MX' },
+  { value: 'visa',      label: 'Visa B1/B2' },
+  { value: 'ine',       label: 'INE / ID Oficial' },
+  { value: 'cdl',       label: 'Licencia Federal MX' },
+  { value: 'insurance', label: 'Seguro Trucking' },
+  { value: 'photo',     label: 'Foto' },
+  { value: 'other',     label: 'Otro' },
+]
 
 interface Props {
   oo?: OwnerOperator
@@ -11,27 +22,20 @@ interface Props {
   onSaved: (oo: OwnerOperator) => void
 }
 
-const EMPTY = {
-  name: '', company_name: '', phone_whatsapp: '', email: '',
-  dispatch_fee_pct: '13', mc_number: '', dot_number: '',
-  insurance_carrier: '', insurance_expiry: '', notes: '',
-}
-
 export default function OOModal({ oo, onClose, onSaved }: Props) {
   const isEdit = !!oo
-  const [form, setForm] = useState(
-    oo ? {
-      name: oo.name, company_name: oo.company_name ?? '',
-      phone_whatsapp: oo.phone_whatsapp, email: oo.email ?? '',
-      dispatch_fee_pct: String(oo.dispatch_fee_pct),
-      mc_number: oo.mc_number ?? '', dot_number: oo.dot_number ?? '',
-      insurance_carrier: (oo as any).insurance_carrier ?? '',
-      insurance_expiry: oo.insurance_expiry ?? '',
-      notes: oo.notes ?? '',
-    } : EMPTY
-  )
+  const [tab, setTab] = useState<'info' | 'mx' | 'docs'>('info')
+  const [form, setForm] = useState<Record<string, any>>(oo ? { ...oo } : {
+    name: '', company_name: '', phone_whatsapp: '', email: '',
+    dispatch_fee_pct: '13', mc_number: '', dot_number: '',
+    insurance_carrier: '', insurance_expiry: '', notes: '',
+    nationality: 'MX', rfc: '', curp: '',
+    passport_number: '', passport_expiry: '',
+    visa_type: 'B1/B2', visa_number: '', visa_expiry: '',
+    ine_number: '', federal_license_number: '', federal_license_expiry: '',
+  })
   const [loading, setLoading] = useState(false)
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+  const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -40,109 +44,154 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
       ...form,
       dispatch_fee_pct: parseFloat(form.dispatch_fee_pct),
       insurance_expiry: form.insurance_expiry || null,
-      company_name: form.company_name || null,
-      email: form.email || null,
-      mc_number: form.mc_number || null,
-      dot_number: form.dot_number || null,
-      insurance_carrier: form.insurance_carrier || null,
-      notes: form.notes || null,
+      passport_expiry: form.passport_expiry || null,
+      visa_expiry: form.visa_expiry || null,
+      federal_license_expiry: form.federal_license_expiry || null,
     }
+    // Clean empty strings to null
+    Object.keys(payload).forEach(k => { if (payload[k] === '') payload[k] = null })
 
     const res = isEdit
-      ? await fetch(`/api/owner-operators/${oo.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-      : await fetch('/api/owner-operators', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        })
-
+      ? await fetch(`/api/owner-operators/${oo.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      : await fetch('/api/owner-operators', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
     if (res.ok) onSaved(await res.json())
     setLoading(false)
   }
 
+  const tabCls = (t: string) =>
+    `px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`
+
   return (
-    <Modal title={isEdit ? `Edit — ${oo.name}` : 'Add Owner Operator'} onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Full Name" required>
-            <input className={inputCls} value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Juan García" />
-          </Field>
-          <Field label="Company Name">
-            <input className={inputCls} value={form.company_name} onChange={e => set('company_name', e.target.value)} placeholder="García Trucking LLC" />
-          </Field>
-        </div>
+    <Modal title={isEdit ? `OO — ${oo.name}` : 'Agregar Owner Operator'} onClose={onClose} width="max-w-2xl">
+      <div className="flex gap-2 mb-5">
+        <button type="button" className={tabCls('info')} onClick={() => setTab('info')}>Información</button>
+        <button type="button" className={tabCls('mx')} onClick={() => setTab('mx')}>Docs MX / Visa</button>
+        {isEdit && <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Archivos</button>}
+      </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="WhatsApp" required>
-            <input className={inputCls} value={form.phone_whatsapp} onChange={e => set('phone_whatsapp', e.target.value)} required placeholder="+15126781234" />
-          </Field>
-          <Field label="Email">
-            <input className={inputCls} type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="juan@email.com" />
-          </Field>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
-          <Field label="Dispatch Fee %" required>
-            <input className={inputCls} type="number" step="0.5" min="0" max="30"
-              value={form.dispatch_fee_pct} onChange={e => set('dispatch_fee_pct', e.target.value)} required />
-          </Field>
-          <Field label="MC Number">
-            <input className={inputCls} value={form.mc_number} onChange={e => set('mc_number', e.target.value)} placeholder="MC123456" />
-          </Field>
-          <Field label="DOT Number">
-            <input className={inputCls} value={form.dot_number} onChange={e => set('dot_number', e.target.value)} placeholder="DOT7654321" />
-          </Field>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Insurance Carrier">
-            <input className={inputCls} value={form.insurance_carrier} onChange={e => set('insurance_carrier', e.target.value)} placeholder="Progressive, Owner Policy..." />
-          </Field>
-          <Field label="Insurance Expiry">
-            <input className={inputCls} type="date" value={form.insurance_expiry} onChange={e => set('insurance_expiry', e.target.value)} />
-          </Field>
-        </div>
-
-        <Field label="Notes">
-          <textarea className={inputCls + ' resize-none'} rows={2} value={form.notes}
-            onChange={e => set('notes', e.target.value)} placeholder="Preferred routes, special notes..." />
-        </Field>
-
-        {/* Compliance checklist (edit only) */}
-        {isEdit && (
-          <div className="bg-gray-800/50 rounded-lg p-3 space-y-2">
-            <p className="text-xs text-gray-400 font-medium mb-2">Compliance</p>
-            {[
-              ['cdl_verified', 'CDL Verified'],
-              ['psp_cleared', 'PSP Cleared'],
-              ['mvr_cleared', 'MVR Cleared'],
-              ['clearinghouse_ok', 'Clearinghouse OK'],
-            ].map(([key, label]) => (
-              <label key={key} className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-                <input type="checkbox" className="accent-orange-500"
-                  checked={(oo as any)[key] ?? false}
-                  onChange={() => {}} readOnly />
-                {label}
-              </label>
-            ))}
+      {/* INFO */}
+      {tab === 'info' && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Nombre completo" required>
+              <input className={inputCls} value={form.name ?? ''} onChange={e => set('name', e.target.value)} required placeholder="Juan García" />
+            </Field>
+            <Field label="Empresa">
+              <input className={inputCls} value={form.company_name ?? ''} onChange={e => set('company_name', e.target.value)} placeholder="García Trucking LLC" />
+            </Field>
           </div>
-        )}
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="WhatsApp" required>
+              <input className={inputCls} value={form.phone_whatsapp ?? ''} onChange={e => set('phone_whatsapp', e.target.value)} required placeholder="+15126781234" />
+            </Field>
+            <Field label="Email">
+              <input className={inputCls} type="email" value={form.email ?? ''} onChange={e => set('email', e.target.value)} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <Field label="Dispatch Fee %" required>
+              <input className={inputCls} type="number" step="0.5" value={form.dispatch_fee_pct ?? '13'} onChange={e => set('dispatch_fee_pct', e.target.value)} required />
+            </Field>
+            <Field label="MC Number">
+              <input className={inputCls} value={form.mc_number ?? ''} onChange={e => set('mc_number', e.target.value)} placeholder="MC123456" />
+            </Field>
+            <Field label="DOT Number">
+              <input className={inputCls} value={form.dot_number ?? ''} onChange={e => set('dot_number', e.target.value)} placeholder="DOT7654321" />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Aseguradora">
+              <input className={inputCls} value={form.insurance_carrier ?? ''} onChange={e => set('insurance_carrier', e.target.value)} />
+            </Field>
+            <Field label="Seguro — vence">
+              <input className={inputCls} type="date" value={form.insurance_expiry ?? ''} onChange={e => set('insurance_expiry', e.target.value)} />
+            </Field>
+          </div>
+          <Field label="Notas">
+            <textarea className={inputCls + ' resize-none'} rows={2} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)} />
+          </Field>
+          {isEdit && (
+            <div className="bg-gray-800/50 rounded-lg p-3 grid grid-cols-4 gap-2">
+              {[['cdl_verified','CDL'],['psp_cleared','PSP'],['mvr_cleared','MVR'],['clearinghouse_ok','CH']].map(([k,l]) => (
+                <label key={k} className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+                  <input type="checkbox" className="accent-orange-500" checked={!!form[k]}
+                    onChange={e => set(k, e.target.checked)} />
+                  {l}
+                </label>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+              {loading ? 'Guardando...' : isEdit ? 'Guardar' : 'Agregar OO'}
+            </button>
+          </div>
+        </form>
+      )}
 
-        <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onClose}
-            className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">
-            Cancel
-          </button>
-          <button type="submit" disabled={loading}
-            className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
-            {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Add OO'}
-          </button>
-        </div>
-      </form>
+      {/* MX DOCS */}
+      {tab === 'mx' && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="RFC">
+              <input className={inputCls} value={form.rfc ?? ''} onChange={e => set('rfc', e.target.value.toUpperCase())} placeholder="GAJA800101ABC" />
+            </Field>
+            <Field label="CURP">
+              <input className={inputCls} value={form.curp ?? ''} onChange={e => set('curp', e.target.value.toUpperCase())} placeholder="GAJA800101HCMRJN00" />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="INE #">
+              <input className={inputCls} value={form.ine_number ?? ''} onChange={e => set('ine_number', e.target.value)} />
+            </Field>
+            <Field label="Licencia Federal MX #">
+              <input className={inputCls} value={form.federal_license_number ?? ''} onChange={e => set('federal_license_number', e.target.value)} />
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Lic. Federal — vence">
+              <input className={inputCls} type="date" value={form.federal_license_expiry ?? ''} onChange={e => set('federal_license_expiry', e.target.value)} />
+            </Field>
+          </div>
+          <div className="border-t border-gray-700 pt-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Pasaporte</p>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="# Pasaporte">
+                <input className={inputCls} value={form.passport_number ?? ''} onChange={e => set('passport_number', e.target.value.toUpperCase())} placeholder="G12345678" />
+              </Field>
+              <Field label="Pasaporte — vence">
+                <input className={inputCls} type="date" value={form.passport_expiry ?? ''} onChange={e => set('passport_expiry', e.target.value)} />
+              </Field>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 pt-4">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Visa USA</p>
+            <div className="grid grid-cols-3 gap-4">
+              <Field label="Tipo">
+                <input className={inputCls} value={form.visa_type ?? ''} onChange={e => set('visa_type', e.target.value)} placeholder="B1/B2" />
+              </Field>
+              <Field label="# Visa">
+                <input className={inputCls} value={form.visa_number ?? ''} onChange={e => set('visa_number', e.target.value.toUpperCase())} />
+              </Field>
+              <Field label="Visa — vence">
+                <input className={inputCls} type="date" value={form.visa_expiry ?? ''} onChange={e => set('visa_expiry', e.target.value)} />
+              </Field>
+            </div>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+              {loading ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* ARCHIVOS */}
+      {tab === 'docs' && isEdit && (
+        <DocUploader entityType="owner_operator" entityId={oo.id} categories={OO_DOCS} />
+      )}
     </Modal>
   )
 }
