@@ -6,7 +6,7 @@ import { clsx } from 'clsx'
 import {
   LayoutDashboard, Search, Receipt, FileText, Fuel,
   Wrench, Store, List,
-  Truck, Box, UserCheck, Users, Building2,
+  Truck, Box, UserCheck, Users, Building2, Banknote,
   Settings, LogOut, ChevronRight,
 } from 'lucide-react'
 
@@ -50,11 +50,11 @@ const sections: NavSection[] = [
     header: 'Fleet Manager',
     items: [
       { label: 'Trucks',         href: '/units',           icon: Truck     },
-      { label: 'Trailers',       href: '/trailers',        icon: Box,       soon: true },
+      { label: 'Trailers',       href: '/trailers',        icon: Box                },
       { label: 'Drivers',        href: '/drivers',         icon: UserCheck  },
       { label: 'Owner Operators',href: '/owner-operators', icon: Users     },
-      { label: 'Customers',      href: '/customers',       icon: Building2, soon: true },
-      { label: 'Factoring Co.',  href: '/factoring',       icon: Building2, soon: true },
+      { label: 'Customers',      href: '/customers',       icon: Building2          },
+      { label: 'Factoring Co.',  href: '/factoring',       icon: Banknote            },
     ],
   },
 ]
