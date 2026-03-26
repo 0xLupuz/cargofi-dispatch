@@ -1,23 +1,43 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Container, Plus, Pencil, AlertTriangle, CheckCircle, XCircle, Truck } from 'lucide-react'
+import { Container, Plus, Pencil, AlertTriangle, CheckCircle, XCircle, Truck, Ban } from 'lucide-react'
 import UnitModal from '@/components/units/UnitModal'
 
 interface Unit {
   id: string; unit_number: string; make?: string; model?: string; year?: number
-  color?: string; vin?: string; license_plate?: string; license_state?: string
+  color?: string; vin?: string
+  license_plate?: string; license_state?: string
+  license_plate_mx?: string; plate_expiry_us?: string; plate_expiry_mx?: string
   status?: string; eld_device_id?: string; insurance_carrier?: string
-  insurance_expiry?: string; registration_expiry?: string
-  inspection_expiry?: string; cvsa_expiry?: string; notes?: string
+  insurance_expiry?: string; insurance_expiry_mx?: string
+  registration_expiry?: string; inspection_expiry?: string; inspection_expiry_mx?: string
+  cvsa_expiry?: string; laredo_tag?: string; transponder?: string
+  blocked?: boolean; notes?: string
   owner_operator?: { id: string; name: string }
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  available:   'bg-green-500/10 text-green-400',
-  in_transit:  'bg-yellow-500/10 text-yellow-400',
-  maintenance: 'bg-red-500/10 text-red-400',
-  inactive:    'bg-gray-700 text-gray-500',
+  available:   'bg-green-500/10 text-green-400 border-green-500/20',
+  in_transit:  'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  maintenance: 'bg-red-500/10 text-red-400 border-red-500/20',
+  inactive:    'bg-gray-700 text-gray-500 border-gray-600',
+}
+
+function expiryIcon(expiry?: string) {
+  if (!expiry) return null
+  const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86400000)
+  if (days < 0) return <span title="Vencido"><XCircle className="w-3.5 h-3.5 text-red-400" /></span>
+  if (days < 30) return <span title={`${days}d restantes`}><AlertTriangle className="w-3.5 h-3.5 text-yellow-400" /></span>
+  return <span title="Vigente"><CheckCircle className="w-3.5 h-3.5 text-green-400" /></span>
+}
+
+function fmtDate(d?: string) {
+  if (!d) return <span className="text-gray-600">—</span>
+  const days = Math.ceil((new Date(d).getTime() - Date.now()) / 86400000)
+  const fmt = new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
+  const cls = days < 0 ? 'text-red-400' : days < 30 ? 'text-yellow-400' : 'text-gray-300'
+  return <span className={cls}>{fmt}</span>
 }
 
 export default function UnitsPage() {
@@ -42,17 +62,9 @@ export default function UnitsPage() {
     setShowAdd(false); setEditing(null)
   }
 
-  function expiryBadge(expiry?: string, label?: string) {
-    if (!expiry) return null
-    const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86400000)
-    if (days < 0) return { icon: XCircle, cls: 'text-red-400', text: `${label} VENCIDO` }
-    if (days < 30) return { icon: AlertTriangle, cls: 'text-yellow-400', text: `${label} — ${days}d` }
-    if (days < 90) return { icon: CheckCircle, cls: 'text-green-400', text: `${label} — ${new Date(expiry).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}` }
-    return null
-  }
-
   return (
     <div className="px-6 py-6">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Container className="w-5 h-5 text-orange-400" />
@@ -71,86 +83,109 @@ export default function UnitsPage() {
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Truck className="w-12 h-12 text-gray-700 mb-3" />
           <p className="text-gray-400 font-medium">Sin unidades registradas</p>
-          <p className="text-gray-600 text-sm mt-1">Agrega tu primer truck para empezar</p>
           <button onClick={() => setShowAdd(true)} className="mt-4 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
-            Agregar unidad
+            Agregar primera unidad
           </button>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {units.map(unit => {
-          const alerts = [
-            expiryBadge(unit.insurance_expiry, 'Seguro'),
-            expiryBadge(unit.inspection_expiry, 'Inspección'),
-            expiryBadge(unit.registration_expiry, 'Registro'),
-            expiryBadge(unit.cvsa_expiry, 'CVSA'),
-          ].filter(Boolean)
+      {!loading && units.length > 0 && (
+        <div className="overflow-x-auto rounded-xl border border-gray-700">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-700 bg-gray-800/50">
+                <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Unidad</th>
+                <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Carrier / OO</th>
+                <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Make / Model</th>
+                <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Placas USA</th>
+                <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Placas MX</th>
+                <th className="text-center px-4 py-3 text-xs text-gray-400 font-medium">Seg.</th>
+                <th className="text-center px-4 py-3 text-xs text-gray-400 font-medium">Insp.</th>
+                <th className="text-center px-4 py-3 text-xs text-gray-400 font-medium">CVSA</th>
+                <th className="text-center px-4 py-3 text-xs text-gray-400 font-medium">Status</th>
+                <th className="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {units.map((unit, i) => (
+                <tr key={unit.id}
+                  className={`border-b border-gray-800 hover:bg-gray-800/30 transition-colors ${unit.blocked ? 'opacity-60' : ''} ${i % 2 === 0 ? '' : 'bg-gray-800/10'}`}>
+                  {/* Unit # */}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      {unit.blocked && <span title="Bloqueada"><Ban className="w-3.5 h-3.5 text-red-400 flex-shrink-0" /></span>}
+                      <span className="text-white font-mono font-bold">{unit.unit_number}</span>
+                    </div>
+                    {unit.eld_device_id && <p className="text-xs text-gray-600 mt-0.5">ELD: {unit.eld_device_id}</p>}
+                  </td>
 
-          return (
-            <div key={unit.id} className="bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 transition-colors">
-              {/* Header */}
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-white font-bold text-lg">#{unit.unit_number}</h3>
-                    {unit.status && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[unit.status] ?? STATUS_COLORS.inactive}`}>
-                        {unit.status}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-gray-400 text-sm mt-0.5">
-                    {[unit.year, unit.make, unit.model].filter(Boolean).join(' ')}
-                    {unit.color && ` · ${unit.color}`}
-                  </p>
-                </div>
-                <button onClick={() => setEditing(unit)}
-                  className="text-gray-500 hover:text-white p-1 rounded transition-colors">
-                  <Pencil className="w-3.5 h-3.5" />
-                </button>
-              </div>
+                  {/* OO */}
+                  <td className="px-4 py-3">
+                    <p className="text-gray-300">{unit.owner_operator?.name ?? '—'}</p>
+                  </td>
 
-              {/* OO */}
-              {unit.owner_operator && (
-                <p className="text-xs text-gray-500 mb-2">OO: <span className="text-gray-300">{unit.owner_operator.name}</span></p>
-              )}
+                  {/* Make/Model/Year */}
+                  <td className="px-4 py-3">
+                    <p className="text-gray-300">{[unit.make, unit.model].filter(Boolean).join(' ')}</p>
+                    <p className="text-xs text-gray-500">{unit.year}</p>
+                  </td>
 
-              {/* Plates + VIN */}
-              <div className="flex gap-2 mb-3 flex-wrap">
-                {unit.license_plate && (
-                  <span className="text-xs bg-gray-700/60 text-gray-300 rounded px-2 py-0.5">
-                    🪪 {unit.license_plate}{unit.license_state && ` (${unit.license_state})`}
-                  </span>
-                )}
-                {unit.eld_device_id && (
-                  <span className="text-xs bg-gray-700/60 text-gray-400 rounded px-2 py-0.5">
-                    ELD: {unit.eld_device_id}
-                  </span>
-                )}
-              </div>
+                  {/* Plates USA */}
+                  <td className="px-4 py-3">
+                    <p className="text-gray-300 font-mono">{unit.license_plate ?? '—'}</p>
+                    {unit.plate_expiry_us && <p className="text-xs">{fmtDate(unit.plate_expiry_us)}</p>}
+                  </td>
 
-              {/* Alerts */}
-              {alerts.length > 0 && (
-                <div className="space-y-1 pt-2 border-t border-gray-700">
-                  {alerts.map((a, i) => {
-                    const { icon: Icon, cls, text } = a!
-                    return (
-                      <div key={i} className={`flex items-center gap-1.5 text-xs ${cls}`}>
-                        <Icon className="w-3.5 h-3.5" />
-                        {text}
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
+                  {/* Plates MX */}
+                  <td className="px-4 py-3">
+                    <p className="text-gray-300 font-mono">{unit.license_plate_mx ?? '—'}</p>
+                    {unit.plate_expiry_mx && <p className="text-xs">{fmtDate(unit.plate_expiry_mx)}</p>}
+                  </td>
+
+                  {/* Seguro */}
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      {expiryIcon(unit.insurance_expiry)}
+                      {expiryIcon(unit.insurance_expiry_mx)}
+                    </div>
+                  </td>
+
+                  {/* Inspección */}
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      {expiryIcon(unit.inspection_expiry)}
+                      {expiryIcon(unit.inspection_expiry_mx)}
+                    </div>
+                  </td>
+
+                  {/* CVSA */}
+                  <td className="px-4 py-3 text-center">
+                    {expiryIcon(unit.cvsa_expiry)}
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-4 py-3">
+                    <span className={`text-xs px-2 py-0.5 rounded-full border ${STATUS_COLORS[unit.status ?? 'inactive']}`}>
+                      {unit.status ?? 'inactive'}
+                    </span>
+                  </td>
+
+                  {/* Edit */}
+                  <td className="px-4 py-3">
+                    <button onClick={() => setEditing(unit)}
+                      className="text-gray-500 hover:text-orange-400 p-1 rounded transition-colors">
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {showAdd && <UnitModal onClose={() => setShowAdd(false)} onSaved={handleSaved} />}
-      {editing && <UnitModal unit={editing} onClose={() => setEditing(null)} onSaved={handleSaved} />}
+      {editing && <UnitModal unit={editing as any} onClose={() => setEditing(null)} onSaved={handleSaved} />}
     </div>
   )
 }

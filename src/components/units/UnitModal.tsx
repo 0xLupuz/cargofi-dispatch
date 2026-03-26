@@ -7,33 +7,34 @@ import DocUploader from '@/components/ui/DocUploader'
 import type { OwnerOperator } from '@/types'
 
 const UNIT_DOCS = [
-  { value: 'insurance',    label: 'Seguro / Insurance' },
-  { value: 'inspection',   label: 'Inspección Anual' },
-  { value: 'cvsa',         label: 'CVSA Sticker' },
-  { value: 'registration', label: 'Registro / Title' },
-  { value: 'photo',        label: 'Foto del Truck' },
-  { value: 'other',        label: 'Otro' },
+  { value: 'inspection_us',       label: 'Inspección Anual USA' },
+  { value: 'inspection_mx',       label: 'Inspección MX / Físico-Mecánica' },
+  { value: 'cab_card',            label: 'Cab Card' },
+  { value: 'insurance_us',        label: 'Seguro USA' },
+  { value: 'insurance_mx',        label: 'Póliza Seguro MX' },
+  { value: 'registration_us',     label: 'Registration / Title USA' },
+  { value: 'tarjeta_circulacion', label: 'Tarjeta de Circulación MX' },
+  { value: 'cvsa',                label: 'CVSA Sticker' },
+  { value: 'photo',               label: 'Foto del Truck / Placas' },
+  { value: 'other',               label: 'Otro' },
 ]
 
 interface Unit {
   id: string
   unit_number: string
   owner_operator_id?: string
-  make?: string
-  model?: string
-  year?: number
-  vin?: string
-  license_plate?: string
-  license_state?: string
-  color?: string
-  eld_device_id?: string
-  status?: string
+  make?: string; model?: string; year?: number; color?: string; vin?: string
+  license_plate?: string; license_state?: string
+  license_plate_mx?: string; license_state_mx?: string
+  plate_expiry_us?: string; plate_expiry_mx?: string
+  eld_device_id?: string; status?: string
   insurance_carrier?: string
-  insurance_expiry?: string
+  insurance_expiry?: string; insurance_expiry_mx?: string
   registration_expiry?: string
-  inspection_expiry?: string
+  inspection_expiry?: string; inspection_expiry_mx?: string
   cvsa_expiry?: string
-  notes?: string
+  laredo_tag?: string; transponder?: string
+  blocked?: boolean; notes?: string
 }
 
 interface Props {
@@ -49,10 +50,13 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
   const [form, setForm] = useState<Partial<Unit>>(unit ?? {
     unit_number: '', make: '', model: '', year: undefined,
     vin: '', license_plate: '', license_state: '', color: '',
+    license_plate_mx: '', license_state_mx: '',
+    plate_expiry_us: '', plate_expiry_mx: '',
     eld_device_id: '', status: 'available', owner_operator_id: '',
-    insurance_carrier: '', insurance_expiry: '',
-    registration_expiry: '', inspection_expiry: '', cvsa_expiry: '',
-    notes: '',
+    insurance_carrier: '', insurance_expiry: '', insurance_expiry_mx: '',
+    registration_expiry: '', inspection_expiry: '', inspection_expiry_mx: '',
+    cvsa_expiry: '', laredo_tag: '', transponder: '',
+    blocked: false, notes: '',
   })
   const [loading, setLoading] = useState(false)
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
@@ -138,14 +142,43 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
             </Field>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          {/* Plates USA */}
+          <div className="grid grid-cols-4 gap-3">
             <div className="col-span-2">
-              <Field label="Placas">
+              <Field label="Placas USA">
                 <input className={inputCls} value={form.license_plate ?? ''} onChange={e => set('license_plate', e.target.value)} placeholder="ABC1234" />
               </Field>
             </div>
             <Field label="Estado">
               <input className={inputCls} value={form.license_state ?? ''} onChange={e => set('license_state', e.target.value.toUpperCase())} placeholder="TX" maxLength={2} />
+            </Field>
+            <Field label="Vence USA">
+              <input className={inputCls} type="date" value={(form as any).plate_expiry_us ?? ''} onChange={e => set('plate_expiry_us', e.target.value)} />
+            </Field>
+          </div>
+
+          {/* Plates MX */}
+          <div className="grid grid-cols-4 gap-3">
+            <div className="col-span-2">
+              <Field label="Placas MX">
+                <input className={inputCls} value={(form as any).license_plate_mx ?? ''} onChange={e => set('license_plate_mx', e.target.value)} placeholder="08ES3L" />
+              </Field>
+            </div>
+            <Field label="Estado MX">
+              <input className={inputCls} value={(form as any).license_state_mx ?? ''} onChange={e => set('license_state_mx', e.target.value.toUpperCase())} placeholder="TAM" maxLength={3} />
+            </Field>
+            <Field label="Vence MX">
+              <input className={inputCls} type="date" value={(form as any).plate_expiry_mx ?? ''} onChange={e => set('plate_expiry_mx', e.target.value)} />
+            </Field>
+          </div>
+
+          {/* Laredo Tag + Transponder */}
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Laredo Tag">
+              <input className={inputCls} value={(form as any).laredo_tag ?? ''} onChange={e => set('laredo_tag', e.target.value)} placeholder="LDO00187376" />
+            </Field>
+            <Field label="Transponder">
+              <input className={inputCls} value={(form as any).transponder ?? ''} onChange={e => set('transponder', e.target.value)} placeholder="2C283537B3FA0E..." />
             </Field>
           </div>
 
@@ -153,23 +186,39 @@ export default function UnitModal({ unit, onClose, onSaved }: Props) {
           <div className="border-t border-gray-700 pt-4">
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Vencimientos</p>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Seguro — vence">
-                <input className={inputCls} type="date" value={form.insurance_expiry ?? ''} onChange={e => set('insurance_expiry', e.target.value)} />
-              </Field>
               <Field label="Aseguradora">
                 <input className={inputCls} value={form.insurance_carrier ?? ''} onChange={e => set('insurance_carrier', e.target.value)} placeholder="Owner's Policy, Progressive..." />
               </Field>
-              <Field label="Registro — vence">
-                <input className={inputCls} type="date" value={form.registration_expiry ?? ''} onChange={e => set('registration_expiry', e.target.value)} />
+              <Field label="Seguro USA — vence">
+                <input className={inputCls} type="date" value={form.insurance_expiry ?? ''} onChange={e => set('insurance_expiry', e.target.value)} />
               </Field>
-              <Field label="Inspección anual — vence">
+              <Field label="Seguro MX — vence">
+                <input className={inputCls} type="date" value={(form as any).insurance_expiry_mx ?? ''} onChange={e => set('insurance_expiry_mx', e.target.value)} />
+              </Field>
+              <Field label="Inspección USA — vence">
                 <input className={inputCls} type="date" value={form.inspection_expiry ?? ''} onChange={e => set('inspection_expiry', e.target.value)} />
+              </Field>
+              <Field label="Inspección MX — vence">
+                <input className={inputCls} type="date" value={(form as any).inspection_expiry_mx ?? ''} onChange={e => set('inspection_expiry_mx', e.target.value)} />
+              </Field>
+              <Field label="Registro USA — vence">
+                <input className={inputCls} type="date" value={form.registration_expiry ?? ''} onChange={e => set('registration_expiry', e.target.value)} />
               </Field>
               <Field label="CVSA sticker — vence">
                 <input className={inputCls} type="date" value={form.cvsa_expiry ?? ''} onChange={e => set('cvsa_expiry', e.target.value)} />
               </Field>
             </div>
           </div>
+
+          {/* Blocked */}
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" className="accent-red-500 w-4 h-4"
+              checked={!!(form as any).blocked}
+              onChange={e => set('blocked', e.target.checked)} />
+            <span className="text-sm text-gray-300">
+              <span className="text-red-400 font-medium">Bloquear unidad</span> — no asignable a nuevos loads
+            </span>
+          </label>
 
           <Field label="Notas">
             <textarea className={inputCls + ' resize-none'} rows={2} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)} placeholder="Detalles adicionales..." />
