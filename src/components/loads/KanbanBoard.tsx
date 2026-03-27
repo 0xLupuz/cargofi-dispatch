@@ -7,6 +7,7 @@ import {
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import LoadCard from './LoadCard'
 import type { Load, TripStatus } from '@/types'
 
@@ -16,7 +17,7 @@ const COLUMNS: { status: TripStatus; label: string; accent: string; dot: string;
   { status: 'delivered',  label: 'Delivered',  accent: 'border-emerald-500', dot: 'bg-emerald-500', border: 'border-emerald-500/30' },
 ]
 
-// ── Desktop: droppable column with DnD ────────────────────────────────────────
+// ── Desktop: droppable column with DnD + collapse ─────────────────────────────
 function DroppableColumn({
   status, label, accent, dot, loads, onCardClick, onChecklistToggle,
 }: {
@@ -26,12 +27,57 @@ function DroppableColumn({
   onChecklistToggle: (loadId: string, field: string, value: boolean) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
+  const [collapsed, setCollapsed] = useState(false)
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col flex-none w-11 select-none">
+        {/* Collapsed strip — click to expand */}
+        <button
+          onClick={() => setCollapsed(false)}
+          className={`flex flex-col items-center gap-3 py-3 px-2 rounded-xl border ${
+            dot === 'bg-blue-500'    ? 'border-blue-500/30 hover:border-blue-500/60' :
+            dot === 'bg-amber-400'   ? 'border-amber-400/30 hover:border-amber-400/60' :
+                                       'border-emerald-500/30 hover:border-emerald-500/60'
+          } bg-gray-900/60 transition-colors h-full`}
+          title={`${label} (${loads.length})`}
+        >
+          <ChevronRight className="w-3.5 h-3.5 text-gray-500" />
+          <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
+          <span
+            className="text-xs font-semibold text-gray-400 flex-1"
+            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+          >
+            {label}
+          </span>
+          <span className={`text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ${
+            dot === 'bg-blue-500'    ? 'bg-blue-500/20 text-blue-400' :
+            dot === 'bg-amber-400'   ? 'bg-amber-400/20 text-amber-400' :
+                                       'bg-emerald-500/20 text-emerald-400'
+          }`}>
+            {loads.length}
+          </span>
+        </button>
+        {/* Hidden droppable node so DnD still works */}
+        <div ref={setNodeRef} className="hidden" />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col flex-1 min-w-[280px] max-w-[360px]">
+      {/* Column header — click chevron to collapse */}
       <div className={`flex items-center gap-2.5 mb-3 pb-2.5 border-b-2 ${accent}`}>
         <span className={`w-2 h-2 rounded-full ${dot}`} />
         <span className="text-sm font-semibold text-gray-100">{label}</span>
         <span className="text-xs text-gray-500 bg-gray-800/80 rounded-full px-2 py-0.5 ml-auto">{loads.length}</span>
+        <button
+          onClick={() => setCollapsed(true)}
+          className="ml-1 text-gray-700 hover:text-gray-400 transition-colors"
+          title="Colapsar columna"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
       </div>
       <div
         ref={setNodeRef}
