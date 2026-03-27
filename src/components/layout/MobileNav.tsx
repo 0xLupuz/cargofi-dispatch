@@ -6,7 +6,7 @@ import { useState } from 'react'
 import {
   LayoutDashboard, DollarSign, Wrench, Truck, MoreHorizontal,
   X, Receipt, FileText, Fuel, Store, List, Box,
-  UserCheck, Users, Building2, Banknote, Search,
+  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -47,6 +47,13 @@ const MORE_SECTIONS = [
     items: [
       { label: 'Invoices',        href: '/invoices',          icon: FileText, soon: true },
       { label: 'IFTA',            href: '/ifta',              icon: Fuel,     soon: true },
+    ],
+  },
+  {
+    header: 'Tools',
+    items: [
+      { label: 'Carta de Retiro', href: '/tools/carta-retiro', icon: ScrollText },
+      { label: 'Carta B1',        href: '/tools/carta-b1',     icon: Globe      },
     ],
   },
 ]

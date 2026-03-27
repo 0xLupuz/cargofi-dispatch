@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Search, Receipt, FileText, Fuel,
   Wrench, Store, List,
   Truck, Box, UserCheck, Users, Building2, Banknote,
-  Settings, LogOut, ChevronRight,
+  Settings, LogOut, ChevronRight, ScrollText, Globe,
 } from 'lucide-react'
 
 type NavItem = {
@@ -55,6 +55,13 @@ const sections: NavSection[] = [
       { label: 'Owner Operators',href: '/owner-operators', icon: Users     },
       { label: 'Customers',      href: '/customers',       icon: Building2          },
       { label: 'Factoring Co.',  href: '/factoring',       icon: Banknote            },
+    ],
+  },
+  {
+    header: 'Tools',
+    items: [
+      { label: 'Carta de Retiro', href: '/tools/carta-retiro', icon: ScrollText },
+      { label: 'Carta B1',        href: '/tools/carta-b1',     icon: Globe      },
     ],
   },
 ]
