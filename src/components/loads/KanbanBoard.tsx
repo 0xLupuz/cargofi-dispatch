@@ -175,10 +175,13 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
     )
   }
 
-  // ── Mobile view: stacked sections (DndContext needed by useSortable in LoadCard) ──
+  // ── Mobile view: stacked sections ─────────────────────────────────────────
+  // DndContext with NO sensors: provides the context useSortable needs internally
+  // without registering any global pointer/touch event listeners that would
+  // swallow tap events on mobile.
   if (isMobile) {
     return (
-      <DndContext sensors={sensors}>
+      <DndContext sensors={[]}>
         <div className="space-y-3 pb-2">
           {COLUMNS.map(col => (
             <MobileSection
