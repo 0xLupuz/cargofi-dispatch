@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { MapPin, DollarSign, Truck, User, ArrowUpFromLine, Clock, CheckCircle2 } from 'lucide-react'
+import { MapPin, DollarSign, Truck, User, ArrowUpFromLine, Clock, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
 import type { Load } from '@/types'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -73,25 +74,105 @@ interface CardBodyProps {
 }
 
 function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps) {
+  const [collapsed, setCollapsed] = useState(false)
   const origin = load.stops?.find(s => s.stop_type === 'pickup')
   const dest   = load.stops?.find(s => s.stop_type === 'delivery')
   const completedSteps = CHECKLIST.filter(c => load[c.field]).length
   const allDone = completedSteps === CHECKLIST.length
 
+  // ── Compact / collapsed view ────────────────────────────────────────────────
+  if (collapsed) {
+    return (
+      <div className={`bg-gray-900 border rounded-lg px-3 py-2 select-none transition-all ${
+        allDone ? 'border-emerald-700/60' : 'border-gray-700/60'
+      } ${isDragging ? 'opacity-35' : ''}`}>
+        <div className="flex items-center gap-2 min-w-0">
+
+          {/* Load # */}
+          <span className="text-xs font-mono font-bold text-orange-400 flex-shrink-0">
+            {load.load_number}
+          </span>
+
+          {/* WO# */}
+          {load.work_order_number && (
+            <span className="text-[10px] text-gray-600 flex-shrink-0">
+              WO# {load.work_order_number}
+            </span>
+          )}
+
+          {/* Unit */}
+          {load.unit && (
+            <div className="flex items-center gap-1 text-[10px] text-gray-500 flex-shrink-0">
+              <Truck className="w-3 h-3" />
+              <span>{load.unit.unit_number}</span>
+            </div>
+          )}
+
+          {/* OO / Operator */}
+          {load.owner_operator && (
+            <div className="flex items-center gap-1 text-[10px] text-gray-400 min-w-0">
+              <User className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">{load.owner_operator.name}</span>
+            </div>
+          )}
+
+          {/* Checklist mini-dots */}
+          <div
+            className="flex items-center gap-0.5 ml-auto flex-shrink-0"
+            onPointerDown={e => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
+          >
+            {CHECKLIST.map(({ field, label }) => (
+              <button
+                key={field}
+                title={label}
+                onClick={e => { e.stopPropagation(); onChecklistToggle(load.id, field, !load[field]) }}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  load[field] ? 'bg-emerald-400' : 'bg-gray-700 hover:bg-gray-500'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Expand toggle */}
+          <button
+            title="Expandir"
+            onPointerDown={e => e.stopPropagation()}
+            onClick={e => { e.stopPropagation(); setCollapsed(false) }}
+            className="ml-1 flex-shrink-0 text-gray-600 hover:text-gray-300 transition-colors"
+          >
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Full / expanded view ────────────────────────────────────────────────────
   return (
     <div className={`bg-gray-900 border rounded-xl p-3.5 select-none transition-all group ${
       allDone ? 'border-emerald-700/60' : 'border-gray-700/80'
     } ${isDragging ? 'shadow-2xl opacity-35' : ''}`}>
 
-      {/* Top: Load # + rate */}
+      {/* Top: Load # + rate + collapse toggle */}
       <div className="flex items-start justify-between mb-2.5">
         <div>
           <span className="text-xs font-mono font-semibold text-orange-400">{load.load_number}</span>
           {load.work_order_number && <span className="text-xs text-gray-600 ml-2">WO# {load.work_order_number}</span>}
         </div>
-        <div className="flex items-center gap-0.5 text-sm font-bold text-white">
-          <DollarSign className="w-3.5 h-3.5 text-green-400" />
-          {load.rate.toLocaleString('en-US', { minimumFractionDigits: 0 })}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 text-sm font-bold text-white">
+            <DollarSign className="w-3.5 h-3.5 text-green-400" />
+            {load.rate.toLocaleString('en-US', { minimumFractionDigits: 0 })}
+          </div>
+          <button
+            title="Colapsar"
+            onPointerDown={e => e.stopPropagation()}
+            onClick={e => { e.stopPropagation(); setCollapsed(true) }}
+            className="text-gray-700 hover:text-gray-400 transition-colors"
+          >
+            <ChevronUp className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
