@@ -16,7 +16,8 @@ export async function GET(
       driver:drivers(id, name, phone_whatsapp),
       unit:units(id, unit_number, make, model, license_plate, license_plate_mx),
       stops(id, stop_type, sequence, facility_name, address, city, state, country, appointment_at, actual_arrival_at, actual_departure_at, notes),
-      deductions(id, description, amount, type)
+      deductions(id, description, amount, type),
+      load_drivers(id, driver_id, driver_name, miles, rate_per_mile, total_pay, sort_order, driver:drivers(id, first_name, last_name, phone_whatsapp))
     `)
     .eq('id', id)
     .single()

@@ -52,8 +52,12 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   // Editable fields
   const [form, setForm] = useState<Record<string, any>>({})
   const [deductions, setDeductions] = useState<any[]>([])
+  const [loadDrivers, setLoadDrivers] = useState<any[]>([])
+  const [allDrivers, setAllDrivers] = useState<any[]>([])
   const [newDed, setNewDed] = useState({ description: '', amount: '', type: 'fuel_advance' })
   const [addingDed, setAddingDed] = useState(false)
+  const [addingDriver, setAddingDriver] = useState(false)
+  const [newDriver, setNewDriver] = useState({ driver_id: '', miles: '', rate_per_mile: '' })
 
   const setF = (k: string, v: any) => { setForm(f => ({ ...f, [k]: v })); setDirty(true) }
 
@@ -81,13 +85,19 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
         po_number: data.po_number ?? '',
         crossing_point: data.crossing_point ?? '',
         mx_carrier: data.mx_carrier ?? '',
+        total_miles: data.total_miles ?? '',
+        fuel_cost: data.fuel_cost ?? '',
       })
       setDeductions(data.deductions ?? [])
+      setLoadDrivers((data.load_drivers ?? []).sort((a: any, b: any) => a.sort_order - b.sort_order))
       setDirty(false)
     }
   }, [loadId])
 
   useEffect(() => { fetchLoad() }, [fetchLoad])
+  useEffect(() => {
+    fetch('/api/drivers').then(r => r.json()).then(d => setAllDrivers(Array.isArray(d) ? d : []))
+  }, [])
 
   // Close on Escape
   useEffect(() => {
@@ -103,6 +113,8 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
     payload.rate = parseFloat(payload.rate) || 0
     payload.dispatch_fee_pct = parseFloat(payload.dispatch_fee_pct) || 0
     payload.factoring_fee_pct = parseFloat(payload.factoring_fee_pct) || 0
+    payload.total_miles = payload.total_miles ? parseInt(payload.total_miles) : null
+    payload.fuel_cost = payload.fuel_cost ? parseFloat(payload.fuel_cost) : null
 
     try {
       const res = await fetch(`/api/loads/${loadId}`, {
@@ -150,6 +162,35 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
     setDeductions(prev => prev.filter(d => d.id !== id))
   }
 
+  async function addDriver() {
+    if (!newDriver.miles || !newDriver.rate_per_mile) return
+    const driverObj = allDrivers.find(d => d.id === newDriver.driver_id)
+    const payload = {
+      load_id: loadId,
+      driver_id: newDriver.driver_id || null,
+      driver_name: driverObj ? `${driverObj.first_name ?? ''} ${driverObj.last_name ?? ''}`.trim() : 'Driver',
+      miles: parseInt(newDriver.miles),
+      rate_per_mile: parseFloat(newDriver.rate_per_mile),
+      sort_order: loadDrivers.length,
+    }
+    const res = await fetch('/api/load-drivers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    if (res.ok) {
+      const row = await res.json()
+      setLoadDrivers(prev => [...prev, row])
+      setNewDriver({ driver_id: '', miles: '', rate_per_mile: '' })
+      setAddingDriver(false)
+    }
+  }
+
+  async function removeDriver(id: string) {
+    await fetch(`/api/load-drivers/${id}`, { method: 'DELETE' })
+    setLoadDrivers(prev => prev.filter(d => d.id !== id))
+  }
+
   // Financial calculations
   const rate = parseFloat(String(form.rate)) || 0
   const dispatchPct = parseFloat(String(form.dispatch_fee_pct)) || 0
@@ -157,7 +198,9 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   const dispatchFee = rate * dispatchPct / 100
   const factoringFee = rate * factoringPct / 100
   const totalDeductions = deductions.reduce((s, d) => s + Number(d.amount), 0)
-  const ooNet = rate - dispatchFee - factoringFee - totalDeductions
+  const totalDriverPay = loadDrivers.reduce((s, d) => s + Number(d.total_pay || 0), 0)
+  const fuelCost = parseFloat(String(form.fuel_cost)) || 0
+  const ooNet = rate - dispatchFee - factoringFee - totalDriverPay - fuelCost - totalDeductions
 
   const currentStatus = STATUSES.find(s => s.value === form.trip_status)
   const tabCls = (t: string) =>
@@ -366,7 +409,84 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                 </div>
                 <div>
                   <label className={lbl}>Factoring %</label>
-                  <input className={inp} type="number" step="0.1" value={form.factoring_fee_pct} onChange={e => setF('factoring_fee_pct', e.target.value)} />
+                  <input className={inp} type="number" step="0.1" value={form.factoring_fee_pct} onChange={e => setF('factoring_fee_pct', e.target.value)} placeholder="0" />
+                </div>
+              </div>
+
+              {/* Miles + Fuel */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={lbl}>Total Miles</label>
+                  <input className={inp} type="number" placeholder="1,200" value={form.total_miles} onChange={e => setF('total_miles', e.target.value)} />
+                </div>
+                <div>
+                  <label className={lbl}>Fuel Cost (USD)</label>
+                  <input className={inp} type="number" step="0.01" placeholder="0.00" value={form.fuel_cost} onChange={e => setF('fuel_cost', e.target.value)} />
+                </div>
+              </div>
+
+              {/* Drivers section */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">
+                    Driver Pay <span className="text-gray-600 normal-case">({loadDrivers.length} driver{loadDrivers.length !== 1 ? 's' : ''})</span>
+                  </p>
+                  <button onClick={() => setAddingDriver(!addingDriver)}
+                    className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                    <Plus className="w-3.5 h-3.5" /> Add Driver
+                  </button>
+                </div>
+
+                {addingDriver && (
+                  <div className="bg-gray-800/50 rounded-lg p-3 space-y-2 mb-2 border border-gray-700">
+                    <select className={inp + ' text-xs'} value={newDriver.driver_id}
+                      onChange={e => setNewDriver(n => ({ ...n, driver_id: e.target.value }))}>
+                      <option value="">— Select driver (optional) —</option>
+                      {allDrivers.map(d => (
+                        <option key={d.id} value={d.id}>{d.first_name} {d.last_name}</option>
+                      ))}
+                    </select>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input className={inp + ' text-xs'} type="number" placeholder="Miles" value={newDriver.miles}
+                        onChange={e => setNewDriver(n => ({ ...n, miles: e.target.value }))} />
+                      <input className={inp + ' text-xs'} type="number" step="0.01" placeholder="$/mile (e.g. 0.38)"
+                        value={newDriver.rate_per_mile}
+                        onChange={e => setNewDriver(n => ({ ...n, rate_per_mile: e.target.value }))} />
+                    </div>
+                    {newDriver.miles && newDriver.rate_per_mile && (
+                      <p className="text-xs text-emerald-400">
+                        Pay: ${(parseInt(newDriver.miles) * parseFloat(newDriver.rate_per_mile)).toFixed(2)}
+                        <span className="text-gray-500 ml-1">({newDriver.miles} mi × ${newDriver.rate_per_mile}/mi)</span>
+                      </p>
+                    )}
+                    <div className="flex gap-2">
+                      <button onClick={() => setAddingDriver(false)}
+                        className="flex-1 border border-gray-600 text-gray-400 rounded-lg py-1.5 text-xs hover:bg-gray-700 transition-colors">Cancel</button>
+                      <button onClick={addDriver}
+                        className="flex-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg py-1.5 text-xs transition-colors">Add</button>
+                    </div>
+                  </div>
+                )}
+
+                {loadDrivers.length === 0 && !addingDriver && (
+                  <p className="text-xs text-gray-600">Sin drivers asignados. Agrega para calcular driver pay.</p>
+                )}
+                <div className="space-y-1.5">
+                  {loadDrivers.map(d => (
+                    <div key={d.id} className="flex items-center justify-between bg-gray-800/40 rounded-lg px-3 py-2">
+                      <div>
+                        <p className="text-sm text-white">{d.driver_name || d.driver?.first_name + ' ' + (d.driver?.last_name ?? '')}</p>
+                        <p className="text-xs text-gray-500">{d.miles} mi × ${Number(d.rate_per_mile).toFixed(2)}/mi</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-red-400 text-sm font-medium">-${Number(d.total_pay).toFixed(2)}</span>
+                        <button onClick={() => removeDriver(d.id)}
+                          className="text-gray-600 hover:text-red-400 transition-colors">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -385,6 +505,18 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Factoring ({factoringPct}%)</span>
                     <span className="text-red-400">-${factoringFee.toFixed(2)}</span>
+                  </div>
+                )}
+                {loadDrivers.map(d => (
+                  <div key={d.id} className="flex justify-between text-sm">
+                    <span className="text-gray-400">Driver: {d.driver_name}</span>
+                    <span className="text-red-400">-${Number(d.total_pay).toFixed(2)}</span>
+                  </div>
+                ))}
+                {fuelCost > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Fuel</span>
+                    <span className="text-red-400">-${fuelCost.toFixed(2)}</span>
                   </div>
                 )}
                 {deductions.map(d => (

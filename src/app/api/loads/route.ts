@@ -3,12 +3,19 @@ import { createServiceClient } from '@/lib/supabase'
 
 const TENANT_ID = '00000000-0000-0000-0000-000000000001'
 
-// GET /api/loads  — board view (unarchived only)
-// GET /api/loads?history=1  — all loads for history tab
+// GET /api/loads              — board view (unarchived only)
+// GET /api/loads?history=1    — all loads for history tab
+// GET /api/loads?paid=true&settled=false  — settlements queue
 export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
-  const history = req.nextUrl.searchParams.get('history') === '1'
-  const search  = req.nextUrl.searchParams.get('q') ?? ''
+  const { searchParams } = req.nextUrl
+  const history  = searchParams.get('history') === '1'
+  const paid     = searchParams.get('paid')
+  const settled  = searchParams.get('settled')
+  const search   = searchParams.get('q') ?? ''
+
+  // Settlements queue mode: paid=true, settled=false — include full financial data
+  const isSettlements = paid === 'true' && settled === 'false'
 
   let query = supabase
     .from('loads')
@@ -18,12 +25,14 @@ export async function GET(req: NextRequest) {
       driver:drivers(id, name, phone_whatsapp),
       unit:units(id, unit_number, make, model, license_plate, license_plate_mx),
       stops(id, stop_type, sequence, city, state, appointment_at),
-      deductions(id, description, amount, type)
+      deductions(id, description, amount, type)${isSettlements ? `,\n      load_drivers(id, driver_id, driver_name, miles, rate_per_mile, total_pay, sort_order)` : ''}
     `)
     .eq('tenant_id', TENANT_ID)
     .order('created_at', { ascending: false })
 
-  if (!history) {
+  if (isSettlements) {
+    query = query.eq('paid_ok', true).eq('settled_ok', false)
+  } else if (!history) {
     // Board: only active (not archived) loads
     query = query.is('archived_at', null)
   }
