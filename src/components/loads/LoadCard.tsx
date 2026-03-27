@@ -191,7 +191,11 @@ function SortableLoadCard({ load, onClick, onChecklistToggle }: Omit<Props, 'dra
 
 function StaticLoadCard({ load, onClick, onChecklistToggle }: Omit<Props, 'draggable'>) {
   return (
-    <div onClick={() => onClick(load)} className="cursor-pointer active:opacity-80 transition-opacity">
+    <div
+      onClick={() => onClick(load)}
+      style={{ touchAction: 'manipulation' }}
+      className="cursor-pointer active:opacity-80 transition-opacity"
+    >
       <CardBody load={load} onChecklistToggle={onChecklistToggle} />
     </div>
   )
