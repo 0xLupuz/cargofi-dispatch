@@ -87,7 +87,7 @@ export default function RepairOrdersPage() {
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-gray-950 border-b border-gray-800">
-            <tr>{['RO #','Status','Type','Unit / Trailer','Vendor','Arrived','Delivered','Parts','Labor','Total',''].map(h => <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3">{h}</th>)}</tr>
+            <tr>{['RO #','Status','Type','Unit / Trailer','Vendor','Arrived','Delivered','Subtotal','Tax','Total',''].map(h => <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-800/60">
             {ros.map(ro => {
@@ -101,8 +101,8 @@ export default function RepairOrdersPage() {
                   <td className="px-4 py-3 text-gray-400 text-xs max-w-[120px] truncate">{ro.vendor?.name ?? '—'}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{fmtDate(ro.arrived_at)}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{fmtDate(ro.delivered_at)}</td>
-                  <td className="px-4 py-3 text-gray-300 text-xs">{Number(ro.subtotal_no_taxable + ro.subtotal_taxable - (ro.total - ro.subtotal_taxable - ro.subtotal_no_taxable)) > 0 ? '' : ''}<span className="text-gray-400">${(Number(ro.subtotal_taxable) + Number(ro.subtotal_no_taxable)).toFixed(0)}</span></td>
-                  <td className="px-4 py-3 text-gray-300 text-xs"></td>
+                  <td className="px-4 py-3 text-gray-400 text-xs">${(Number(ro.subtotal_taxable) + Number(ro.subtotal_no_taxable)).toFixed(2)}</td>
+                  <td className="px-4 py-3 text-gray-400 text-xs">{Number(ro.tax_amount) > 0 ? `$${Number(ro.tax_amount).toFixed(2)}` : '—'}</td>
                   <td className="px-4 py-3 text-white font-semibold">${Number(ro.total).toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
