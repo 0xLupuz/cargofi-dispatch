@@ -81,7 +81,7 @@ function MobileSection({
             <p className="text-center text-gray-700 text-xs py-4">No loads here</p>
           )}
           {loads.map(load => (
-            <LoadCard key={load.id} load={load} onClick={onCardClick} onChecklistToggle={onChecklistToggle} />
+            <LoadCard key={load.id} load={load} onClick={onCardClick} onChecklistToggle={onChecklistToggle} draggable={false} />
           ))}
         </div>
       )}
@@ -175,20 +175,22 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
     )
   }
 
-  // ── Mobile view: stacked sections ─────────────────────────────────────────
+  // ── Mobile view: stacked sections (DndContext needed by useSortable in LoadCard) ──
   if (isMobile) {
     return (
-      <div className="space-y-3 pb-2">
-        {COLUMNS.map(col => (
-          <MobileSection
-            key={col.status}
-            {...col}
-            loads={byStatus(col.status)}
-            onCardClick={onCardClick}
-            onChecklistToggle={handleChecklistToggle}
-          />
-        ))}
-      </div>
+      <DndContext sensors={sensors}>
+        <div className="space-y-3 pb-2">
+          {COLUMNS.map(col => (
+            <MobileSection
+              key={col.status}
+              {...col}
+              loads={byStatus(col.status)}
+              onCardClick={onCardClick}
+              onChecklistToggle={handleChecklistToggle}
+            />
+          ))}
+        </div>
+      </DndContext>
     )
   }
 

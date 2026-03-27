@@ -101,11 +101,12 @@ interface Props {
   load: Load
   onClick: (load: Load) => void
   onChecklistToggle: (loadId: string, field: string, value: boolean) => void
+  draggable?: boolean   // false on mobile — disables dnd listeners so clicks work
 }
 
-export default function LoadCard({ load, onClick, onChecklistToggle }: Props) {
+export default function LoadCard({ load, onClick, onChecklistToggle, draggable = true }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: load.id })
+    useSortable({ id: load.id, disabled: !draggable })
 
   const style = {
     transform: CSS.Transform.toString(transform),
