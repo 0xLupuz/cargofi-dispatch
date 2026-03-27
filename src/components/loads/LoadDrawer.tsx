@@ -168,7 +168,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
     const payload = {
       load_id: loadId,
       driver_id: newDriver.driver_id || null,
-      driver_name: driverObj ? `${driverObj.first_name ?? ''} ${driverObj.last_name ?? ''}`.trim() : 'Driver',
+      driver_name: driverObj ? (driverObj.name ?? 'Driver') : 'Driver',
       miles: parseInt(newDriver.miles),
       rate_per_mile: parseFloat(newDriver.rate_per_mile),
       sort_order: loadDrivers.length,
@@ -443,7 +443,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       onChange={e => setNewDriver(n => ({ ...n, driver_id: e.target.value }))}>
                       <option value="">— Select driver (optional) —</option>
                       {allDrivers.map(d => (
-                        <option key={d.id} value={d.id}>{d.first_name} {d.last_name}</option>
+                        <option key={d.id} value={d.id}>{d.name}</option>
                       ))}
                     </select>
                     <div className="grid grid-cols-2 gap-2">
@@ -475,7 +475,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                   {loadDrivers.map(d => (
                     <div key={d.id} className="flex items-center justify-between bg-gray-800/40 rounded-lg px-3 py-2">
                       <div>
-                        <p className="text-sm text-white">{d.driver_name || d.driver?.first_name + ' ' + (d.driver?.last_name ?? '')}</p>
+                        <p className="text-sm text-white">{d.driver_name || (d.driver?.name ?? '')}</p>
                         <p className="text-xs text-gray-500">{d.miles} mi × ${Number(d.rate_per_mile).toFixed(2)}/mi</p>
                       </div>
                       <div className="flex items-center gap-3">

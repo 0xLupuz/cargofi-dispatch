@@ -131,7 +131,7 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
                   </select>
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div><label className={lbl}>Arrived</label><input className={inp} type="datetime-local" value={form.arrived_at} onChange={e => setF('arrived_at', e.target.value)} /></div>
                 <div><label className={lbl}>Delivered</label><input className={inp} type="datetime-local" value={form.delivered_at} onChange={e => setF('delivered_at', e.target.value)} /></div>
               </div>

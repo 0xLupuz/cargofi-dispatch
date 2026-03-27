@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .from('load_drivers')
     .update({ ...body, total_pay })
     .eq('id', id)
-    .select(`*, driver:drivers(id, first_name, last_name)`)
+    .select(`*, driver:drivers(id, name)`)
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

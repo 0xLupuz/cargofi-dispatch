@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await createServiceClient()
     .from('load_drivers')
     .insert({ ...body, total_pay, tenant_id: T })
-    .select(`*, driver:drivers(id, first_name, last_name)`)
+    .select(`*, driver:drivers(id, name)`)
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
