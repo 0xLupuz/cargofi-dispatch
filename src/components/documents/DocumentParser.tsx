@@ -53,7 +53,8 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
     factoring_fee_pct: '0', commodity: '', weight_lbs: '',
     pickup_date: '', delivery_date: '', bol_number: '',
     crossing_point: '', origin_city: '', origin_state: '',
-    dest_city: '', dest_state: '', trailer_number: '',
+    dest_city: '', dest_state: '', dest_address: '', trailer_number: '',
+    work_order_number: '', total_miles: '',
   })
 
   useEffect(() => {
@@ -86,25 +87,34 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
         ? oos.find(o => o.id === matchedDriver.owner_operator_id)
         : oos.find(o => fuzzyMatch(e.carrier_name ?? '', o.name) || fuzzyMatch(e.carrier_name ?? '', o.company_name ?? ''))
 
+      // For DX: delivery_appointment is "YYYY-MM-DDTHH:MM" — use date part as delivery_date
+      const deliveryDate = e.delivery_appointment
+        ? e.delivery_appointment.split('T')[0]
+        : (e.delivery_date ?? '')
+
       setForm(f => ({
         ...f,
-        load_number: e.load_number ?? e.bol_number ?? '',
-        broker_name: e.broker_name ?? e.consignee_name ?? '',
-        broker_mc: e.broker_mc ?? '',
-        commodity: e.commodity ?? '',
-        weight_lbs: e.weight_lbs ? String(e.weight_lbs) : '',
-        pickup_date: e.pickup_date ?? '',
-        delivery_date: e.delivery_date ?? '',
-        bol_number: e.bol_number ?? e.pedimento ?? '',
-        origin_city: e.origin_city ?? '',
-        origin_state: e.origin_state ?? '',
-        dest_city: e.dest_city ?? '',
-        dest_state: e.dest_state ?? '',
-        trailer_number: e.trailer_number ?? '',
-        rate: e.rate ? String(e.rate) : '',
+        load_number:       e.load_number ?? e.bol_number ?? '',
+        work_order_number: e.work_order_number ?? '',
+        broker_name:       e.broker_name ?? e.consignee_name ?? '',
+        broker_mc:         e.broker_mc ?? '',
+        commodity:         e.commodity ?? '',
+        weight_lbs:        e.weight_lbs ? String(e.weight_lbs) : '',
+        pickup_date:       e.pickup_date ?? '',
+        delivery_date:     deliveryDate,
+        bol_number:        e.bol_number ?? e.pedimento ?? '',
+        origin_city:       e.origin_city ?? '',
+        origin_state:      e.origin_state ?? '',
+        dest_facility:     e.dest_facility ?? '',
+        dest_city:         e.dest_city ?? '',
+        dest_state:        e.dest_state ?? '',
+        dest_address:      e.dest_address ?? '',
+        trailer_number:    e.trailer_number ?? '',
+        total_miles:       e.total_miles ? String(Math.round(e.total_miles)) : '',
+        rate:              e.rate ? String(e.rate) : '',
         owner_operator_id: matchedOO?.id ?? '',
-        driver_id: matchedDriver?.id ?? '',
-        dispatch_fee_pct: matchedOO ? String(matchedOO.dispatch_fee_pct) : '13',
+        driver_id:         matchedDriver?.id ?? '',
+        dispatch_fee_pct:  matchedOO ? String(matchedOO.dispatch_fee_pct) : '13',
       }))
 
       setStep('confirm')
@@ -135,7 +145,7 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
       driver_id: form.driver_id,
       broker_name: form.broker_name,
       broker_mc: form.broker_mc || null,
-      rate: parseFloat(form.rate),
+      rate: parseFloat(form.rate) || 0,
       dispatch_fee_pct: parseFloat(form.dispatch_fee_pct),
       factoring_fee_pct: parseFloat(form.factoring_fee_pct) || 0,
       commodity: form.commodity || null,
@@ -144,6 +154,8 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
       delivery_date: form.delivery_date || null,
       bol_number: form.bol_number || null,
       crossing_point: form.crossing_point || null,
+      work_order_number: form.work_order_number || null,
+      total_miles: form.total_miles ? parseInt(form.total_miles) : null,
       trip_status: 'open',
       raw_rate_con_text: result?.raw_text_summary ?? null,
     }
@@ -159,8 +171,17 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
 
       // Create stops
       const stops = []
-      if (form.origin_city) stops.push({ stop_type: 'pickup', sequence: 1, city: form.origin_city, state: form.origin_state, country: 'MX' })
-      if (form.dest_city)   stops.push({ stop_type: 'delivery', sequence: 2, city: form.dest_city, state: form.dest_state, country: 'US' })
+      if (form.origin_city) stops.push({
+        stop_type: 'pickup', sequence: 1,
+        city: form.origin_city, state: form.origin_state, country: 'MX',
+        facility_name: 'DX RANCH – NUEVO LAREDO',
+      })
+      if (form.dest_city) stops.push({
+        stop_type: 'delivery', sequence: 2,
+        city: form.dest_city, state: form.dest_state, country: 'US',
+        address: (form as any).dest_address || null,
+        facility_name: (form as any).dest_facility || null,
+      })
       if (stops.length) {
         await fetch('/api/stops', {
           method: 'POST',
@@ -220,6 +241,17 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
       {/* STEP 3 — Confirm & Create */}
       {step === 'confirm' && result && (
         <form onSubmit={handleCreate} className="space-y-5">
+          {/* DX Assignment banner */}
+          {result.doc_type === 'dx_assignment' && (
+            <div className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/30 rounded-lg px-3 py-2.5 text-xs text-blue-300">
+              <FileText className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold text-blue-200">DX Xpress — Asignación de viaje detectada</span>
+                <span className="ml-2 text-blue-400">Rate no incluido en el doc — ingresar manualmente (pago semanal DX)</span>
+              </div>
+            </div>
+          )}
+
           {/* Alerts */}
           {missing.length > 0 && (
             <div className="space-y-1.5">
@@ -268,7 +300,7 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
           {/* Load # + Broker */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={lbl}>Load #</label>
+              <label className={lbl}>Load # (auto)</label>
               <input className={inp} value={form.load_number}
                 onChange={e => set('load_number', e.target.value)} placeholder="CF-001" />
             </div>
@@ -276,6 +308,31 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
               <label className={lbl}>Broker / Customer *</label>
               <input className={inp} value={form.broker_name}
                 onChange={e => set('broker_name', e.target.value)} required />
+            </div>
+          </div>
+
+          {/* Folio / WO# + Total Miles + Trailer */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className={lbl}>
+                Folio / WO #{form.work_order_number && <span className="ml-1 text-green-400">✓</span>}
+              </label>
+              <input className={inp} value={form.work_order_number}
+                onChange={e => set('work_order_number', e.target.value)} placeholder="1126732" />
+            </div>
+            <div>
+              <label className={lbl}>
+                Total Miles{form.total_miles && <span className="ml-1 text-green-400">✓</span>}
+              </label>
+              <input className={inp} type="number" value={form.total_miles}
+                onChange={e => set('total_miles', e.target.value)} placeholder="1385" />
+            </div>
+            <div>
+              <label className={lbl}>
+                Trailer #{form.trailer_number && <span className="ml-1 text-green-400">✓</span>}
+              </label>
+              <input className={inp} value={form.trailer_number}
+                onChange={e => set('trailer_number', e.target.value)} placeholder="FR432" />
             </div>
           </div>
 
