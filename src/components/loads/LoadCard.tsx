@@ -3,7 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { MapPin, DollarSign, Truck, User, ArrowUpFromLine, Clock, CheckCircle2 } from 'lucide-react'
-import type { Load, TripStatus } from '@/types'
+import type { Load } from '@/types'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -24,70 +24,37 @@ function etaColor(dateStr?: string | null): string {
   return 'text-gray-400'
 }
 
-// ─── DateRow — different info per trip_status ─────────────────────────────────
+// ─── DateRow ──────────────────────────────────────────────────────────────────
 
 function DateRow({ load }: { load: Load }) {
   const pickupStop   = load.stops?.find(s => s.stop_type === 'pickup')
   const deliveryStop = load.stops?.find(s => s.stop_type === 'delivery')
+  const departedAt   = pickupStop?.actual_departure_at ?? load.pickup_date ?? null
+  const expectedAt   = pickupStop?.appointment_at ?? load.pickup_date ?? null
+  const deliveredAt  = deliveryStop?.actual_arrival_at ?? load.delivery_date ?? null
+  const etaAt        = deliveryStop?.appointment_at ?? load.delivery_date ?? null
 
-  // Departed = actual_departure_at on pickup stop, fallback to pickup_date
-  const departedAt = pickupStop?.actual_departure_at ?? load.pickup_date ?? null
-
-  // Expected appt = appointment_at on pickup stop, fallback to pickup_date
-  const expectedAt = pickupStop?.appointment_at ?? load.pickup_date ?? null
-
-  // Delivered = actual_arrival_at on delivery stop, fallback to delivery_date
-  const deliveredAt = deliveryStop?.actual_arrival_at ?? load.delivery_date ?? null
-
-  // ETA = appointment_at on delivery stop, fallback to delivery_date
-  const etaAt = deliveryStop?.appointment_at ?? load.delivery_date ?? null
-
-  // ── OPEN ──────────────────────────────────────────────────────────────────
-  if (load.trip_status === 'open') {
-    return (
-      <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1 text-gray-600">
-          <ArrowUpFromLine className="w-3 h-3" />
-          Departed: <span className="text-gray-600 ml-0.5">N/A</span>
-        </span>
-        <span className="flex items-center gap-1 text-gray-500">
-          <Clock className="w-3 h-3" />
-          Appt: <span className="text-gray-400 ml-0.5">{fmt(expectedAt)}</span>
-        </span>
-      </div>
-    )
-  }
-
-  // ── IN TRANSIT ────────────────────────────────────────────────────────────
-  if (load.trip_status === 'in_transit') {
-    return (
-      <div className="flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1 text-gray-500">
-          <ArrowUpFromLine className="w-3 h-3 text-amber-500" />
-          Departed: <span className="text-gray-300 ml-0.5">{fmt(departedAt)}</span>
-        </span>
-        <span className={`flex items-center gap-1 ${etaColor(etaAt)}`}>
-          <Clock className="w-3 h-3" />
-          ETA: <span className="ml-0.5">{fmt(etaAt)}</span>
-        </span>
-      </div>
-    )
-  }
-
-  // ── DELIVERED ─────────────────────────────────────────────────────────────
+  if (load.trip_status === 'open') return (
+    <div className="flex items-center justify-between text-xs">
+      <span className="flex items-center gap-1 text-gray-600"><ArrowUpFromLine className="w-3 h-3" />Departed: <span className="text-gray-600 ml-0.5">N/A</span></span>
+      <span className="flex items-center gap-1 text-gray-500"><Clock className="w-3 h-3" />Appt: <span className="text-gray-400 ml-0.5">{fmt(expectedAt)}</span></span>
+    </div>
+  )
+  if (load.trip_status === 'in_transit') return (
+    <div className="flex items-center justify-between text-xs">
+      <span className="flex items-center gap-1 text-gray-500"><ArrowUpFromLine className="w-3 h-3 text-amber-500" />Departed: <span className="text-gray-300 ml-0.5">{fmt(departedAt)}</span></span>
+      <span className={`flex items-center gap-1 ${etaColor(etaAt)}`}><Clock className="w-3 h-3" />ETA: <span className="ml-0.5">{fmt(etaAt)}</span></span>
+    </div>
+  )
   return (
     <div className="flex items-center justify-between text-xs">
-      <span className="flex items-center gap-1 text-gray-500">
-        <ArrowUpFromLine className="w-3 h-3" />
-        Departed: <span className="text-gray-400 ml-0.5">{fmt(departedAt)}</span>
-      </span>
-      <span className="flex items-center gap-1 text-emerald-400">
-        <CheckCircle2 className="w-3 h-3" />
-        Delivered: <span className="ml-0.5">{fmt(deliveredAt)}</span>
-      </span>
+      <span className="flex items-center gap-1 text-gray-500"><ArrowUpFromLine className="w-3 h-3" />Departed: <span className="text-gray-400 ml-0.5">{fmt(departedAt)}</span></span>
+      <span className="flex items-center gap-1 text-emerald-400"><CheckCircle2 className="w-3 h-3" />Delivered: <span className="ml-0.5">{fmt(deliveredAt)}</span></span>
     </div>
   )
 }
+
+// ─── Checklist ────────────────────────────────────────────────────────────────
 
 const CHECKLIST: { field: keyof Load; label: string }[] = [
   { field: 'rate_con_ok', label: 'Rate Con' },
@@ -97,51 +64,30 @@ const CHECKLIST: { field: keyof Load; label: string }[] = [
   { field: 'settled_ok',  label: 'Settled'  },
 ]
 
-interface Props {
+// ─── Shared card body (no dnd-kit, no refs, pure UI) ─────────────────────────
+
+interface CardBodyProps {
   load: Load
-  onClick: (load: Load) => void
+  isDragging?: boolean
   onChecklistToggle: (loadId: string, field: string, value: boolean) => void
-  draggable?: boolean   // false on mobile — disables dnd listeners so clicks work
 }
 
-export default function LoadCard({ load, onClick, onChecklistToggle, draggable = true }: Props) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: load.id, disabled: !draggable })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.35 : 1,
-  }
-
+function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps) {
   const origin = load.stops?.find(s => s.stop_type === 'pickup')
   const dest   = load.stops?.find(s => s.stop_type === 'delivery')
-
   const completedSteps = CHECKLIST.filter(c => load[c.field]).length
   const allDone = completedSteps === CHECKLIST.length
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      onClick={() => onClick(load)}
-      className={`bg-gray-900 border rounded-xl p-3.5 cursor-pointer select-none transition-all group ${
-        allDone
-          ? 'border-emerald-700/60 hover:border-emerald-500/60'
-          : 'border-gray-700/80 hover:border-orange-500/50'
-      } ${isDragging ? 'shadow-2xl' : 'hover:shadow-lg'}`}
-    >
-      {/* Top row: Load # + WO# + rate */}
+    <div className={`bg-gray-900 border rounded-xl p-3.5 select-none transition-all group ${
+      allDone ? 'border-emerald-700/60' : 'border-gray-700/80'
+    } ${isDragging ? 'shadow-2xl opacity-35' : ''}`}>
+
+      {/* Top: Load # + rate */}
       <div className="flex items-start justify-between mb-2.5">
         <div>
-          <span className="text-xs font-mono font-semibold text-orange-400">
-            {load.load_number}
-          </span>
-          {load.work_order_number && (
-            <span className="text-xs text-gray-600 ml-2">WO# {load.work_order_number}</span>
-          )}
+          <span className="text-xs font-mono font-semibold text-orange-400">{load.load_number}</span>
+          {load.work_order_number && <span className="text-xs text-gray-600 ml-2">WO# {load.work_order_number}</span>}
         </div>
         <div className="flex items-center gap-0.5 text-sm font-bold text-white">
           <DollarSign className="w-3.5 h-3.5 text-green-400" />
@@ -162,11 +108,9 @@ export default function LoadCard({ load, onClick, onChecklistToggle, draggable =
       )}
 
       {/* Broker */}
-      {load.broker_name && (
-        <p className="text-xs text-gray-500 truncate mb-1.5">{load.broker_name}</p>
-      )}
+      {load.broker_name && <p className="text-xs text-gray-500 truncate mb-1.5">{load.broker_name}</p>}
 
-      {/* Date row — changes by trip_status */}
+      {/* Date row */}
       <div className="mb-3 bg-gray-800/50 rounded-md px-2 py-1.5">
         <DateRow load={load} />
       </div>
@@ -187,7 +131,7 @@ export default function LoadCard({ load, onClick, onChecklistToggle, draggable =
         )}
       </div>
 
-      {/* Progress checklist — stop propagation so clicks don't open drawer or trigger drag */}
+      {/* Checklist */}
       <div
         className="flex items-center gap-1 pt-2.5 border-t border-gray-800"
         onPointerDown={e => e.stopPropagation()}
@@ -199,19 +143,12 @@ export default function LoadCard({ load, onClick, onChecklistToggle, draggable =
             <button
               key={field}
               title={label}
-              onClick={e => {
-                e.stopPropagation()
-                onChecklistToggle(load.id, field, !done)
-              }}
+              onClick={e => { e.stopPropagation(); onChecklistToggle(load.id, field, !done) }}
               className={`flex-1 flex flex-col items-center gap-1 py-1 rounded-md transition-colors ${
-                done
-                  ? 'text-emerald-400 hover:text-emerald-300'
-                  : 'text-gray-600 hover:text-gray-400'
+                done ? 'text-emerald-400 hover:text-emerald-300' : 'text-gray-600 hover:text-gray-400'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full transition-colors ${
-                done ? 'bg-emerald-400' : 'bg-gray-700'
-              }`} />
+              <span className={`w-2 h-2 rounded-full transition-colors ${done ? 'bg-emerald-400' : 'bg-gray-700'}`} />
               <span className="text-[9px] leading-none font-medium">{label}</span>
             </button>
           )
@@ -219,4 +156,50 @@ export default function LoadCard({ load, onClick, onChecklistToggle, draggable =
       </div>
     </div>
   )
+}
+
+// ─── Props ────────────────────────────────────────────────────────────────────
+
+interface Props {
+  load: Load
+  onClick: (load: Load) => void
+  onChecklistToggle: (loadId: string, field: string, value: boolean) => void
+  draggable?: boolean
+}
+
+// ─── SortableLoadCard — desktop only, uses useSortable ────────────────────────
+
+function SortableLoadCard({ load, onClick, onChecklistToggle }: Omit<Props, 'draggable'>) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: load.id })
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      {...attributes}
+      {...listeners}
+      onClick={() => onClick(load)}
+      className="cursor-pointer hover:scale-[1.01] transition-transform"
+    >
+      <CardBody load={load} isDragging={isDragging} onChecklistToggle={onChecklistToggle} />
+    </div>
+  )
+}
+
+// ─── StaticLoadCard — mobile, ZERO dnd-kit, plain div with onClick ────────────
+
+function StaticLoadCard({ load, onClick, onChecklistToggle }: Omit<Props, 'draggable'>) {
+  return (
+    <div onClick={() => onClick(load)} className="cursor-pointer active:opacity-80 transition-opacity">
+      <CardBody load={load} onChecklistToggle={onChecklistToggle} />
+    </div>
+  )
+}
+
+// ─── Default export — picks the right variant ─────────────────────────────────
+
+export default function LoadCard({ draggable = true, ...props }: Props) {
+  if (!draggable) return <StaticLoadCard {...props} />
+  return <SortableLoadCard {...props} />
 }

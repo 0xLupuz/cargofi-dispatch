@@ -175,25 +175,20 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
     )
   }
 
-  // ── Mobile view: stacked sections ─────────────────────────────────────────
-  // DndContext with NO sensors: provides the context useSortable needs internally
-  // without registering any global pointer/touch event listeners that would
-  // swallow tap events on mobile.
+  // ── Mobile view: stacked sections, no DnD at all ─────────────────────────
   if (isMobile) {
     return (
-      <DndContext sensors={[]}>
-        <div className="space-y-3 pb-2">
-          {COLUMNS.map(col => (
-            <MobileSection
-              key={col.status}
-              {...col}
-              loads={byStatus(col.status)}
-              onCardClick={onCardClick}
-              onChecklistToggle={handleChecklistToggle}
-            />
-          ))}
-        </div>
-      </DndContext>
+      <div className="space-y-3 pb-2">
+        {COLUMNS.map(col => (
+          <MobileSection
+            key={col.status}
+            {...col}
+            loads={byStatus(col.status)}
+            onCardClick={onCardClick}
+            onChecklistToggle={handleChecklistToggle}
+          />
+        ))}
+      </div>
     )
   }
 
