@@ -34,6 +34,7 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
     unit_id: ro?.unit_id ?? '',
     trailer_id: ro?.trailer_id ?? '',
     odometer: ro?.odometer ?? '',
+    carrier: ro?.carrier ?? 'CargoFi',
     tax_rate: ro?.tax_rate ?? '8.25',
     internal_notes: ro?.internal_notes ?? '',
     printed_notes: ro?.printed_notes ?? '',
@@ -150,12 +151,22 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
                   <button key={t} type="button" onClick={() => setF('equipment_type', t)} className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${form.equipment_type===t ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>{t}</button>
                 ))}
               </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <label className={lbl}>Work on</label>
+                  <select className={inp + ' cursor-pointer'} value={form.equipment_type==='truck' ? form.unit_id : form.trailer_id} onChange={e => setF(form.equipment_type==='truck' ? 'unit_id' : 'trailer_id', e.target.value)}>
+                    <option value="">— Select —</option>
+                    {(form.equipment_type==='truck' ? units : trailers).map((eq:any) => <option key={eq.id} value={eq.id}>{eq.unit_number ?? eq.trailer_number}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={lbl}>Odometer</label>
+                  <input className={inp} type="number" placeholder="150000" value={form.odometer} onChange={e => setF('odometer', e.target.value)} />
+                </div>
+              </div>
               <div>
-                <label className={lbl}>Work on</label>
-                <select className={inp + ' cursor-pointer'} value={form.equipment_type==='truck' ? form.unit_id : form.trailer_id} onChange={e => setF(form.equipment_type==='truck' ? 'unit_id' : 'trailer_id', e.target.value)}>
-                  <option value="">— Select —</option>
-                  {(form.equipment_type==='truck' ? units : trailers).map((eq:any) => <option key={eq.id} value={eq.id}>{eq.unit_number ?? eq.trailer_number}</option>)}
-                </select>
+                <label className={lbl}>Carrier</label>
+                <input className={inp} value={form.carrier} onChange={e => setF('carrier', e.target.value)} placeholder="CargoFi" />
               </div>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div><label className={lbl}>Make</label><input className={inp + ' opacity-60'} value={equip?.make ?? ''} readOnly /></div>
@@ -163,7 +174,6 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
                 <div><label className={lbl}>Year</label><input className={inp + ' opacity-60'} value={equip?.year ?? ''} readOnly /></div>
                 <div><label className={lbl}>VIN</label><input className={inp + ' opacity-60 text-xs'} value={equip?.vin ?? ''} readOnly /></div>
               </div>
-              <div><label className={lbl}>Odometer</label><input className={inp} type="number" placeholder="150000" value={form.odometer} onChange={e => setF('odometer', e.target.value)} /></div>
             </div>
           </div>
 

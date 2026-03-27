@@ -12,3 +12,6 @@ alter table vendors add column if not exists is_repair_shop boolean default fals
 
 -- ITEMS: add whole_qty (when true = integer qty only; when false = allow decimals)
 alter table items add column if not exists whole_qty boolean default true;
+
+-- Repair Orders: add carrier field
+alter table repair_orders add column if not exists carrier text;

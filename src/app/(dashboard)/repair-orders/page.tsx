@@ -87,7 +87,7 @@ export default function RepairOrdersPage() {
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-gray-950 border-b border-gray-800">
-            <tr>{['RO #','Status','Type','Unit / Trailer','Vendor','Arrived','Delivered','Subtotal','Tax','Total',''].map(h => <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3">{h}</th>)}</tr>
+            <tr>{['RO #','Status','Type','Unit','Year / Make / Model','Vendor','Arrived','Days','Delivered','Subtotal','Total',''].map(h => <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-gray-800/60">
             {ros.map(ro => {
@@ -98,11 +98,20 @@ export default function RepairOrdersPage() {
                   <td className="px-4 py-3"><span className={`text-xs rounded-full px-2 py-0.5 font-medium ${STATUS_COLORS[ro.status] ?? STATUS_COLORS.estimate}`}>{STATUS_LABELS[ro.status] ?? ro.status}</span></td>
                   <td className="px-4 py-3 text-gray-400 capitalize text-xs">{ro.equipment_type}</td>
                   <td className="px-4 py-3 text-gray-200 font-mono text-xs">{equip?.unit_number ?? equip?.trailer_number ?? '—'}</td>
-                  <td className="px-4 py-3 text-gray-400 text-xs max-w-[120px] truncate">{ro.vendor?.name ?? '—'}</td>
+                  <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
+                    {equip ? `${equip.year ?? ''} ${equip.make ?? ''} ${equip.model ?? ''}`.trim() || '—' : '—'}
+                  </td>
+                  <td className="px-4 py-3 text-gray-400 text-xs max-w-[110px] truncate">{ro.vendor?.name ?? '—'}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{fmtDate(ro.arrived_at)}</td>
+                  <td className="px-4 py-3 text-xs">
+                    {ro.arrived_at ? (() => {
+                      const end = ro.delivered_at ? new Date(ro.delivered_at) : new Date()
+                      const days = Math.ceil((end.getTime() - new Date(ro.arrived_at).getTime()) / 86400000)
+                      return <span className={days > 3 ? 'text-amber-400 font-semibold' : 'text-gray-400'}>{days}d</span>
+                    })() : '—'}
+                  </td>
                   <td className="px-4 py-3 text-gray-400 text-xs">{fmtDate(ro.delivered_at)}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">${(Number(ro.subtotal_taxable) + Number(ro.subtotal_no_taxable)).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">{Number(ro.tax_amount) > 0 ? `$${Number(ro.tax_amount).toFixed(2)}` : '—'}</td>
                   <td className="px-4 py-3 text-white font-semibold">${Number(ro.total).toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
