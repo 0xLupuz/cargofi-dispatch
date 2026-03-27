@@ -48,22 +48,22 @@ export default function LoadsPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-gray-800 flex-shrink-0">
+        <div className="flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2">
             <Package className="w-5 h-5 text-orange-400" />
-            <h1 className="text-white font-semibold text-lg">Loads</h1>
+            <h1 className="text-white font-semibold text-base md:text-lg">Loads</h1>
           </div>
 
           {/* Tab switcher */}
           <div className="flex items-center gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1">
             <button className={tabClass('board')} onClick={() => switchTab('board')}>
               <LayoutGrid className="w-3.5 h-3.5" />
-              Board
+              <span className="hidden sm:inline">Board</span>
             </button>
             <button className={tabClass('history')} onClick={() => switchTab('history')}>
               <Clock className="w-3.5 h-3.5" />
-              History
+              <span className="hidden sm:inline">History</span>
             </button>
           </div>
         </div>
@@ -80,24 +80,24 @@ export default function LoadsPage() {
           )}
           <button
             onClick={() => setShowParser(true)}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm shadow-orange-900/30"
+            className="flex items-center gap-1.5 md:gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-3 md:px-4 py-2 rounded-lg transition-colors shadow-sm shadow-orange-900/30"
           >
             <Zap className="w-4 h-4" />
-            Quick Load
+            <span className="hidden sm:inline">Quick Load</span>
           </button>
           <button
             onClick={() => setShowNew(true)}
-            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 md:gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Manual
+            <span className="hidden sm:inline">Manual</span>
           </button>
         </div>
       </div>
 
       {/* Content */}
       {tab === 'board' ? (
-        <div className="flex-1 overflow-x-auto px-6 py-5">
+        <div className="flex-1 overflow-y-auto md:overflow-x-auto px-3 md:px-6 py-4 md:py-5">
           <KanbanBoard
             onCardClick={(load: Load) => setSelectedLoadId(load.id)}
             refreshKey={refreshKey}

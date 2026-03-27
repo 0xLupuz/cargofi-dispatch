@@ -10,51 +10,36 @@ import { useDroppable } from '@dnd-kit/core'
 import LoadCard from './LoadCard'
 import type { Load, TripStatus } from '@/types'
 
-const COLUMNS: { status: TripStatus; label: string; accent: string; dot: string }[] = [
-  { status: 'open',       label: 'Open',       accent: 'border-blue-500',   dot: 'bg-blue-500'   },
-  { status: 'in_transit', label: 'In Transit', accent: 'border-amber-400',  dot: 'bg-amber-400'  },
-  { status: 'delivered',  label: 'Delivered',  accent: 'border-emerald-500', dot: 'bg-emerald-500' },
+const COLUMNS: { status: TripStatus; label: string; accent: string; dot: string; border: string }[] = [
+  { status: 'open',       label: 'Open',       accent: 'border-blue-500',    dot: 'bg-blue-500',    border: 'border-blue-500/30'   },
+  { status: 'in_transit', label: 'In Transit', accent: 'border-amber-400',   dot: 'bg-amber-400',   border: 'border-amber-400/30'  },
+  { status: 'delivered',  label: 'Delivered',  accent: 'border-emerald-500', dot: 'bg-emerald-500', border: 'border-emerald-500/30' },
 ]
 
+// ── Desktop: droppable column with DnD ────────────────────────────────────────
 function DroppableColumn({
   status, label, accent, dot, loads, onCardClick, onChecklistToggle,
 }: {
-  status: TripStatus
-  label: string
-  accent: string
-  dot: string
+  status: TripStatus; label: string; accent: string; dot: string
   loads: Load[]
   onCardClick: (load: Load) => void
   onChecklistToggle: (loadId: string, field: string, value: boolean) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status })
-
   return (
     <div className="flex flex-col flex-1 min-w-[280px] max-w-[360px]">
-      {/* Column header */}
       <div className={`flex items-center gap-2.5 mb-3 pb-2.5 border-b-2 ${accent}`}>
         <span className={`w-2 h-2 rounded-full ${dot}`} />
         <span className="text-sm font-semibold text-gray-100">{label}</span>
-        <span className="text-xs text-gray-500 bg-gray-800/80 rounded-full px-2 py-0.5 ml-auto">
-          {loads.length}
-        </span>
+        <span className="text-xs text-gray-500 bg-gray-800/80 rounded-full px-2 py-0.5 ml-auto">{loads.length}</span>
       </div>
-
-      {/* Drop zone */}
       <div
         ref={setNodeRef}
-        className={`flex-1 space-y-3 min-h-[200px] rounded-xl p-2 transition-colors ${
-          isOver ? 'bg-gray-800/50 ring-1 ring-orange-500/40' : ''
-        }`}
+        className={`flex-1 space-y-3 min-h-[200px] rounded-xl p-2 transition-colors ${isOver ? 'bg-gray-800/50 ring-1 ring-orange-500/40' : ''}`}
       >
         <SortableContext items={loads.map(l => l.id)} strategy={verticalListSortingStrategy}>
           {loads.map(load => (
-            <LoadCard
-              key={load.id}
-              load={load}
-              onClick={onCardClick}
-              onChecklistToggle={onChecklistToggle}
-            />
+            <LoadCard key={load.id} load={load} onClick={onCardClick} onChecklistToggle={onChecklistToggle} />
           ))}
         </SortableContext>
         {loads.length === 0 && (
@@ -67,15 +52,62 @@ function DroppableColumn({
   )
 }
 
+// ── Mobile: status section (stacked, no DnD) ──────────────────────────────────
+function MobileSection({
+  status, label, dot, border, loads, onCardClick, onChecklistToggle,
+}: {
+  status: TripStatus; label: string; dot: string; border: string
+  loads: Load[]
+  onCardClick: (load: Load) => void
+  onChecklistToggle: (loadId: string, field: string, value: boolean) => void
+}) {
+  const [collapsed, setCollapsed] = useState(false)
+  return (
+    <div className={`rounded-2xl border ${border} bg-gray-900/60 overflow-hidden`}>
+      {/* Section header — tap to collapse */}
+      <button
+        className="w-full flex items-center gap-2.5 px-4 py-3 text-left"
+        onClick={() => setCollapsed(v => !v)}
+      >
+        <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${dot}`} />
+        <span className="text-sm font-semibold text-gray-100 flex-1">{label}</span>
+        <span className="text-xs text-gray-500 bg-gray-800 rounded-full px-2 py-0.5">{loads.length}</span>
+        <span className={`text-gray-500 text-xs transition-transform ${collapsed ? 'rotate-0' : 'rotate-180'}`}>▲</span>
+      </button>
+
+      {!collapsed && (
+        <div className="px-3 pb-3 space-y-3">
+          {loads.length === 0 && (
+            <p className="text-center text-gray-700 text-xs py-4">No loads here</p>
+          )}
+          {loads.map(load => (
+            <LoadCard key={load.id} load={load} onClick={onCardClick} onChecklistToggle={onChecklistToggle} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Main board ────────────────────────────────────────────────────────────────
 interface Props {
   onCardClick: (load: Load) => void
   refreshKey: number
 }
 
 export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
-  const [loads, setLoads] = useState<Load[]>([])
+  const [loads, setLoads]       = useState<Load[]>([])
   const [activeLoad, setActiveLoad] = useState<Load | null>(null)
   const [fetching, setFetching] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile on mount + resize
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const fetchLoads = useCallback(async () => {
     setFetching(true)
@@ -97,54 +129,37 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
   async function handleDragEnd({ active, over }: DragEndEvent) {
     setActiveLoad(null)
     if (!over) return
-
     const loadId = active.id as string
     const validStatuses = COLUMNS.map(c => c.status) as string[]
-
     let newStatus: TripStatus
     if (validStatuses.includes(over.id as string)) {
       newStatus = over.id as TripStatus
     } else {
-      // Dropped on another card — use that card's column
       const targetLoad = loads.find(l => l.id === over.id)
       if (!targetLoad) return
       newStatus = targetLoad.trip_status
     }
-
     const load = loads.find(l => l.id === loadId)
     if (!load || load.trip_status === newStatus) return
-
-    // Optimistic
     setLoads(prev => prev.map(l => l.id === loadId ? { ...l, trip_status: newStatus } : l))
-
     const res = await fetch(`/api/loads/${loadId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ trip_status: newStatus }),
     })
-    if (!res.ok) {
-      // Revert on error
-      setLoads(prev => prev.map(l => l.id === loadId ? { ...l, trip_status: load.trip_status } : l))
-    }
+    if (!res.ok) setLoads(prev => prev.map(l => l.id === loadId ? { ...l, trip_status: load.trip_status } : l))
   }
 
   async function handleChecklistToggle(loadId: string, field: string, value: boolean) {
-    // Optimistic update
     setLoads(prev => prev.map(l => l.id === loadId ? { ...l, [field]: value } : l))
-
     const res = await fetch(`/api/loads/${loadId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ [field]: value }),
     })
-
     if (res.ok && field === 'settled_ok' && value === true) {
-      // Auto-archive: remove from board after brief delay
-      setTimeout(() => {
-        setLoads(prev => prev.filter(l => l.id !== loadId))
-      }, 800)
+      setTimeout(() => { setLoads(prev => prev.filter(l => l.id !== loadId)) }, 800)
     } else if (!res.ok) {
-      // Revert
       setLoads(prev => prev.map(l => l.id === loadId ? { ...l, [field]: !value } : l))
     }
   }
@@ -154,11 +169,30 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
   if (fetching) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
-        Loading loads...
+        <div className="w-5 h-5 rounded-full border-2 border-orange-500 border-t-transparent animate-spin mr-2" />
+        Loading...
       </div>
     )
   }
 
+  // ── Mobile view: stacked sections ─────────────────────────────────────────
+  if (isMobile) {
+    return (
+      <div className="space-y-3 pb-2">
+        {COLUMNS.map(col => (
+          <MobileSection
+            key={col.status}
+            {...col}
+            loads={byStatus(col.status)}
+            onCardClick={onCardClick}
+            onChecklistToggle={handleChecklistToggle}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  // ── Desktop view: horizontal Kanban with DnD ───────────────────────────────
   return (
     <DndContext
       sensors={sensors}
@@ -177,7 +211,6 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
           />
         ))}
       </div>
-
       <DragOverlay>
         {activeLoad && (
           <div className="rotate-1 opacity-90 scale-105">
