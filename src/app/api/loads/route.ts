@@ -14,8 +14,11 @@ export async function GET(req: NextRequest) {
   const settled  = searchParams.get('settled')
   const search   = searchParams.get('q') ?? ''
 
-  // Settlements queue mode: paid=true, settled=false — include full financial data
+  // Settlements queue: paid=true, settled=false
+  // Settlements history: paid=true, settled=true
   const isSettlements = paid === 'true' && settled === 'false'
+  const isSettledHistory = paid === 'true' && settled === 'true'
+  const needsFinancials = isSettlements || isSettledHistory
 
   let query = supabase
     .from('loads')
@@ -25,13 +28,15 @@ export async function GET(req: NextRequest) {
       driver:drivers(id, name, phone_whatsapp),
       unit:units(id, unit_number, make, model, license_plate, license_plate_mx),
       stops(id, stop_type, sequence, city, state, appointment_at),
-      deductions(id, description, amount, type)${isSettlements ? `,\n      load_drivers(id, driver_id, driver_name, miles, rate_per_mile, total_pay, sort_order)` : ''}
+      deductions(id, description, amount, type)${needsFinancials ? `,\n      load_drivers(id, driver_id, driver_name, miles, rate_per_mile, total_pay, sort_order)` : ''}
     `)
     .eq('tenant_id', TENANT_ID)
     .order('created_at', { ascending: false })
 
   if (isSettlements) {
     query = query.eq('paid_ok', true).eq('settled_ok', false)
+  } else if (isSettledHistory) {
+    query = query.eq('settled_ok', true)
   } else if (!history) {
     // Board: only active (not archived) loads
     query = query.is('archived_at', null)
