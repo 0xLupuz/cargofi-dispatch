@@ -38,8 +38,8 @@ const sections: NavSection[] = [
     collapsible: true,
     items: [
       { label: 'Settlements',    href: '/settlements',  icon: Receipt              },
-      { label: 'Invoices',       href: '/invoices',     icon: FileText,  soon: true },
-      { label: 'IFTA',           href: '/ifta',         icon: Fuel,      soon: true },
+      { label: 'Invoices',       href: '/invoices',     icon: FileText  },
+      { label: 'IFTA',           href: '/ifta',         icon: Fuel      },
     ],
   },
   {
