@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
 import { Field, inputCls } from '@/components/ui/Field'
 import DocUploader from '@/components/ui/DocUploader'
@@ -36,6 +36,15 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
   })
   const [loading, setLoading] = useState(false)
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
+
+  // Pull default dispatch fee from Settings when creating a new OO
+  useEffect(() => {
+    if (!isEdit) {
+      fetch('/api/settings').then(r => r.ok ? r.json() : null).then(s => {
+        if (s?.default_dispatch_fee_pct) set('dispatch_fee_pct', String(s.default_dispatch_fee_pct))
+      })
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
