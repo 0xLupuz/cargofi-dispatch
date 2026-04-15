@@ -17,8 +17,17 @@ interface Props {
 
 export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
   const isEdit = !!trailer
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [saving, setSaving]     = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError]       = useState('')
+
+  async function handleDelete() {
+    if (!confirm(`¿Eliminar trailer #${trailer?.trailer_number}?`)) return
+    setDeleting(true)
+    const res = await fetch(`/api/trailers/${trailer!.id}`, { method: 'DELETE' })
+    if (res.ok) { onClose(); window.location.reload() }
+    else { const d = await res.json(); setError(d.error ?? 'Error al eliminar'); setDeleting(false) }
+  }
 
   const [form, setForm] = useState({
     trailer_number:     trailer?.trailer_number     ?? '',
@@ -159,6 +168,12 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
           {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
 
           <div className="flex gap-3 pt-2">
+            {isEdit && (
+              <button type="button" onClick={handleDelete} disabled={deleting}
+                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 text-sm transition-colors disabled:opacity-50">
+                {deleting ? '...' : 'Eliminar'}
+              </button>
+            )}
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancel</button>
             <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : isEdit ? 'Save Changes' : 'Add Trailer'}

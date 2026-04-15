@@ -20,8 +20,17 @@ export async function DELETE(
 ) {
   const supabase = createServiceClient()
   const { id } = await params
-  const { error } = await supabase
-    .from('drivers').update({ active: false }).eq('id', id)
+
+  const { count } = await supabase
+    .from('loads').select('id', { count: 'exact', head: true }).eq('driver_id', id)
+
+  if (count && count > 0) {
+    const { error } = await supabase.from('drivers').update({ active: false }).eq('id', id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true, mode: 'deactivated' })
+  }
+
+  const { error } = await supabase.from('drivers').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, mode: 'deleted' })
 }

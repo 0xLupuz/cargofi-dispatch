@@ -35,23 +35,34 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
     ine_number: '', federal_license_number: '', federal_license_expiry: '',
     notes: '',
   })
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]   = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError]       = useState('')
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
 
   useEffect(() => { fetch('/api/owner-operators').then(r => r.json()).then(setOOs) }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
+    setLoading(true); setError('')
     const payload = { ...form }
     Object.keys(payload).forEach(k => { if (payload[k] === '') payload[k] = null })
     payload.owner_operator_id = payload.owner_operator_id || null
 
     const res = isEdit
       ? await fetch(`/api/drivers/${driver.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      : await fetch('/api/drivers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-    if (res.ok) onSaved(await res.json())
+      : await fetch('/api/drivers',               { method: 'POST',  headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    if (res.ok) { onSaved(await res.json()) }
+    else { const d = await res.json(); setError(d.error ?? 'Error al guardar') }
     setLoading(false)
+  }
+
+  async function handleDelete() {
+    if (!confirm(`¿Eliminar driver ${driver?.name}?`)) return
+    setDeleting(true)
+    const res = await fetch(`/api/drivers/${driver!.id}`, { method: 'DELETE' })
+    if (res.ok) { onClose(); window.location.reload() }
+    else { const d = await res.json(); setError(d.error ?? 'Error al eliminar'); setDeleting(false) }
   }
 
   const tabCls = (t: string) =>
@@ -103,10 +114,17 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
           <Field label="Notas">
             <textarea className={inputCls + ' resize-none'} rows={2} value={form.notes ?? ''} onChange={e => set('notes', e.target.value)} />
           </Field>
+          {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
           <div className="flex gap-3 pt-2">
+            {isEdit && (
+              <button type="button" onClick={handleDelete} disabled={deleting}
+                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 text-sm transition-colors disabled:opacity-50">
+                {deleting ? '...' : 'Eliminar'}
+              </button>
+            )}
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
             <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
-              {loading ? 'Guardando...' : isEdit ? 'Guardar' : 'Agregar Driver'}
+              {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Agregar Driver'}
             </button>
           </div>
         </form>
@@ -159,10 +177,11 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
               </Field>
             </div>
           </div>
+          {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
             <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
-              {loading ? 'Guardando...' : 'Guardar'}
+              {loading ? 'Guardando...' : 'Guardar cambios'}
             </button>
           </div>
         </form>
