@@ -32,7 +32,7 @@ export default function IFTAPage() {
 
   return (
     <div className="h-full overflow-auto">
-      <div className="px-6 py-5 max-w-5xl">
+      <div className="px-6 py-5 w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

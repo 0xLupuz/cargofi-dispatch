@@ -46,7 +46,7 @@ export default function OOLedgerPage() {
         }
       `}</style>
 
-      <div className="h-full overflow-auto px-6 py-6 max-w-6xl print-area">
+      <div className="h-full overflow-auto px-6 py-6 w-full print-area">
 
         {/* Header */}
         <div className="no-print flex items-center justify-between mb-6">

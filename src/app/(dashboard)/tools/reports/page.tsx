@@ -81,7 +81,7 @@ export default function ReportsPage() {
   const totalAR = (agingChart ?? []).reduce((s: number, b: any) => s + b.amount, 0)
 
   return (
-    <div className="h-full overflow-auto px-6 py-6 space-y-6 max-w-6xl">
+    <div className="h-full overflow-auto px-6 py-6 space-y-6 w-full">
 
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">

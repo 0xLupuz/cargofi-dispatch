@@ -50,7 +50,7 @@ export default function DashboardPage() {
   )
 
   return (
-    <div className="h-full overflow-auto px-6 py-6 space-y-6 max-w-5xl">
+    <div className="h-full overflow-auto px-6 py-6 space-y-6 w-full">
 
       {/* Header */}
       <div className="flex items-center justify-between">
