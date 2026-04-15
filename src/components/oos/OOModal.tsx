@@ -59,11 +59,15 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
       visa_expiry:             form.visa_expiry             || null,
       federal_license_expiry:  form.federal_license_expiry  || null,
     }
-    // Clean empty strings to null, remove internal keys
+    // Clean empty strings to null; remove internal/relation keys
     Object.keys(payload).forEach(k => {
       if (payload[k] === '') payload[k] = null
     })
+    // Strip nested relation arrays returned by the GET select
     delete payload._defaultFeeLoaded
+    delete payload.drivers
+    delete payload.units
+    delete payload.loads
 
     const res = isEdit
       ? await fetch(`/api/owner-operators/${oo.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
