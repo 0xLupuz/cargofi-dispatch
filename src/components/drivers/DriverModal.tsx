@@ -45,8 +45,12 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true); setError('')
-    const payload = { ...form }
+    const payload: Record<string, any> = { ...form }
     Object.keys(payload).forEach(k => { if (payload[k] === '') payload[k] = null })
+    // Strip nested relation objects returned by GET select
+    delete payload.owner_operator
+    delete payload.units
+    delete payload.loads
     payload.owner_operator_id = payload.owner_operator_id || null
 
     const res = isEdit

@@ -79,6 +79,10 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
     Object.keys(payload).forEach(k => {
       if (payload[k] === '') payload[k] = null
     })
+    // Strip nested relation objects returned by GET select
+    delete payload.owner_operator
+    delete payload.drivers
+    delete payload.loads
     payload.year = payload.year ? Number(payload.year) : null
 
     try {
