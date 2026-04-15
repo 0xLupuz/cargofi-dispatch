@@ -91,25 +91,26 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
           <h2 className="text-white font-semibold">{isEdit ? `Edit Trailer #${trailer.trailer_number}` : 'New Trailer'}</h2>
           <div className="flex items-center gap-3">
-            {isEdit && (
-              <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
-                {(['info', 'docs'] as const).map(t => (
-                  <button key={t} type="button"
-                    onClick={() => setTab(t)}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`}>
-                    {t === 'info' ? 'Información' : 'Documentos'}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+              {(['info', 'docs'] as const).map(t => (
+                <button key={t} type="button"
+                  onClick={() => setTab(t)}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`}>
+                  {t === 'info' ? 'Información' : 'Documentos'}
+                </button>
+              ))}
+            </div>
             <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
           </div>
         </div>
 
         {/* Docs tab */}
-        {tab === 'docs' && isEdit && (
+        {tab === 'docs' && (
           <div className="px-6 py-5">
-            <DocUploader entityType="trailer" entityId={trailer.id} categories={TRAILER_DOCS} />
+            {isEdit
+              ? <DocUploader entityType="trailer" entityId={trailer.id} categories={TRAILER_DOCS} />
+              : <p className="text-sm text-gray-500 text-center py-8">Guarda el registro primero para adjuntar documentos.</p>
+            }
           </div>
         )}
 

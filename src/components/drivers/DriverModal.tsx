@@ -73,7 +73,7 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
       <div className="flex gap-2 mb-5">
         <button type="button" className={tabCls('info')} onClick={() => setTab('info')}>Información</button>
         <button type="button" className={tabCls('mx')} onClick={() => setTab('mx')}>Docs MX / Visa</button>
-        {isEdit && <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Archivos</button>}
+        <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Archivos</button>
       </div>
 
       {/* INFO */}
@@ -188,8 +188,10 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
       )}
 
       {/* ARCHIVOS */}
-      {tab === 'docs' && isEdit && (
-        <DocUploader entityType="driver" entityId={driver.id} categories={DRIVER_DOCS} />
+      {tab === 'docs' && (
+        isEdit
+          ? <DocUploader entityType="driver" entityId={driver.id} categories={DRIVER_DOCS} />
+          : <p className="text-sm text-gray-500 text-center py-8">Guarda el registro primero para adjuntar documentos.</p>
       )}
     </Modal>
   )

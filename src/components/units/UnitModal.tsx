@@ -106,7 +106,7 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
       {/* Tabs */}
       <div className="flex gap-2 mb-5">
         <button type="button" className={tabCls('info')} onClick={() => setTab('info')}>Información</button>
-        {isEdit && <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Documentos</button>}
+        <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Documentos</button>
       </div>
 
       {/* INFO TAB */}
@@ -262,8 +262,10 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
       )}
 
       {/* DOCS TAB */}
-      {tab === 'docs' && isEdit && (
-        <DocUploader entityType="unit" entityId={unit.id} categories={UNIT_DOCS} />
+      {tab === 'docs' && (
+        isEdit
+          ? <DocUploader entityType="unit" entityId={unit.id} categories={UNIT_DOCS} />
+          : <p className="text-sm text-gray-500 text-center py-8">Guarda el registro primero para adjuntar documentos.</p>
       )}
     </Modal>
   )
