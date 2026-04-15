@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Truck, Plus, Pencil, Phone, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Truck, Plus, Pencil, Phone, AlertTriangle, CheckCircle, XCircle, BookOpen } from 'lucide-react'
 import OOModal from '@/components/oos/OOModal'
 import type { OwnerOperator } from '@/types'
 
 export default function OwnerOperatorsPage() {
+  const router = useRouter()
   const [oos, setOOs] = useState<OwnerOperator[]>([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
@@ -121,23 +123,29 @@ export default function OwnerOperatorsPage() {
                   </div>
                 )})()}
 
-                {/* Compliance dots */}
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-700">
-                  {[
-                    ['cdl_verified', 'CDL'],
-                    ['psp_cleared', 'PSP'],
-                    ['mvr_cleared', 'MVR'],
-                    ['clearinghouse_ok', 'CH'],
-                  ].map(([key, label]) => (
-                    <span key={key}
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        (oo as any)[key]
-                          ? 'bg-green-500/10 text-green-400'
-                          : 'bg-gray-700 text-gray-500'
-                      }`}>
-                      {label}
-                    </span>
-                  ))}
+                {/* Compliance dots + Ledger */}
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
+                  <div className="flex gap-2">
+                    {[
+                      ['cdl_verified', 'CDL'],
+                      ['psp_cleared', 'PSP'],
+                      ['mvr_cleared', 'MVR'],
+                      ['clearinghouse_ok', 'CH'],
+                    ].map(([key, label]) => (
+                      <span key={key}
+                        className={`text-xs px-2 py-0.5 rounded-full ${
+                          (oo as any)[key]
+                            ? 'bg-green-500/10 text-green-400'
+                            : 'bg-gray-700 text-gray-500'
+                        }`}>
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                  <button onClick={() => router.push(`/owner-operators/${oo.id}`)}
+                    className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                    <BookOpen className="w-3.5 h-3.5" /> Ledger
+                  </button>
                 </div>
               </div>
             )

@@ -72,10 +72,22 @@ export default function IFTAPage() {
             Calculating IFTA...
           </div>
         ) : states.length === 0 ? (
-          <div className="text-center py-16 text-gray-600">
-            <Fuel className="w-12 h-12 mx-auto mb-4 opacity-20" />
-            <p className="text-sm font-medium">No IFTA data for {QUARTERS[quarter-1]} {year}</p>
-            <p className="text-xs mt-1">State miles are auto-calculated when loads are created with route data.</p>
+          <div className="space-y-4">
+            <div className="text-center py-10 text-gray-600">
+              <Fuel className="w-12 h-12 mx-auto mb-4 opacity-20" />
+              <p className="text-sm font-medium text-gray-400">No IFTA data for {QUARTERS[quarter-1]} {year}</p>
+              <p className="text-xs mt-1 text-gray-600">Capture fuel purchases on each load to populate this report.</p>
+            </div>
+            <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-5 max-w-xl mx-auto">
+              <p className="text-sm font-semibold text-yellow-300 mb-3">📋 How to populate IFTA data</p>
+              <ol className="space-y-2 text-sm text-gray-400">
+                <li><span className="text-yellow-400 font-semibold">1.</span> Open any load → click the <strong className="text-white">Fuel</strong> tab</li>
+                <li><span className="text-yellow-400 font-semibold">2.</span> Add each fuel stop: state, gallons purchased, price/gallon</li>
+                <li><span className="text-yellow-400 font-semibold">3.</span> State miles are auto-calculated via OpenRoute Service when the load has pickup/delivery stops</li>
+                <li><span className="text-yellow-400 font-semibold">4.</span> IFTA report aggregates all loads in the quarter automatically</li>
+              </ol>
+              <p className="text-xs text-gray-600 mt-3">Miles per state: set automatically from route. Fuel per state: captured manually from fuel receipts.</p>
+            </div>
           </div>
         ) : (
           <>

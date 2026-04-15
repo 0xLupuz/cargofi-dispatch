@@ -29,7 +29,7 @@ type NavSection = {
 const sections: NavSection[] = [
   {
     items: [
-      { label: 'Dashboard',   href: '/loads',             icon: LayoutDashboard, exact: true },
+      { label: 'Dashboard',   href: '/dashboard',         icon: LayoutDashboard },
       { label: 'Load Finder', href: '/loads?tab=history', icon: Search,          exact: true },
     ],
   },
