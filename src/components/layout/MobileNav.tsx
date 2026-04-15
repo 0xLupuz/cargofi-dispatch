@@ -6,7 +6,7 @@ import { useState } from 'react'
 import {
   LayoutDashboard, DollarSign, Wrench, Truck, MoreHorizontal,
   X, Receipt, FileText, Fuel, Store, List, Box,
-  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe, BarChart2,
+  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe, BarChart2, Settings,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -51,6 +51,7 @@ const MORE_SECTIONS = [
       { label: 'Reports',         href: '/tools/reports',      icon: BarChart2  },
       { label: 'Carta de Retiro', href: '/tools/carta-retiro', icon: ScrollText },
       { label: 'Carta B1',        href: '/tools/carta-b1',     icon: Globe      },
+      { label: 'Settings',        href: '/settings',           icon: Settings   },
     ],
   },
 ]
