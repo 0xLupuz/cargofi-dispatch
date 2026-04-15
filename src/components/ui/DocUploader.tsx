@@ -15,7 +15,7 @@ export interface EntityDoc {
 }
 
 interface Props {
-  entityType: 'unit' | 'owner_operator' | 'driver' | 'load'
+  entityType: 'unit' | 'owner_operator' | 'driver' | 'load' | 'trailer'
   entityId: string
   categories: { value: string; label: string }[]
 }

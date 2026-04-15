@@ -1,6 +1,16 @@
 'use client'
 import { useState } from 'react'
 import { X, Loader2 } from 'lucide-react'
+import DocUploader from '@/components/ui/DocUploader'
+
+const TRAILER_DOCS = [
+  { value: 'registration',  label: 'Registration'       },
+  { value: 'inspection',    label: 'Annual Inspection'  },
+  { value: 'lease',         label: 'Lease Agreement'    },
+  { value: 'bond',          label: 'Bond / Permit'      },
+  { value: 'insurance',     label: 'Insurance'          },
+  { value: 'other',         label: 'Other'              },
+]
 
 const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
@@ -17,6 +27,7 @@ interface Props {
 
 export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
   const isEdit = !!trailer
+  const [tab, setTab]           = useState<'info' | 'docs'>('info')
   const [saving, setSaving]     = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError]       = useState('')
@@ -79,10 +90,30 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
       <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
           <h2 className="text-white font-semibold">{isEdit ? `Edit Trailer #${trailer.trailer_number}` : 'New Trailer'}</h2>
-          <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
+          <div className="flex items-center gap-3">
+            {isEdit && (
+              <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+                {(['info', 'docs'] as const).map(t => (
+                  <button key={t} type="button"
+                    onClick={() => setTab(t)}
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`}>
+                    {t === 'info' ? 'Información' : 'Documentos'}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
+        {/* Docs tab */}
+        {tab === 'docs' && isEdit && (
+          <div className="px-6 py-5">
+            <DocUploader entityType="trailer" entityId={trailer.id} categories={TRAILER_DOCS} />
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className={`px-6 py-5 space-y-5 ${tab === 'docs' ? 'hidden' : ''}`}>
           {/* Basic info */}
           <div className="grid grid-cols-3 gap-4">
             <div><label className={lbl}>Trailer # *</label><input className={inp} value={form.trailer_number} onChange={e => set('trailer_number', e.target.value)} required /></div>
