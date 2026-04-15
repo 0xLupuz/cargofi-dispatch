@@ -11,6 +11,7 @@ import {
   Settings, LogOut, ChevronRight, ScrollText, Globe,
   BarChart2, ChevronDown,
 } from 'lucide-react'
+import NotificationBell from '@/components/layout/NotificationBell'
 
 type NavItem = {
   label: string
@@ -139,10 +140,11 @@ export default function Sidebar() {
         <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
           <Truck className="w-4 h-4 text-white" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-white font-bold text-sm leading-tight">CargoFi</p>
           <p className="text-gray-600 text-[10px] leading-tight">Dispatch</p>
         </div>
+        <NotificationBell />
       </div>
 
       {/* Nav */}
