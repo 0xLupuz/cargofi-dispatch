@@ -69,7 +69,7 @@ const sections: NavSection[] = [
     items: [
       { label: 'Carta de Retiro', href: '/tools/carta-retiro', icon: ScrollText  },
       { label: 'Carta B1',        href: '/tools/carta-b1',     icon: Globe       },
-      { label: 'Reports',         href: '/tools/reports',      icon: BarChart2, soon: true },
+      { label: 'Reports',         href: '/tools/reports',      icon: BarChart2 },
     ],
   },
 ]
