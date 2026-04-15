@@ -9,7 +9,7 @@ import {
   Wrench, Store, List,
   Truck, Box, UserCheck, Users, Building2, Banknote,
   Settings, LogOut, ChevronRight, ScrollText, Globe,
-  BarChart2, ChevronDown,
+  BarChart2, ChevronDown, LayoutGrid,
 } from 'lucide-react'
 import NotificationBell from '@/components/layout/NotificationBell'
 
@@ -31,6 +31,7 @@ const sections: NavSection[] = [
   {
     items: [
       { label: 'Dashboard',   href: '/dashboard',         icon: LayoutDashboard },
+      { label: 'Load Board',  href: '/loads',             icon: LayoutGrid,      exact: true },
       { label: 'Load Finder', href: '/loads?tab=history', icon: Search,          exact: true },
     ],
   },

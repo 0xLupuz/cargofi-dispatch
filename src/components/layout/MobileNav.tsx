@@ -6,13 +6,13 @@ import { useState } from 'react'
 import {
   LayoutDashboard, DollarSign, Wrench, Truck, MoreHorizontal,
   X, Receipt, FileText, Fuel, Store, List, Box,
-  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe, BarChart2, Settings,
+  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe, BarChart2, Settings, LayoutGrid,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const BOTTOM_TABS = [
   { label: 'Dashboard',   href: '/dashboard',    icon: LayoutDashboard },
-  { label: 'Loads',       href: '/loads',        icon: Receipt         },
+  { label: 'Board',       href: '/loads',        icon: LayoutGrid      },
   { label: 'Settlements', href: '/settlements',  icon: DollarSign      },
   { label: 'Fleet',       href: '/units',        icon: Truck           },
   { label: 'More',        href: '__more__',      icon: MoreHorizontal  },
