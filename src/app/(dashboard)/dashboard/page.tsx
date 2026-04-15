@@ -88,18 +88,31 @@ export default function DashboardPage() {
       {/* Pipeline */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
         <p className="text-sm font-semibold text-gray-300 mb-4">Load Pipeline</p>
-        <div className="flex items-center gap-1 overflow-x-auto pb-1">
+        <div className="flex items-stretch gap-1.5 w-full overflow-x-auto pb-1">
           {PIPELINE.map((step, i) => {
             const count = data?.statusCounts?.[step.key] ?? 0
             const s = STATUS_STYLE[step.key]
+            const borderMap: Record<string, string> = {
+              'text-blue-400':    'border-blue-500/30',
+              'text-indigo-400':  'border-indigo-500/30',
+              'text-yellow-400':  'border-yellow-500/30',
+              'text-orange-400':  'border-orange-500/30',
+              'text-cyan-400':    'border-cyan-500/30',
+              'text-emerald-400': 'border-emerald-500/30',
+            }
+            const borderColor = borderMap[s.text] ?? 'border-gray-700/40'
             return (
-              <div key={step.key} className="flex items-center gap-1 flex-shrink-0">
-                <button onClick={() => router.push('/loads')}
-                  className={`rounded-xl ${s.bg} border border-current/10 px-4 py-3 text-center hover:opacity-80 transition-opacity`}>
-                  <p className={`text-xs ${s.text} whitespace-nowrap`}>{step.label}</p>
-                  <p className={`text-2xl font-bold ${s.text} mt-0.5`}>{count}</p>
+              <div key={step.key} className="flex items-center gap-1.5 flex-1 min-w-0">
+                <button
+                  onClick={() => router.push('/loads')}
+                  className={`flex-1 rounded-xl ${s.bg} border ${borderColor} px-3 py-3 text-center hover:opacity-80 transition-opacity min-w-[70px]`}
+                >
+                  <p className={`text-[11px] font-medium ${s.text} whitespace-nowrap`}>{step.label}</p>
+                  <p className={`text-xl font-bold ${s.text} mt-0.5`}>{count}</p>
                 </button>
-                {i < PIPELINE.length - 1 && <ArrowRight className="w-3.5 h-3.5 text-gray-700 flex-shrink-0" />}
+                {i < PIPELINE.length - 1 && (
+                  <ArrowRight className="w-3 h-3 text-gray-700 flex-shrink-0" />
+                )}
               </div>
             )
           })}
