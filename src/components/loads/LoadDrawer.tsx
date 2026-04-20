@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   X, Truck, User, DollarSign, MapPin, FileText,
   Plus, Trash2, Phone, Save, AlertTriangle, Loader2,
-  Package, ChevronDown, Zap,
+  Package, ChevronDown, Zap, Fuel,
 } from 'lucide-react'
 import DocUploader from '@/components/ui/DocUploader'
 import type { Load, TripStatus } from '@/types'
@@ -43,7 +43,7 @@ interface Props {
 
 export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   const [load, setLoad] = useState<Load | null>(null)
-  const [tab, setTab] = useState<'info' | 'financials' | 'documents'>('info')
+  const [tab, setTab] = useState<'info' | 'financials' | 'documents' | 'fuel'>('info')
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
@@ -58,6 +58,9 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   const [addingDed, setAddingDed] = useState(false)
   const [addingDriver, setAddingDriver] = useState(false)
   const [newDriver, setNewDriver] = useState({ driver_id: '', miles: '', rate_per_mile: '' })
+  const [fuelPurchases, setFuelPurchases] = useState<any[]>([])
+  const [addingFuel, setAddingFuel] = useState(false)
+  const [newFuel, setNewFuel] = useState({ purchase_date: new Date().toISOString().slice(0,10), vendor_name: '', state: '', gallons: '', price_per_gallon: '' })
 
   // CargoFi Finance — factoring request
   const [factoringReq, setFactoringReq] = useState<any>(null)
@@ -98,6 +101,10 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
       setDeductions(data.deductions ?? [])
       setLoadDrivers((data.load_drivers ?? []).sort((a: any, b: any) => a.sort_order - b.sort_order))
       setDirty(false)
+      // Fetch fuel purchases separately
+      fetch(`/api/fuel-purchases?load_id=${loadId}`)
+        .then(r => r.ok ? r.json() : [])
+        .then(d => setFuelPurchases(Array.isArray(d) ? d : []))
     }
   }, [loadId])
 
@@ -241,6 +248,31 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
     cancelled:  { label: 'Cancelado',          color: 'text-gray-400 bg-gray-400/10'   },
   }
 
+  async function addFuel() {
+    if (!newFuel.state || !newFuel.gallons || !newFuel.price_per_gallon) return
+    const res = await fetch('/api/fuel-purchases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ load_id: loadId, ...newFuel, gallons: parseFloat(newFuel.gallons), price_per_gallon: parseFloat(newFuel.price_per_gallon) }),
+    })
+    if (res.ok) {
+      const row = await res.json()
+      setFuelPurchases(prev => [...prev, row])
+      setNewFuel({ purchase_date: new Date().toISOString().slice(0,10), vendor_name: '', state: '', gallons: '', price_per_gallon: '' })
+      setAddingFuel(false)
+      const total = [...fuelPurchases, row].reduce((s, f) => s + parseFloat(f.amount), 0)
+      setF('fuel_cost', total.toFixed(2))
+    }
+  }
+
+  async function removeFuel(id: string) {
+    await fetch(`/api/fuel-purchases/${id}`, { method: 'DELETE' })
+    const updated = fuelPurchases.filter(f => f.id !== id)
+    setFuelPurchases(updated)
+    const total = updated.reduce((s, f) => s + parseFloat(f.amount), 0)
+    setF('fuel_cost', total.toFixed(2))
+  }
+
   // Financial calculations
   const rate = parseFloat(String(form.rate)) || 0
   const dispatchPct = parseFloat(String(form.dispatch_fee_pct)) || 0
@@ -300,9 +332,12 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-800 flex-shrink-0">
+        <div className="flex border-b border-gray-800 flex-shrink-0 overflow-x-auto">
           <button className={tabCls('info')} onClick={() => setTab('info')}>Información</button>
           <button className={tabCls('financials')} onClick={() => setTab('financials')}>Financiero</button>
+          <button className={tabCls('fuel')} onClick={() => setTab('fuel')}>
+            <span className="flex items-center gap-1"><Fuel className="w-3.5 h-3.5" />Fuel</span>
+          </button>
           <button className={tabCls('documents')} onClick={() => setTab('documents')}>Documentos</button>
         </div>
 
@@ -744,6 +779,96 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                   ))}
                 </div>
               </div>
+            </>
+          )}
+
+          {/* ── FUEL TAB ── */}
+          {tab === 'fuel' && (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Fuel Purchases</p>
+                  <p className="text-xs text-gray-600 mt-0.5">Per-state fuel for IFTA reporting</p>
+                </div>
+                <button onClick={() => setAddingFuel(!addingFuel)}
+                  className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                  <Plus className="w-3.5 h-3.5" /> Add Purchase
+                </button>
+              </div>
+
+              {addingFuel && (
+                <div className="bg-gray-800/50 rounded-lg p-3 space-y-2 mb-3 border border-gray-700">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className={lbl}>Date</label>
+                      <input className={inp + ' text-xs'} type="date" value={newFuel.purchase_date}
+                        onChange={e => setNewFuel(f => ({ ...f, purchase_date: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className={lbl}>State (2-letter)</label>
+                      <input className={inp + ' text-xs uppercase'} placeholder="TX" maxLength={2} value={newFuel.state}
+                        onChange={e => setNewFuel(f => ({ ...f, state: e.target.value.toUpperCase() }))} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={lbl}>Vendor / Station (optional)</label>
+                    <input className={inp + ' text-xs'} placeholder="Love's, Pilot, TA..." value={newFuel.vendor_name}
+                      onChange={e => setNewFuel(f => ({ ...f, vendor_name: e.target.value }))} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className={lbl}>Gallons</label>
+                      <input className={inp + ' text-xs'} type="number" step="0.001" placeholder="150.000" value={newFuel.gallons}
+                        onChange={e => setNewFuel(f => ({ ...f, gallons: e.target.value }))} />
+                    </div>
+                    <div>
+                      <label className={lbl}>Price / Gallon ($)</label>
+                      <input className={inp + ' text-xs'} type="number" step="0.001" placeholder="3.899" value={newFuel.price_per_gallon}
+                        onChange={e => setNewFuel(f => ({ ...f, price_per_gallon: e.target.value }))} />
+                    </div>
+                  </div>
+                  {newFuel.gallons && newFuel.price_per_gallon && (
+                    <p className="text-xs text-emerald-400">
+                      Total: ${(parseFloat(newFuel.gallons) * parseFloat(newFuel.price_per_gallon)).toFixed(2)}
+                    </p>
+                  )}
+                  <div className="flex gap-2">
+                    <button onClick={() => setAddingFuel(false)}
+                      className="flex-1 border border-gray-600 text-gray-400 rounded-lg py-1.5 text-xs hover:bg-gray-700 transition-colors">Cancel</button>
+                    <button onClick={addFuel}
+                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg py-1.5 text-xs transition-colors">Save</button>
+                  </div>
+                </div>
+              )}
+
+              {fuelPurchases.length === 0 && !addingFuel && (
+                <p className="text-xs text-gray-600 py-4 text-center">No fuel purchases recorded for this load.</p>
+              )}
+
+              <div className="space-y-2">
+                {fuelPurchases.map(f => (
+                  <div key={f.id} className="flex items-center justify-between bg-gray-800/40 rounded-lg px-3 py-2.5">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-orange-400 bg-orange-500/10 rounded px-1.5 py-0.5">{f.state}</span>
+                        <span className="text-sm text-white">${parseFloat(f.amount).toFixed(2)}</span>
+                        {f.vendor_name && <span className="text-xs text-gray-500">{f.vendor_name}</span>}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">{f.gallons} gal × ${parseFloat(f.price_per_gallon).toFixed(3)}/gal · {new Date(f.purchase_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                    </div>
+                    <button onClick={() => removeFuel(f.id)} className="text-gray-600 hover:text-red-400 transition-colors ml-3">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {fuelPurchases.length > 0 && (
+                <div className="mt-3 bg-gray-800/60 rounded-lg px-3 py-2 flex justify-between text-sm">
+                  <span className="text-gray-400">Total Fuel ({fuelPurchases.length} purchases)</span>
+                  <span className="text-orange-400 font-bold">${fuelPurchases.reduce((s, f) => s + parseFloat(f.amount), 0).toFixed(2)}</span>
+                </div>
+              )}
             </>
           )}
 

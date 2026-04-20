@@ -9,8 +9,17 @@ interface Props { company?: any; onClose: () => void; onSaved: () => void }
 
 export default function FactoringModal({ company, onClose, onSaved }: Props) {
   const isEdit = !!company
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [saving, setSaving]     = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError]       = useState('')
+
+  async function handleDelete() {
+    if (!confirm(`¿Eliminar ${company?.name}?`)) return
+    setDeleting(true)
+    const res = await fetch(`/api/factoring/${company.id}`, { method: 'DELETE' })
+    if (res.ok) { onSaved(); onClose() }
+    else { const d = await res.json(); setError(d.error ?? 'Error al eliminar'); setDeleting(false) }
+  }
   const [tab, setTab] = useState<'info'|'contacts'|'terms'>('info')
 
   const [form, setForm] = useState({
@@ -128,6 +137,12 @@ export default function FactoringModal({ company, onClose, onSaved }: Props) {
           <div className="px-6 py-4 border-t border-gray-800 sticky bottom-0 bg-gray-900">
             {error && <p className="text-red-400 text-xs mb-3 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
             <div className="flex gap-3">
+              {isEdit && (
+                <button type="button" onClick={handleDelete} disabled={deleting}
+                  className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 text-sm transition-colors disabled:opacity-50">
+                  {deleting ? '...' : 'Eliminar'}
+                </button>
+              )}
               <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800">Cancel</button>
               <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : isEdit ? 'Save Changes' : 'Add Company'}

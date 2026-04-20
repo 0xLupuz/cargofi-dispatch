@@ -1,6 +1,16 @@
 'use client'
 import { useState } from 'react'
 import { X, Loader2 } from 'lucide-react'
+import DocUploader from '@/components/ui/DocUploader'
+
+const TRAILER_DOCS = [
+  { value: 'registration',  label: 'Registration'       },
+  { value: 'inspection',    label: 'Annual Inspection'  },
+  { value: 'lease',         label: 'Lease Agreement'    },
+  { value: 'bond',          label: 'Bond / Permit'      },
+  { value: 'insurance',     label: 'Insurance'          },
+  { value: 'other',         label: 'Other'              },
+]
 
 const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
@@ -17,8 +27,18 @@ interface Props {
 
 export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
   const isEdit = !!trailer
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [tab, setTab]           = useState<'info' | 'docs'>('info')
+  const [saving, setSaving]     = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError]       = useState('')
+
+  async function handleDelete() {
+    if (!confirm(`¿Eliminar trailer #${trailer?.trailer_number}?`)) return
+    setDeleting(true)
+    const res = await fetch(`/api/trailers/${trailer!.id}`, { method: 'DELETE' })
+    if (res.ok) { onClose(); window.location.reload() }
+    else { const d = await res.json(); setError(d.error ?? 'Error al eliminar'); setDeleting(false) }
+  }
 
   const [form, setForm] = useState({
     trailer_number:     trailer?.trailer_number     ?? '',
@@ -70,10 +90,31 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
       <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
           <h2 className="text-white font-semibold">{isEdit ? `Edit Trailer #${trailer.trailer_number}` : 'New Trailer'}</h2>
-          <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+              {(['info', 'docs'] as const).map(t => (
+                <button key={t} type="button"
+                  onClick={() => setTab(t)}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`}>
+                  {t === 'info' ? 'Información' : 'Documentos'}
+                </button>
+              ))}
+            </div>
+            <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
+        {/* Docs tab */}
+        {tab === 'docs' && (
+          <div className="px-6 py-5">
+            {isEdit
+              ? <DocUploader entityType="trailer" entityId={trailer.id} categories={TRAILER_DOCS} />
+              : <p className="text-sm text-gray-500 text-center py-8">Guarda el registro primero para adjuntar documentos.</p>
+            }
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className={`px-6 py-5 space-y-5 ${tab === 'docs' ? 'hidden' : ''}`}>
           {/* Basic info */}
           <div className="grid grid-cols-3 gap-4">
             <div><label className={lbl}>Trailer # *</label><input className={inp} value={form.trailer_number} onChange={e => set('trailer_number', e.target.value)} required /></div>
@@ -159,6 +200,12 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
           {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
 
           <div className="flex gap-3 pt-2">
+            {isEdit && (
+              <button type="button" onClick={handleDelete} disabled={deleting}
+                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 text-sm transition-colors disabled:opacity-50">
+                {deleting ? '...' : 'Eliminar'}
+              </button>
+            )}
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancel</button>
             <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : isEdit ? 'Save Changes' : 'Add Trailer'}

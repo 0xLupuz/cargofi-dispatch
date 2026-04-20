@@ -65,7 +65,7 @@ function DroppableColumn({
   }
 
   return (
-    <div className="flex flex-col flex-1 min-w-[280px] max-w-[360px]">
+    <div className="flex flex-col flex-1 min-w-[280px]">
       {/* Column header — click chevron to collapse */}
       <div className={`flex items-center gap-2.5 mb-3 pb-2.5 border-b-2 ${accent}`}>
         <span className={`w-2 h-2 rounded-full ${dot}`} />

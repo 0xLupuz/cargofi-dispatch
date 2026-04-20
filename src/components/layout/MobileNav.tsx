@@ -6,22 +6,24 @@ import { useState } from 'react'
 import {
   LayoutDashboard, DollarSign, Wrench, Truck, MoreHorizontal,
   X, Receipt, FileText, Fuel, Store, List, Box,
-  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe,
+  UserCheck, Users, Building2, Banknote, Search, ScrollText, Globe, BarChart2, Settings, LayoutGrid,
 } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const BOTTOM_TABS = [
-  { label: 'Board',         href: '/loads',        icon: LayoutDashboard },
-  { label: 'Settlements',   href: '/settlements',  icon: DollarSign      },
-  { label: 'Maintenance',   href: '/repair-orders',icon: Wrench          },
-  { label: 'Fleet',         href: '/units',        icon: Truck           },
-  { label: 'More',          href: '__more__',      icon: MoreHorizontal  },
+  { label: 'Dashboard',   href: '/dashboard',    icon: LayoutDashboard },
+  { label: 'Board',       href: '/loads',        icon: LayoutGrid      },
+  { label: 'Settlements', href: '/settlements',  icon: DollarSign      },
+  { label: 'Fleet',       href: '/units',        icon: Truck           },
+  { label: 'More',        href: '__more__',      icon: MoreHorizontal  },
 ]
 
 const MORE_SECTIONS = [
   {
-    header: 'Operations',
+    header: 'Accounting',
     items: [
+      { label: 'Invoices',        href: '/invoices',          icon: FileText   },
+      { label: 'IFTA',            href: '/ifta',              icon: Fuel       },
       { label: 'Load Finder',     href: '/loads?tab=history', icon: Search     },
     ],
   },
@@ -38,22 +40,18 @@ const MORE_SECTIONS = [
   {
     header: 'Maintenance',
     items: [
+      { label: 'Repair Orders',   href: '/repair-orders',     icon: Wrench     },
       { label: 'Vendors',         href: '/vendors',           icon: Store      },
       { label: 'Item List',       href: '/item-list',         icon: List       },
     ],
   },
   {
-    header: 'Accounting',
+    header: 'Tools & Reports',
     items: [
-      { label: 'Invoices',        href: '/invoices',          icon: FileText, soon: true },
-      { label: 'IFTA',            href: '/ifta',              icon: Fuel,     soon: true },
-    ],
-  },
-  {
-    header: 'Tools',
-    items: [
+      { label: 'Reports',         href: '/tools/reports',      icon: BarChart2  },
       { label: 'Carta de Retiro', href: '/tools/carta-retiro', icon: ScrollText },
       { label: 'Carta B1',        href: '/tools/carta-b1',     icon: Globe      },
+      { label: 'Settings',        href: '/settings',           icon: Settings   },
     ],
   },
 ]
@@ -64,6 +62,7 @@ export default function MobileNav() {
 
   function isActive(href: string) {
     if (href === '/loads') return pathname === '/loads'
+    if (href === '/dashboard') return pathname === '/dashboard'
     return pathname.startsWith(href.split('?')[0])
   }
 
@@ -109,23 +108,18 @@ export default function MobileNav() {
         })}
       </nav>
 
-      {/* More sheet — slides up from bottom */}
+      {/* More sheet */}
       {moreOpen && (
         <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-30 bg-black/60 md:hidden"
-            onClick={() => setMoreOpen(false)}
-          />
-          {/* Sheet */}
-          <div className="fixed bottom-[56px] inset-x-0 z-40 bg-gray-900 border-t border-gray-800 rounded-t-2xl md:hidden max-h-[70vh] overflow-y-auto">
+          <div className="fixed inset-0 z-30 bg-black/60 md:hidden" onClick={() => setMoreOpen(false)} />
+          <div className="fixed bottom-[56px] inset-x-0 z-40 bg-gray-900 border-t border-gray-800 rounded-t-2xl md:hidden max-h-[75vh] overflow-y-auto">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
               <span className="text-white font-semibold text-sm">More</span>
               <button onClick={() => setMoreOpen(false)}>
                 <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
-            <div className="px-4 py-3 space-y-5 pb-6">
+            <div className="px-4 py-3 space-y-5 pb-8">
               {MORE_SECTIONS.map(section => (
                 <div key={section.header}>
                   <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-2 mb-2">
@@ -134,15 +128,6 @@ export default function MobileNav() {
                   <div className="space-y-0.5">
                     {section.items.map(item => {
                       const Icon = item.icon
-                      if ((item as any).soon) {
-                        return (
-                          <div key={item.href} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-600">
-                            <Icon className="w-4 h-4" />
-                            <span className="text-sm">{item.label}</span>
-                            <span className="ml-auto text-[9px] bg-gray-800 text-gray-600 rounded px-1.5 py-0.5 uppercase">Soon</span>
-                          </div>
-                        )
-                      }
                       const active = isActive(item.href)
                       return (
                         <Link

@@ -37,9 +37,13 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
     Promise.all([
       fetch('/api/owner-operators').then(r => r.json()),
       fetch('/api/drivers').then(r => r.json()),
-    ]).then(([ooData, driverData]) => {
+      fetch('/api/settings').then(r => r.ok ? r.json() : null),
+    ]).then(([ooData, driverData, settings]) => {
       setOOs(ooData)
       setDrivers(driverData)
+      if (settings?.default_dispatch_fee_pct) {
+        setForm(f => ({ ...f, dispatch_fee_pct: String(settings.default_dispatch_fee_pct) }))
+      }
     })
   }, [])
 

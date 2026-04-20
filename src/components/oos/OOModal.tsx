@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Modal from '@/components/ui/Modal'
 import { Field, inputCls } from '@/components/ui/Field'
 import DocUploader from '@/components/ui/DocUploader'
@@ -34,28 +34,60 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
     visa_type: 'B1/B2', visa_number: '', visa_expiry: '',
     ine_number: '', federal_license_number: '', federal_license_expiry: '',
   })
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]   = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError]       = useState('')
   const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }))
+
+  // Pull default dispatch fee from Settings when creating a new OO
+  useEffect(() => {
+    if (!isEdit) {
+      fetch('/api/settings').then(r => r.ok ? r.json() : null).then(s => {
+        if (s?.default_dispatch_fee_pct) set('dispatch_fee_pct', String(s.default_dispatch_fee_pct))
+      })
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setLoading(true)
+    setLoading(true); setError('')
     const payload: Record<string, any> = {
       ...form,
       dispatch_fee_pct: parseFloat(form.dispatch_fee_pct),
-      insurance_expiry: form.insurance_expiry || null,
-      passport_expiry: form.passport_expiry || null,
-      visa_expiry: form.visa_expiry || null,
-      federal_license_expiry: form.federal_license_expiry || null,
+      insurance_expiry:        form.insurance_expiry        || null,
+      passport_expiry:         form.passport_expiry         || null,
+      visa_expiry:             form.visa_expiry             || null,
+      federal_license_expiry:  form.federal_license_expiry  || null,
     }
-    // Clean empty strings to null
-    Object.keys(payload).forEach(k => { if (payload[k] === '') payload[k] = null })
+    // Clean empty strings to null; remove internal/relation keys
+    Object.keys(payload).forEach(k => {
+      if (payload[k] === '') payload[k] = null
+    })
+    // Strip nested relation arrays returned by the GET select
+    delete payload._defaultFeeLoaded
+    delete payload.drivers
+    delete payload.units
+    delete payload.loads
 
     const res = isEdit
       ? await fetch(`/api/owner-operators/${oo.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      : await fetch('/api/owner-operators', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-    if (res.ok) onSaved(await res.json())
+      : await fetch('/api/owner-operators',            { method: 'POST',  headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+
+    if (res.ok) {
+      onSaved(await res.json())
+    } else {
+      const d = await res.json()
+      setError(d.error ?? 'Error al guardar — intenta de nuevo')
+    }
     setLoading(false)
+  }
+
+  async function handleDelete() {
+    if (!confirm(`¿Eliminar a ${oo?.name}?\n\nSi tiene loads asignados quedará inactivo. Si no tiene, se eliminará permanentemente.`)) return
+    setDeleting(true)
+    const res = await fetch(`/api/owner-operators/${oo!.id}`, { method: 'DELETE' })
+    if (res.ok) { onClose(); window.location.reload() }
+    else { const d = await res.json(); setError(d.error ?? 'Error al eliminar'); setDeleting(false) }
   }
 
   const tabCls = (t: string) =>
@@ -66,7 +98,7 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
       <div className="flex gap-2 mb-5">
         <button type="button" className={tabCls('info')} onClick={() => setTab('info')}>Información</button>
         <button type="button" className={tabCls('mx')} onClick={() => setTab('mx')}>Docs MX / Visa</button>
-        {isEdit && <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Archivos</button>}
+        <button type="button" className={tabCls('docs')} onClick={() => setTab('docs')}>Archivos</button>
       </div>
 
       {/* INFO */}
@@ -121,10 +153,17 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
               ))}
             </div>
           )}
+          {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
           <div className="flex gap-3 pt-2">
+            {isEdit && (
+              <button type="button" onClick={handleDelete} disabled={deleting}
+                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg px-3 py-2.5 text-sm transition-colors disabled:opacity-50">
+                {deleting ? '...' : 'Eliminar'}
+              </button>
+            )}
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
             <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
-              {loading ? 'Guardando...' : isEdit ? 'Guardar' : 'Agregar OO'}
+              {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Agregar OO'}
             </button>
           </div>
         </form>
@@ -179,18 +218,21 @@ export default function OOModal({ oo, onClose, onSaved }: Props) {
               </Field>
             </div>
           </div>
+          {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
             <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
-              {loading ? 'Guardando...' : 'Guardar'}
+              {loading ? 'Guardando...' : 'Guardar cambios'}
             </button>
           </div>
         </form>
       )}
 
       {/* ARCHIVOS */}
-      {tab === 'docs' && isEdit && (
-        <DocUploader entityType="owner_operator" entityId={oo.id} categories={OO_DOCS} />
+      {tab === 'docs' && (
+        isEdit
+          ? <DocUploader entityType="owner_operator" entityId={oo.id} categories={OO_DOCS} />
+          : <p className="text-sm text-gray-500 text-center py-8">Guarda el registro primero para adjuntar documentos.</p>
       )}
     </Modal>
   )
