@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   X, Truck, User, DollarSign, MapPin, FileText,
   Plus, Trash2, Phone, Save, AlertTriangle, Loader2,
-  Package, ChevronDown,
+  Package, ChevronDown, Zap,
 } from 'lucide-react'
 import DocUploader from '@/components/ui/DocUploader'
 import type { Load, TripStatus } from '@/types'
@@ -59,6 +59,13 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   const [addingDriver, setAddingDriver] = useState(false)
   const [newDriver, setNewDriver] = useState({ driver_id: '', miles: '', rate_per_mile: '' })
 
+  // CargoFi Finance — factoring request
+  const [factoringReq, setFactoringReq] = useState<any>(null)
+  const [showFactoringForm, setShowFactoringForm] = useState(false)
+  const [factoringForm, setFactoringForm] = useState({ carrier_wallet: '', carrier_usdc_account: '' })
+  const [submittingFactoring, setSubmittingFactoring] = useState(false)
+  const [factoringError, setFactoringError] = useState('')
+
   const setF = (k: string, v: any) => { setForm(f => ({ ...f, [k]: v })); setDirty(true) }
 
   const fetchLoad = useCallback(async () => {
@@ -98,6 +105,13 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   useEffect(() => {
     fetch('/api/drivers').then(r => r.json()).then(d => setAllDrivers(Array.isArray(d) ? d : []))
   }, [])
+
+  useEffect(() => {
+    fetch(`/api/factoring-requests?load_id=${loadId}`)
+      .then(r => r.json())
+      .then(d => setFactoringReq(d))
+      .catch(() => {})
+  }, [loadId])
 
   // Close on Escape
   useEffect(() => {
@@ -189,6 +203,42 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   async function removeDriver(id: string) {
     await fetch(`/api/load-drivers/${id}`, { method: 'DELETE' })
     setLoadDrivers(prev => prev.filter(d => d.id !== id))
+  }
+
+  async function submitFactoringRequest() {
+    if (!rate || rate <= 0) { setFactoringError('El load necesita un rate válido'); return }
+    setSubmittingFactoring(true); setFactoringError('')
+    try {
+      const res = await fetch('/api/factoring-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          load_id: loadId,
+          gross_amount_usdc: rate,
+          carrier_wallet: factoringForm.carrier_wallet || null,
+          carrier_usdc_account: factoringForm.carrier_usdc_account || null,
+        }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setFactoringReq(data)
+        setShowFactoringForm(false)
+      } else {
+        const e = await res.json(); setFactoringError(e.error ?? 'Error al enviar')
+      }
+    } catch (e: any) { setFactoringError(e.message) }
+    setSubmittingFactoring(false)
+  }
+
+  const FACTORING_STATUS_LABELS: Record<string, { label: string; color: string }> = {
+    pending:    { label: 'Pendiente revisión', color: 'text-yellow-400 bg-yellow-400/10' },
+    approved:   { label: 'Aprobado',           color: 'text-blue-400 bg-blue-400/10'   },
+    listed:     { label: 'En marketplace',     color: 'text-purple-400 bg-purple-400/10' },
+    funded:     { label: 'Fondeado ✓',         color: 'text-emerald-400 bg-emerald-400/10' },
+    broker_paid:{ label: 'Broker pagó',        color: 'text-teal-400 bg-teal-400/10'   },
+    settled:    { label: 'Liquidado ✓',        color: 'text-green-400 bg-green-400/10' },
+    defaulted:  { label: 'Default',            color: 'text-red-400 bg-red-400/10'     },
+    cancelled:  { label: 'Cancelado',          color: 'text-gray-400 bg-gray-400/10'   },
   }
 
   // Financial calculations
@@ -531,6 +581,115 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                     ${ooNet.toFixed(2)}
                   </span>
                 </div>
+              </div>
+
+              {/* ── CargoFi Finance ── */}
+              <div className="border border-orange-500/20 rounded-xl p-4 bg-orange-500/5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-4 h-4 text-orange-400" />
+                  <p className="text-sm font-semibold text-white">CargoFi Finance</p>
+                  {factoringReq && (
+                    <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${FACTORING_STATUS_LABELS[factoringReq.status]?.color ?? 'text-gray-400'}`}>
+                      {FACTORING_STATUS_LABELS[factoringReq.status]?.label ?? factoringReq.status}
+                    </span>
+                  )}
+                </div>
+
+                {!factoringReq && !showFactoringForm && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-3">
+                      Obtén el <span className="text-orange-400 font-medium">97% del rate</span> hoy — sin esperar 30-45 días al broker.
+                      CargoFi adelanta el dinero al carrier.
+                    </p>
+                    <button
+                      onClick={() => setShowFactoringForm(true)}
+                      disabled={!rate || rate <= 0}
+                      className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Solicitar Factoraje — ${rate > 0 ? (rate * 0.97).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} adelanto
+                    </button>
+                    {(!rate || rate <= 0) && (
+                      <p className="text-xs text-gray-600 mt-1.5 text-center">Agrega el rate del load para habilitar</p>
+                    )}
+                  </div>
+                )}
+
+                {!factoringReq && showFactoringForm && (
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-gray-400 mb-1">Rate a factorar: <span className="text-white font-medium">${rate.toFixed(2)} USD</span></p>
+                      <p className="text-xs text-gray-500">Adelanto 97%: <span className="text-orange-400">${(rate * 0.97).toFixed(2)}</span> · Fee 3%: <span className="text-gray-400">${(rate * 0.03).toFixed(2)}</span></p>
+                    </div>
+                    <div>
+                      <label className={lbl}>Wallet Solana del carrier <span className="text-gray-600">(opcional por ahora)</span></label>
+                      <input
+                        className={inp + ' text-xs'}
+                        placeholder="Base58 pubkey (ej: 9y1LQod...)"
+                        value={factoringForm.carrier_wallet}
+                        onChange={e => setFactoringForm(f => ({ ...f, carrier_wallet: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <label className={lbl}>USDC ATA del carrier <span className="text-gray-600">(opcional por ahora)</span></label>
+                      <input
+                        className={inp + ' text-xs'}
+                        placeholder="Token account USDC"
+                        value={factoringForm.carrier_usdc_account}
+                        onChange={e => setFactoringForm(f => ({ ...f, carrier_usdc_account: e.target.value }))}
+                      />
+                    </div>
+                    {factoringError && (
+                      <p className="text-xs text-red-400 bg-red-400/10 rounded px-2 py-1">{factoringError}</p>
+                    )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => { setShowFactoringForm(false); setFactoringError('') }}
+                        className="flex-1 border border-gray-600 text-gray-400 rounded-lg py-2 text-xs hover:bg-gray-700 transition-colors"
+                      >Cancelar</button>
+                      <button
+                        onClick={submitFactoringRequest}
+                        disabled={submittingFactoring}
+                        className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                      >
+                        {submittingFactoring ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                        {submittingFactoring ? 'Enviando...' : 'Enviar solicitud'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {factoringReq && (
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Invoice</span>
+                      <span className="text-gray-300 font-mono">{factoringReq.invoice_id_hex?.slice(0,8)}...</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Gross</span>
+                      <span className="text-white">${Number(factoringReq.gross_amount_usdc).toFixed(2)}</span>
+                    </div>
+                    {factoringReq.advance_amount_usdc && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Adelanto recibido</span>
+                        <span className="text-emerald-400 font-medium">${Number(factoringReq.advance_amount_usdc).toFixed(2)}</span>
+                      </div>
+                    )}
+                    {factoringReq.status === 'funded' && factoringReq.due_at && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Vencimiento</span>
+                        <span className="text-yellow-400">{new Date(factoringReq.due_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+                    )}
+                    {factoringReq.settle_tx && (
+                      <a
+                        href={`https://explorer.solana.com/tx/${factoringReq.settle_tx}?cluster=devnet`}
+                        target="_blank" rel="noreferrer"
+                        className="block text-center text-orange-400 hover:text-orange-300 pt-1"
+                      >Ver TX en Solana Explorer ↗</a>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Deductions */}
