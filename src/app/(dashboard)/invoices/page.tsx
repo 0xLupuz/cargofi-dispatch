@@ -5,10 +5,10 @@ import { FileText, Plus, Search, Clock, AlertCircle, CheckCircle, DollarSign, Ch
 
 const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
   draft:   { bg: 'bg-gray-700/60',       text: 'text-gray-400',   label: 'Draft'   },
-  sent:    { bg: 'bg-blue-500/10',        text: 'text-blue-400',   label: 'Sent'    },
+  sent:    { bg: 'bg-[#58a6ff]/10',        text: 'text-[#58a6ff]',   label: 'Sent'    },
   paid:    { bg: 'bg-emerald-500/10',     text: 'text-emerald-400',label: 'Paid'    },
   overdue: { bg: 'bg-red-500/10',         text: 'text-red-400',    label: 'Overdue' },
-  void:    { bg: 'bg-gray-800',           text: 'text-gray-600',   label: 'Void'    },
+  void:    { bg: 'bg-[#161b22]',           text: 'text-[#484f58]',   label: 'Void'    },
 }
 
 function fmt(n: any) { return parseFloat(String(n ?? 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
@@ -57,13 +57,13 @@ export default function InvoicesPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d] flex-shrink-0">
         <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-orange-400" />
+          <FileText className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Invoices</h1>
         </div>
         <button onClick={() => router.push('/invoices/new')}
-          className="flex items-center gap-1.5 text-sm bg-orange-500 hover:bg-orange-600 text-white rounded-lg px-4 py-2 font-medium transition-colors">
+          className="flex items-center gap-1.5 text-sm bg-[#3ab690] hover:bg-[#1a9d75] text-white rounded-lg px-4 py-2 font-medium transition-colors">
           <Plus className="w-4 h-4" /> New Invoice
         </button>
       </div>
@@ -71,13 +71,13 @@ export default function InvoicesPage() {
       {/* Stats */}
       <div className="px-6 pt-5 pb-1 grid grid-cols-4 gap-4 flex-shrink-0">
         {[
-          { label: 'Accounts Receivable', value: `$${fmt(totalAR)}`, sub: `${pending.length} invoices`, icon: DollarSign, color: 'text-orange-400', border: 'border-orange-500/20', bg: 'bg-orange-500/5' },
+          { label: 'Accounts Receivable', value: `$${fmt(totalAR)}`, sub: `${pending.length} invoices`, icon: DollarSign, color: 'text-[#3ab690]', border: 'border-[#3ab690]/20', bg: 'bg-[#3ab690]/5' },
           { label: 'Overdue', value: `$${fmt(overdueAmt)}`, sub: `${overdue.length} invoices`, icon: AlertCircle, color: 'text-red-400', border: 'border-red-500/20', bg: 'bg-red-500/5' },
           { label: 'Paid (current)',
             value: `$${fmt(invoices.filter(i=>i.status==='paid').reduce((s,i)=>s+(parseFloat(i.rate)+parseFloat(i.fuel_surcharge??0)+parseFloat(i.accessorials??0)),0))}`,
             sub: `${invoices.filter(i=>i.status==='paid').length} invoices`,
             icon: CheckCircle, color: 'text-emerald-400', border: 'border-emerald-500/20', bg: 'bg-emerald-500/5' },
-          { label: 'Drafts', value: invoices.filter(i=>i.status==='draft').length, sub: 'not sent', icon: Clock, color: 'text-gray-400', border: 'border-gray-700', bg: 'bg-gray-800/30' },
+          { label: 'Drafts', value: invoices.filter(i=>i.status==='draft').length, sub: 'not sent', icon: Clock, color: 'text-gray-400', border: 'border-[#30363d]', bg: 'bg-[#161b22]/30' },
         ].map(s => (
           <div key={s.label} className={`rounded-xl border ${s.border} ${s.bg} px-4 py-3`}>
             <div className="flex items-center gap-1.5 mb-2">
@@ -85,7 +85,7 @@ export default function InvoicesPage() {
               <p className="text-xs text-gray-500">{s.label}</p>
             </div>
             <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-xs text-gray-600 mt-0.5">{s.sub}</p>
+            <p className="text-xs text-[#484f58] mt-0.5">{s.sub}</p>
           </div>
         ))}
       </div>
@@ -93,11 +93,11 @@ export default function InvoicesPage() {
       {/* Aging AR bar */}
       {pending.length > 0 && (
         <div className="px-6 py-3 flex-shrink-0">
-          <p className="text-xs text-gray-600 mb-2 font-semibold uppercase tracking-wider">Aging AR</p>
+          <p className="text-xs text-[#484f58] mb-2 font-semibold uppercase tracking-wider">Aging AR</p>
           <div className="flex gap-3">
             {[['0–30 days', 0, 30, 'bg-emerald-500/20 text-emerald-400'],
               ['31–60 days', 31, 60, 'bg-yellow-500/20 text-yellow-400'],
-              ['61–90 days', 61, 90, 'bg-orange-500/20 text-orange-400'],
+              ['61–90 days', 61, 90, 'bg-[rgba(58,182,144,0.2)] text-[#3ab690]'],
               ['+90 days', 91, 9999, 'bg-red-500/20 text-red-400']].map(([label, min, max, cls]) => {
               const group = pending.filter(i => {
                 const d = daysUntilDue(i.due_at)
@@ -120,11 +120,11 @@ export default function InvoicesPage() {
       )}
 
       {/* Tabs + search */}
-      <div className="px-6 py-2 border-b border-gray-800 flex items-center gap-3 flex-shrink-0">
-        <div className="flex items-center gap-1 bg-gray-800/60 rounded-lg p-1">
+      <div className="px-6 py-2 border-b border-[#21262d] flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-1 bg-[#161b22]/60 rounded-lg p-1">
           {(['pending','paid','all'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
-              className={`rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition-colors ${tab === t ? 'bg-orange-500/20 text-orange-400' : 'text-gray-500 hover:text-gray-300'}`}>
+              className={`rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition-colors ${tab === t ? 'bg-[rgba(58,182,144,0.2)] text-[#3ab690]' : 'text-gray-500 hover:text-gray-300'}`}>
               {t}
             </button>
           ))}
@@ -132,7 +132,7 @@ export default function InvoicesPage() {
         <div className="relative max-w-xs flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" />
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Invoice #, broker..."
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 transition-colors" />
+            className="w-full bg-[#161b22] border border-[#30363d] rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#3ab690] transition-colors" />
         </div>
       </div>
 
@@ -140,17 +140,17 @@ export default function InvoicesPage() {
       <div className="flex-1 overflow-auto">
         {loading ? (
           <div className="flex items-center gap-2 text-gray-500 px-6 py-8 text-sm">
-            <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" /> Loading...
+            <div className="w-4 h-4 rounded-full border-2 border-[#3ab690] border-t-transparent animate-spin" /> Loading...
           </div>
         ) : invoices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-48 text-gray-600">
+          <div className="flex flex-col items-center justify-center h-48 text-[#484f58]">
             <FileText className="w-10 h-10 mb-3 opacity-20" />
             <p className="text-sm">{query ? 'No results' : 'No invoices yet'}</p>
-            {!query && <button onClick={() => router.push('/invoices/new')} className="mt-2 text-xs text-orange-400 hover:underline">Create your first invoice →</button>}
+            {!query && <button onClick={() => router.push('/invoices/new')} className="mt-2 text-xs text-[#3ab690] hover:underline">Create your first invoice →</button>}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-gray-950 border-b border-gray-800 z-10">
+            <thead className="sticky top-0 bg-[#080c12] border-b border-[#21262d] z-10">
               <tr>
                 {['Invoice #','Broker','Load','Issued','Due','Amount','Status',''].map(h => (
                   <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
@@ -165,8 +165,8 @@ export default function InvoicesPage() {
                 const isLate = days !== null && days < 0 && inv.status !== 'paid'
                 return (
                   <tr key={inv.id} onClick={() => router.push(`/invoices/${inv.id}`)}
-                    className="hover:bg-gray-800/40 cursor-pointer transition-colors">
-                    <td className="px-4 py-3 font-mono text-orange-400 font-semibold">{inv.invoice_number}</td>
+                    className="hover:bg-[#161b22]/40 cursor-pointer transition-colors">
+                    <td className="px-4 py-3 font-mono text-[#3ab690] font-semibold">{inv.invoice_number}</td>
                     <td className="px-4 py-3 text-gray-300 max-w-[140px] truncate">{inv.broker_name}</td>
                     <td className="px-4 py-3 text-gray-500 font-mono text-xs">{inv.load?.load_number ?? '—'}</td>
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{fmtDate(inv.issued_at)}</td>
@@ -182,7 +182,7 @@ export default function InvoicesPage() {
                       <div className="flex items-center gap-1.5">
                         {inv.status === 'draft' && (
                           <button onClick={e => markSent(inv.id, e)}
-                            className="text-xs bg-blue-500/15 text-blue-400 border border-blue-500/20 rounded-md px-2 py-1 hover:bg-blue-500/25 transition-colors">
+                            className="text-xs bg-[#58a6ff]/15 text-[#58a6ff] border border-[#58a6ff]/20 rounded-md px-2 py-1 hover:bg-[#58a6ff]/25 transition-colors">
                             Send
                           </button>
                         )}
@@ -192,7 +192,7 @@ export default function InvoicesPage() {
                             Mark Paid
                           </button>
                         )}
-                        <ChevronRight className="w-4 h-4 text-gray-700" />
+                        <ChevronRight className="w-4 h-4 text-[#30363d]" />
                       </div>
                     </td>
                   </tr>

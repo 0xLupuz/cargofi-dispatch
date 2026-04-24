@@ -25,7 +25,7 @@ export default function OOLedgerPage() {
 
   if (loading) return (
     <div className="flex items-center gap-2 text-gray-500 px-6 py-12 text-sm">
-      <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" /> Loading...
+      <div className="w-4 h-4 rounded-full border-2 border-[#3ab690] border-t-transparent animate-spin" /> Loading...
     </div>
   )
   if (!data?.oo) return <div className="px-6 py-8 text-gray-500">OO not found</div>
@@ -54,7 +54,7 @@ export default function OOLedgerPage() {
             <button onClick={() => router.push('/owner-operators')} className="text-gray-500 hover:text-gray-300 transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <Users className="w-5 h-5 text-orange-400" />
+            <Users className="w-5 h-5 text-[#3ab690]" />
             <div>
               <h1 className="text-white font-semibold text-lg">{oo.name}</h1>
               {oo.company_name && <p className="text-xs text-gray-500">{oo.company_name}</p>}
@@ -68,7 +68,7 @@ export default function OOLedgerPage() {
               </a>
             )}
             <button onClick={() => window.print()}
-              className="flex items-center gap-1.5 text-sm border border-gray-700 text-gray-300 rounded-lg px-3 py-2 hover:border-gray-500 transition-colors">
+              className="flex items-center gap-1.5 text-sm border border-[#30363d] text-gray-300 rounded-lg px-3 py-2 hover:border-gray-500 transition-colors">
               <Printer className="w-4 h-4" /> Print Statement
             </button>
           </div>
@@ -84,8 +84,8 @@ export default function OOLedgerPage() {
         {/* Summary cards */}
         <div className="no-print grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {[
-            { label: 'Total Loads',    value: loads.length,              suffix: '',    icon: Truck,       color: 'text-orange-400', border: 'border-orange-500/20', bg: 'bg-orange-500/5', currency: false },
-            { label: 'Total Gross',    value: totals.gross,              suffix: '',    icon: DollarSign,  color: 'text-blue-400',   border: 'border-blue-500/20',   bg: 'bg-blue-500/5',   currency: true  },
+            { label: 'Total Loads',    value: loads.length,              suffix: '',    icon: Truck,       color: 'text-[#3ab690]', border: 'border-[#3ab690]/20', bg: 'bg-[#3ab690]/5', currency: false },
+            { label: 'Total Gross',    value: totals.gross,              suffix: '',    icon: DollarSign,  color: 'text-[#58a6ff]',   border: 'border-[#58a6ff]/20',   bg: 'bg-[#58a6ff]/5',   currency: true  },
             { label: 'Dispatch Fees',  value: totals.dispFee,            suffix: '',    icon: TrendingUp,  color: 'text-yellow-400', border: 'border-yellow-500/20', bg: 'bg-yellow-500/5', currency: true  },
             { label: 'OO Net Total',   value: totals.ooNet,              suffix: '',    icon: DollarSign,  color: totals.ooNet >= 0 ? 'text-emerald-400' : 'text-red-400', border: totals.ooNet >= 0 ? 'border-emerald-500/20' : 'border-red-500/20', bg: totals.ooNet >= 0 ? 'bg-emerald-500/5' : 'bg-red-500/5', currency: true },
           ].map(c => (
@@ -101,12 +101,12 @@ export default function OOLedgerPage() {
 
         {/* Loads table */}
         {loads.length === 0 ? (
-          <div className="text-center py-16 text-gray-600 text-sm">No loads for this OO yet</div>
+          <div className="text-center py-16 text-[#484f58] text-sm">No loads for this OO yet</div>
         ) : (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+          <div className="bg-[#0d1117] border border-[#21262d] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="border-b border-gray-800">
+                <thead className="border-b border-[#21262d]">
                   <tr>
                     {['Date', 'Load #', 'Broker', 'Status', 'Gross', 'Disp Fee', 'Fuel', 'Driver Pay', 'Other Deds', 'OO Net', 'Balance'].map(h => (
                       <th key={h} className="text-left text-xs font-medium text-gray-500 px-3 py-3 whitespace-nowrap">{h}</th>
@@ -115,9 +115,9 @@ export default function OOLedgerPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-800/60">
                   {loads.map((l: any) => (
-                    <tr key={l.id} className="hover:bg-gray-800/30 transition-colors">
+                    <tr key={l.id} className="hover:bg-[#161b22]/30 transition-colors">
                       <td className="px-3 py-2.5 text-gray-500 text-xs whitespace-nowrap">{fmtDate(l.pickup_date)}</td>
-                      <td className="px-3 py-2.5 font-mono text-orange-400 text-xs font-semibold whitespace-nowrap">{l.load_number}</td>
+                      <td className="px-3 py-2.5 font-mono text-[#3ab690] text-xs font-semibold whitespace-nowrap">{l.load_number}</td>
                       <td className="px-3 py-2.5 text-gray-300 max-w-[120px] truncate text-xs">{l.broker_name}</td>
                       <td className="px-3 py-2.5">
                         <span className="text-xs text-gray-500">{STATUS_LABEL[l.kanban_status] ?? l.kanban_status}</span>
@@ -136,7 +136,7 @@ export default function OOLedgerPage() {
                     </tr>
                   ))}
                   {/* Totals row */}
-                  <tr className="border-t-2 border-gray-700 bg-gray-800/50">
+                  <tr className="border-t-2 border-[#30363d] bg-[#161b22]/50">
                     <td colSpan={4} className="px-3 py-3 text-xs font-bold text-gray-400 uppercase tracking-wide">TOTALS ({loads.length} loads)</td>
                     <td className="px-3 py-3 text-white font-bold text-xs">${fmt(totals.gross)}</td>
                     <td className="px-3 py-3 text-yellow-400 font-bold text-xs">-${fmt(totals.dispFee)}</td>
@@ -156,7 +156,7 @@ export default function OOLedgerPage() {
           </div>
         )}
 
-        <p className="no-print text-xs text-gray-700 text-center mt-6 pb-2">
+        <p className="no-print text-xs text-[#30363d] text-center mt-6 pb-2">
           Dispatch fee: {oo.dispatch_fee_pct ?? 13}% · {oo.mc_number ? `MC: ${oo.mc_number}` : 'MC not set'}
         </p>
       </div>

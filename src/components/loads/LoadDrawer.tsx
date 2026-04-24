@@ -18,7 +18,7 @@ const LOAD_DOCS = [
 ]
 
 const STATUSES: { value: TripStatus; label: string; color: string }[] = [
-  { value: 'open',       label: 'Open',       color: 'bg-blue-600'    },
+  { value: 'open',       label: 'Open',       color: 'bg-[#3b82f6]'    },
   { value: 'in_transit', label: 'In Transit', color: 'bg-amber-500'   },
   { value: 'delivered',  label: 'Delivered',  color: 'bg-emerald-600' },
 ]
@@ -32,7 +32,7 @@ const DEDUCTION_TYPES = [
   { value: 'other',        label: 'Other' },
 ]
 
-const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl = 'block text-xs text-gray-500 mb-1'
 
 interface Props {
@@ -239,7 +239,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
 
   const FACTORING_STATUS_LABELS: Record<string, { label: string; color: string }> = {
     pending:    { label: 'Pendiente revisión', color: 'text-yellow-400 bg-yellow-400/10' },
-    approved:   { label: 'Aprobado',           color: 'text-blue-400 bg-blue-400/10'   },
+    approved:   { label: 'Aprobado',           color: 'text-[#58a6ff] bg-[#58a6ff]/10'   },
     listed:     { label: 'En marketplace',     color: 'text-purple-400 bg-purple-400/10' },
     funded:     { label: 'Fondeado ✓',         color: 'text-emerald-400 bg-emerald-400/10' },
     broker_paid:{ label: 'Broker pagó',        color: 'text-teal-400 bg-teal-400/10'   },
@@ -286,13 +286,13 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
 
   const currentStatus = STATUSES.find(s => s.value === form.trip_status)
   const tabCls = (t: string) =>
-    `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-orange-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
+    `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-[#3ab690] text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
 
   if (!load) {
     return (
       <div className="fixed inset-0 bg-black/60 z-40 flex justify-end" onClick={onClose}>
-        <div className="w-full max-w-xl bg-gray-900 h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
-          <Loader2 className="w-8 h-8 text-orange-400 animate-spin" />
+        <div className="w-full max-w-xl bg-[#0d1117] h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+          <Loader2 className="w-8 h-8 text-[#3ab690] animate-spin" />
         </div>
       </div>
     )
@@ -301,13 +301,13 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
   return (
     <div className="fixed inset-0 bg-black/60 z-40 flex justify-end" onClick={onClose}>
       <div
-        className="w-full max-w-xl bg-gray-900 h-full flex flex-col border-l border-gray-700 overflow-hidden"
+        className="w-full max-w-xl bg-[#0d1117] h-full flex flex-col border-l border-[#30363d] overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#21262d] flex-shrink-0">
           <div className="flex items-center gap-3">
-            <Package className="w-5 h-5 text-orange-400" />
+            <Package className="w-5 h-5 text-[#3ab690]" />
             <div>
               <h2 className="text-white font-bold">#{load.load_number}</h2>
               <p className="text-xs text-gray-500">{load.broker_name}</p>
@@ -332,7 +332,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-800 flex-shrink-0 overflow-x-auto">
+        <div className="flex border-b border-[#21262d] flex-shrink-0 overflow-x-auto">
           <button className={tabCls('info')} onClick={() => setTab('info')}>Información</button>
           <button className={tabCls('financials')} onClick={() => setTab('financials')}>Financiero</button>
           <button className={tabCls('fuel')} onClick={() => setTab('fuel')}>
@@ -349,9 +349,9 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
             <>
               {/* Parties */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-800/50 rounded-lg p-3">
+                <div className="bg-[#161b22]/50 rounded-lg p-3">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <Truck className="w-3.5 h-3.5 text-orange-400" />
+                    <Truck className="w-3.5 h-3.5 text-[#3ab690]" />
                     <p className="text-xs text-gray-400 font-medium">Owner Operator</p>
                   </div>
                   <p className="text-sm text-white font-medium">{load.owner_operator?.name ?? '—'}</p>
@@ -364,9 +364,9 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                     </a>
                   )}
                 </div>
-                <div className="bg-gray-800/50 rounded-lg p-3">
+                <div className="bg-[#161b22]/50 rounded-lg p-3">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <User className="w-3.5 h-3.5 text-blue-400" />
+                    <User className="w-3.5 h-3.5 text-[#58a6ff]" />
                     <p className="text-xs text-gray-400 font-medium">Driver</p>
                   </div>
                   <p className="text-sm text-white font-medium">{load.driver?.name ?? '—'}</p>
@@ -384,11 +384,11 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               {/* Load # (read-only) + WO# + Broker */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className={lbl}>Load # <span className="text-gray-700">(auto)</span></label>
+                  <label className={lbl}>Load # <span className="text-[#30363d]">(auto)</span></label>
                   <input className={inp + ' opacity-50 cursor-not-allowed'} value={form.load_number} readOnly />
                 </div>
                 <div>
-                  <label className={lbl}>Work Order # <span className="text-gray-600">(broker ref)</span></label>
+                  <label className={lbl}>Work Order # <span className="text-[#484f58]">(broker ref)</span></label>
                   <input className={inp} value={form.work_order_number} onChange={e => setF('work_order_number', e.target.value)} placeholder="WO-12345" />
                 </div>
               </div>
@@ -414,7 +414,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                   <label className={lbl}>Ruta</label>
                   <div className="space-y-2">
                     {[...load.stops].sort((a,b) => a.sequence - b.sequence).map(stop => (
-                      <div key={stop.id} className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-2">
+                      <div key={stop.id} className="flex items-center gap-2 bg-[#161b22]/50 rounded-lg px-3 py-2">
                         <MapPin className={`w-3.5 h-3.5 flex-shrink-0 ${stop.stop_type === 'pickup' ? 'text-green-400' : 'text-red-400'}`} />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-gray-400 capitalize">{stop.stop_type}</p>
@@ -514,16 +514,16 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">
-                    Driver Pay <span className="text-gray-600 normal-case">({loadDrivers.length} driver{loadDrivers.length !== 1 ? 's' : ''})</span>
+                    Driver Pay <span className="text-[#484f58] normal-case">({loadDrivers.length} driver{loadDrivers.length !== 1 ? 's' : ''})</span>
                   </p>
                   <button onClick={() => setAddingDriver(!addingDriver)}
-                    className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                    className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3] transition-colors">
                     <Plus className="w-3.5 h-3.5" /> Add Driver
                   </button>
                 </div>
 
                 {addingDriver && (
-                  <div className="bg-gray-800/50 rounded-lg p-3 space-y-2 mb-2 border border-gray-700">
+                  <div className="bg-[#161b22]/50 rounded-lg p-3 space-y-2 mb-2 border border-[#30363d]">
                     <select className={inp + ' text-xs'} value={newDriver.driver_id}
                       onChange={e => setNewDriver(n => ({ ...n, driver_id: e.target.value }))}>
                       <option value="">— Select driver (optional) —</option>
@@ -548,17 +548,17 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       <button onClick={() => setAddingDriver(false)}
                         className="flex-1 border border-gray-600 text-gray-400 rounded-lg py-1.5 text-xs hover:bg-gray-700 transition-colors">Cancel</button>
                       <button onClick={addDriver}
-                        className="flex-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg py-1.5 text-xs transition-colors">Add</button>
+                        className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] text-white rounded-lg py-1.5 text-xs transition-colors">Add</button>
                     </div>
                   </div>
                 )}
 
                 {loadDrivers.length === 0 && !addingDriver && (
-                  <p className="text-xs text-gray-600">Sin drivers asignados. Agrega para calcular driver pay.</p>
+                  <p className="text-xs text-[#484f58]">Sin drivers asignados. Agrega para calcular driver pay.</p>
                 )}
                 <div className="space-y-1.5">
                   {loadDrivers.map(d => (
-                    <div key={d.id} className="flex items-center justify-between bg-gray-800/40 rounded-lg px-3 py-2">
+                    <div key={d.id} className="flex items-center justify-between bg-[#161b22]/40 rounded-lg px-3 py-2">
                       <div>
                         <p className="text-sm text-white">{d.driver_name || (d.driver?.name ?? '')}</p>
                         <p className="text-xs text-gray-500">{d.miles} mi × ${Number(d.rate_per_mile).toFixed(2)}/mi</p>
@@ -566,7 +566,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       <div className="flex items-center gap-3">
                         <span className="text-red-400 text-sm font-medium">-${Number(d.total_pay).toFixed(2)}</span>
                         <button onClick={() => removeDriver(d.id)}
-                          className="text-gray-600 hover:text-red-400 transition-colors">
+                          className="text-[#484f58] hover:text-red-400 transition-colors">
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -576,7 +576,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               </div>
 
               {/* Settlement preview */}
-              <div className="bg-gray-800/60 rounded-xl p-4 space-y-2">
+              <div className="bg-[#161b22]/60 rounded-xl p-4 space-y-2">
                 <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-3">Settlement Preview</p>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Gross Rate</span>
@@ -584,7 +584,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Dispatch Fee ({dispatchPct}%)</span>
-                  <span className="text-orange-400">-${dispatchFee.toFixed(2)}</span>
+                  <span className="text-[#3ab690]">-${dispatchFee.toFixed(2)}</span>
                 </div>
                 {factoringFee > 0 && (
                   <div className="flex justify-between text-sm">
@@ -619,9 +619,9 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               </div>
 
               {/* ── CargoFi Finance ── */}
-              <div className="border border-orange-500/20 rounded-xl p-4 bg-orange-500/5">
+              <div className="border border-[#3ab690]/20 rounded-xl p-4 bg-[#3ab690]/5">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap className="w-4 h-4 text-orange-400" />
+                  <Zap className="w-4 h-4 text-[#3ab690]" />
                   <p className="text-sm font-semibold text-white">CargoFi Finance</p>
                   {factoringReq && (
                     <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${FACTORING_STATUS_LABELS[factoringReq.status]?.color ?? 'text-gray-400'}`}>
@@ -633,19 +633,19 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                 {!factoringReq && !showFactoringForm && (
                   <div>
                     <p className="text-xs text-gray-400 mb-3">
-                      Obtén el <span className="text-orange-400 font-medium">97% del rate</span> hoy — sin esperar 30-45 días al broker.
+                      Obtén el <span className="text-[#3ab690] font-medium">97% del rate</span> hoy — sin esperar 30-45 días al broker.
                       CargoFi adelanta el dinero al carrier.
                     </p>
                     <button
                       onClick={() => setShowFactoringForm(true)}
                       disabled={!rate || rate <= 0}
-                      className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-sm font-medium transition-colors flex items-center justify-center gap-2"
                     >
                       <Zap className="w-4 h-4" />
                       Solicitar Factoraje — ${rate > 0 ? (rate * 0.97).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'} adelanto
                     </button>
                     {(!rate || rate <= 0) && (
-                      <p className="text-xs text-gray-600 mt-1.5 text-center">Agrega el rate del load para habilitar</p>
+                      <p className="text-xs text-[#484f58] mt-1.5 text-center">Agrega el rate del load para habilitar</p>
                     )}
                   </div>
                 )}
@@ -654,10 +654,10 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs text-gray-400 mb-1">Rate a factorar: <span className="text-white font-medium">${rate.toFixed(2)} USD</span></p>
-                      <p className="text-xs text-gray-500">Adelanto 97%: <span className="text-orange-400">${(rate * 0.97).toFixed(2)}</span> · Fee 3%: <span className="text-gray-400">${(rate * 0.03).toFixed(2)}</span></p>
+                      <p className="text-xs text-gray-500">Adelanto 97%: <span className="text-[#3ab690]">${(rate * 0.97).toFixed(2)}</span> · Fee 3%: <span className="text-gray-400">${(rate * 0.03).toFixed(2)}</span></p>
                     </div>
                     <div>
-                      <label className={lbl}>Wallet Solana del carrier <span className="text-gray-600">(opcional por ahora)</span></label>
+                      <label className={lbl}>Wallet Solana del carrier <span className="text-[#484f58]">(opcional por ahora)</span></label>
                       <input
                         className={inp + ' text-xs'}
                         placeholder="Base58 pubkey (ej: 9y1LQod...)"
@@ -666,7 +666,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       />
                     </div>
                     <div>
-                      <label className={lbl}>USDC ATA del carrier <span className="text-gray-600">(opcional por ahora)</span></label>
+                      <label className={lbl}>USDC ATA del carrier <span className="text-[#484f58]">(opcional por ahora)</span></label>
                       <input
                         className={inp + ' text-xs'}
                         placeholder="Token account USDC"
@@ -685,7 +685,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       <button
                         onClick={submitFactoringRequest}
                         disabled={submittingFactoring}
-                        className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                        className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1"
                       >
                         {submittingFactoring ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
                         {submittingFactoring ? 'Enviando...' : 'Enviar solicitud'}
@@ -720,7 +720,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       <a
                         href={`https://explorer.solana.com/tx/${factoringReq.settle_tx}?cluster=devnet`}
                         target="_blank" rel="noreferrer"
-                        className="block text-center text-orange-400 hover:text-orange-300 pt-1"
+                        className="block text-center text-[#3ab690] hover:text-[#72d2b3] pt-1"
                       >Ver TX en Solana Explorer ↗</a>
                     )}
                   </div>
@@ -732,13 +732,13 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Deductions ({deductions.length})</p>
                   <button onClick={() => setAddingDed(!addingDed)}
-                    className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                    className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3] transition-colors">
                     <Plus className="w-3.5 h-3.5" /> Add
                   </button>
                 </div>
 
                 {addingDed && (
-                  <div className="bg-gray-800/50 rounded-lg p-3 space-y-2 mb-2 border border-gray-700">
+                  <div className="bg-[#161b22]/50 rounded-lg p-3 space-y-2 mb-2 border border-[#30363d]">
                     <div className="grid grid-cols-2 gap-2">
                       <select className={inp + ' text-xs'} value={newDed.type}
                         onChange={e => setNewDed(n => ({ ...n, type: e.target.value }))}>
@@ -753,17 +753,17 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       <button onClick={() => setAddingDed(false)}
                         className="flex-1 border border-gray-600 text-gray-400 rounded-lg py-1.5 text-xs hover:bg-gray-700 transition-colors">Cancel</button>
                       <button onClick={addDeduction}
-                        className="flex-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg py-1.5 text-xs transition-colors">Add</button>
+                        className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] text-white rounded-lg py-1.5 text-xs transition-colors">Add</button>
                     </div>
                   </div>
                 )}
 
                 {deductions.length === 0 && !addingDed && (
-                  <p className="text-xs text-gray-600">Sin deductions. Agrega fuel advance, lumper, etc.</p>
+                  <p className="text-xs text-[#484f58]">Sin deductions. Agrega fuel advance, lumper, etc.</p>
                 )}
                 <div className="space-y-1.5">
                   {deductions.map(d => (
-                    <div key={d.id} className="flex items-center justify-between bg-gray-800/40 rounded-lg px-3 py-2">
+                    <div key={d.id} className="flex items-center justify-between bg-[#161b22]/40 rounded-lg px-3 py-2">
                       <div>
                         <p className="text-sm text-white">{d.description}</p>
                         <p className="text-xs text-gray-500 capitalize">{d.type.replace('_',' ')}</p>
@@ -771,7 +771,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                       <div className="flex items-center gap-3">
                         <span className="text-red-400 text-sm font-medium">-${Number(d.amount).toFixed(2)}</span>
                         <button onClick={() => removeDeduction(d.id)}
-                          className="text-gray-600 hover:text-red-400 transition-colors">
+                          className="text-[#484f58] hover:text-red-400 transition-colors">
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -788,16 +788,16 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Fuel Purchases</p>
-                  <p className="text-xs text-gray-600 mt-0.5">Per-state fuel for IFTA reporting</p>
+                  <p className="text-xs text-[#484f58] mt-0.5">Per-state fuel for IFTA reporting</p>
                 </div>
                 <button onClick={() => setAddingFuel(!addingFuel)}
-                  className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                  className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3] transition-colors">
                   <Plus className="w-3.5 h-3.5" /> Add Purchase
                 </button>
               </div>
 
               {addingFuel && (
-                <div className="bg-gray-800/50 rounded-lg p-3 space-y-2 mb-3 border border-gray-700">
+                <div className="bg-[#161b22]/50 rounded-lg p-3 space-y-2 mb-3 border border-[#30363d]">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className={lbl}>Date</label>
@@ -836,27 +836,27 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
                     <button onClick={() => setAddingFuel(false)}
                       className="flex-1 border border-gray-600 text-gray-400 rounded-lg py-1.5 text-xs hover:bg-gray-700 transition-colors">Cancel</button>
                     <button onClick={addFuel}
-                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white rounded-lg py-1.5 text-xs transition-colors">Save</button>
+                      className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] text-white rounded-lg py-1.5 text-xs transition-colors">Save</button>
                   </div>
                 </div>
               )}
 
               {fuelPurchases.length === 0 && !addingFuel && (
-                <p className="text-xs text-gray-600 py-4 text-center">No fuel purchases recorded for this load.</p>
+                <p className="text-xs text-[#484f58] py-4 text-center">No fuel purchases recorded for this load.</p>
               )}
 
               <div className="space-y-2">
                 {fuelPurchases.map(f => (
-                  <div key={f.id} className="flex items-center justify-between bg-gray-800/40 rounded-lg px-3 py-2.5">
+                  <div key={f.id} className="flex items-center justify-between bg-[#161b22]/40 rounded-lg px-3 py-2.5">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-orange-400 bg-orange-500/10 rounded px-1.5 py-0.5">{f.state}</span>
+                        <span className="text-xs font-bold text-[#3ab690] bg-[rgba(58,182,144,0.1)] rounded px-1.5 py-0.5">{f.state}</span>
                         <span className="text-sm text-white">${parseFloat(f.amount).toFixed(2)}</span>
                         {f.vendor_name && <span className="text-xs text-gray-500">{f.vendor_name}</span>}
                       </div>
                       <p className="text-xs text-gray-500 mt-0.5">{f.gallons} gal × ${parseFloat(f.price_per_gallon).toFixed(3)}/gal · {new Date(f.purchase_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                     </div>
-                    <button onClick={() => removeFuel(f.id)} className="text-gray-600 hover:text-red-400 transition-colors ml-3">
+                    <button onClick={() => removeFuel(f.id)} className="text-[#484f58] hover:text-red-400 transition-colors ml-3">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -864,9 +864,9 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               </div>
 
               {fuelPurchases.length > 0 && (
-                <div className="mt-3 bg-gray-800/60 rounded-lg px-3 py-2 flex justify-between text-sm">
+                <div className="mt-3 bg-[#161b22]/60 rounded-lg px-3 py-2 flex justify-between text-sm">
                   <span className="text-gray-400">Total Fuel ({fuelPurchases.length} purchases)</span>
-                  <span className="text-orange-400 font-bold">${fuelPurchases.reduce((s, f) => s + parseFloat(f.amount), 0).toFixed(2)}</span>
+                  <span className="text-[#3ab690] font-bold">${fuelPurchases.reduce((s, f) => s + parseFloat(f.amount), 0).toFixed(2)}</span>
                 </div>
               )}
             </>
@@ -879,7 +879,7 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-5 py-4 border-t border-gray-800 space-y-2">
+        <div className="flex-shrink-0 px-5 py-4 border-t border-[#21262d] space-y-2">
           {error && (
             <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>
           )}
@@ -889,11 +889,11 @@ export default function LoadDrawer({ loadId, onClose, onUpdated }: Props) {
               {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
             </button>
             <button onClick={onClose}
-              className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">
+              className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22] transition-colors">
               Cerrar
             </button>
             <button onClick={handleSave} disabled={saving || !dirty}
-              className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+              className="flex-1 flex items-center justify-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-40 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {saving ? 'Guardando...' : dirty ? 'Guardar cambios' : 'Sin cambios'}
             </button>

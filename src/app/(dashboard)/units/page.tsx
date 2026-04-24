@@ -33,7 +33,7 @@ function expiryIcon(expiry?: string) {
 }
 
 function fmtDate(d?: string) {
-  if (!d) return <span className="text-gray-600">—</span>
+  if (!d) return <span className="text-[#484f58]">—</span>
   const days = Math.ceil((new Date(d).getTime() - Date.now()) / 86400000)
   const fmt = new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
   const cls = days < 0 ? 'text-red-400' : days < 30 ? 'text-yellow-400' : 'text-gray-300'
@@ -87,12 +87,12 @@ export default function UnitsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Container className="w-5 h-5 text-orange-400" />
+          <Container className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Unidades</h1>
-          <span className="text-xs text-gray-500 bg-gray-800 rounded-full px-2 py-0.5">{units.length}</span>
+          <span className="text-xs text-gray-500 bg-[#161b22] rounded-full px-2 py-0.5">{units.length}</span>
         </div>
         <button onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          className="flex items-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
           <Plus className="w-4 h-4" /> Agregar unidad
         </button>
       </div>
@@ -101,19 +101,19 @@ export default function UnitsPage() {
 
       {!loading && units.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Truck className="w-12 h-12 text-gray-700 mb-3" />
+          <Truck className="w-12 h-12 text-[#30363d] mb-3" />
           <p className="text-gray-400 font-medium">Sin unidades registradas</p>
-          <button onClick={() => setShowAdd(true)} className="mt-4 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          <button onClick={() => setShowAdd(true)} className="mt-4 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             Agregar primera unidad
           </button>
         </div>
       )}
 
       {!loading && units.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border border-gray-700">
+        <div className="overflow-x-auto rounded-xl border border-[#30363d]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-700 bg-gray-800/50">
+              <tr className="border-b border-[#30363d] bg-[#161b22]/50">
                 <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Unidad</th>
                 <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Carrier / OO</th>
                 <th className="text-left px-4 py-3 text-xs text-gray-400 font-medium">Make / Model</th>
@@ -129,14 +129,14 @@ export default function UnitsPage() {
             <tbody>
               {units.map((unit, i) => (
                 <tr key={unit.id}
-                  className={`border-b border-gray-800 hover:bg-gray-800/30 transition-colors ${unit.blocked ? 'opacity-60' : ''} ${i % 2 === 0 ? '' : 'bg-gray-800/10'}`}>
+                  className={`border-b border-[#21262d] hover:bg-[#161b22]/30 transition-colors ${unit.blocked ? 'opacity-60' : ''} ${i % 2 === 0 ? '' : 'bg-[#161b22]/10'}`}>
                   {/* Unit # */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {unit.blocked && <span title="Bloqueada"><Ban className="w-3.5 h-3.5 text-red-400 flex-shrink-0" /></span>}
                       <span className="text-white font-mono font-bold">{unit.unit_number}</span>
                     </div>
-                    {unit.eld_device_id && <p className="text-xs text-gray-600 mt-0.5">ELD: {unit.eld_device_id}</p>}
+                    {unit.eld_device_id && <p className="text-xs text-[#484f58] mt-0.5">ELD: {unit.eld_device_id}</p>}
                   </td>
 
                   {/* OO */}
@@ -194,11 +194,11 @@ export default function UnitsPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
                       <button onClick={() => setEditing(unit)}
-                        className="text-gray-500 hover:text-orange-400 p-1 rounded transition-colors" title="Editar">
+                        className="text-gray-500 hover:text-[#3ab690] p-1 rounded transition-colors" title="Editar">
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button onClick={() => handleSoftDelete(unit)}
-                        className="text-gray-600 hover:text-yellow-400 p-1 rounded transition-colors" title="Desactivar (soft delete)">
+                        className="text-[#484f58] hover:text-yellow-400 p-1 rounded transition-colors" title="Desactivar (soft delete)">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

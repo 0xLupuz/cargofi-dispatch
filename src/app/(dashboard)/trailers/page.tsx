@@ -46,11 +46,11 @@ export default function TrailersPage() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d] flex-shrink-0">
         <div className="flex items-center gap-2">
-          <Box className="w-5 h-5 text-orange-400" />
+          <Box className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Trailers</h1>
-          <span className="text-xs text-gray-600 bg-gray-800 rounded-full px-2 py-0.5">{filtered.length}</span>
+          <span className="text-xs text-[#484f58] bg-[#161b22] rounded-full px-2 py-0.5">{filtered.length}</span>
         </div>
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
@@ -60,9 +60,9 @@ export default function TrailersPage() {
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input type="text" placeholder="Search trailer, VIN, plate..." value={search} onChange={e => setSearch(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 w-60" />
+              className="bg-[#161b22] border border-[#30363d] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#3ab690] w-60" />
           </div>
-          <button onClick={() => setModal({ open: true })} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+          <button onClick={() => setModal({ open: true })} className="flex items-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             <Plus className="w-4 h-4" /> Add Trailer
           </button>
         </div>
@@ -70,7 +70,7 @@ export default function TrailersPage() {
 
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-gray-950 border-b border-gray-800">
+          <thead className="sticky top-0 bg-[#080c12] border-b border-[#21262d]">
             <tr>
               {['Trailer #','VIN','Type','Plates / State','Inspection','Lease','Bond','Carrier','Status',''].map(h => (
                 <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3">{h}</th>
@@ -79,8 +79,8 @@ export default function TrailersPage() {
           </thead>
           <tbody className="divide-y divide-gray-800/60">
             {filtered.map(t => (
-              <tr key={t.id} className="hover:bg-gray-800/30 transition-colors group">
-                <td className="px-4 py-3 font-mono font-semibold text-orange-400">{t.trailer_number}</td>
+              <tr key={t.id} className="hover:bg-[#161b22]/30 transition-colors group">
+                <td className="px-4 py-3 font-mono font-semibold text-[#3ab690]">{t.trailer_number}</td>
                 <td className="px-4 py-3 text-gray-400 font-mono text-xs">{t.vin ?? '—'}</td>
                 <td className="px-4 py-3 text-gray-300">{t.trailer_type ?? '—'}</td>
                 <td className="px-4 py-3 text-gray-300">{t.license_plate ? `${t.license_plate} / ${t.plate_state ?? ''}` : '—'}</td>
@@ -96,7 +96,7 @@ export default function TrailersPage() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => setModal({ open: true, trailer: t })} className="text-gray-400 hover:text-white"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => handleDelete(t.id, t.trailer_number)} disabled={deleting === t.id} className="text-gray-600 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleDelete(t.id, t.trailer_number)} disabled={deleting === t.id} className="text-[#484f58] hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </td>
               </tr>
@@ -104,7 +104,7 @@ export default function TrailersPage() {
           </tbody>
         </table>
         {filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-40 text-gray-600">
+          <div className="flex flex-col items-center justify-center h-40 text-[#484f58]">
             <Box className="w-8 h-8 mb-2 opacity-30" />
             <p className="text-sm">{search ? 'No trailers found' : 'No trailers yet'}</p>
           </div>

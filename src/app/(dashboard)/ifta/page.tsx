@@ -48,19 +48,19 @@ export default function IFTAPage() {
           <div className="flex items-center gap-3">
             <div className="relative">
               <select value={quarter} onChange={e => setQuarter(parseInt(e.target.value))}
-                className="appearance-none bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-orange-500">
+                className="appearance-none bg-[#161b22] border border-[#30363d] text-white text-sm rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#3ab690]">
                 {QUARTERS.map((q, i) => <option key={i+1} value={i+1}>{q}</option>)}
               </select>
               <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
             </div>
             <div className="relative">
               <select value={year} onChange={e => setYear(parseInt(e.target.value))}
-                className="appearance-none bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-orange-500">
+                className="appearance-none bg-[#161b22] border border-[#30363d] text-white text-sm rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#3ab690]">
                 {[currentY, currentY-1, currentY-2].map(y => <option key={y} value={y}>{y}</option>)}
               </select>
               <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
             </div>
-            <button onClick={loadData} className="p-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition-colors">
+            <button onClick={loadData} className="p-2 rounded-lg bg-[#161b22] border border-[#30363d] text-gray-400 hover:text-white transition-colors">
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
@@ -73,10 +73,10 @@ export default function IFTAPage() {
           </div>
         ) : states.length === 0 ? (
           <div className="space-y-4">
-            <div className="text-center py-10 text-gray-600">
+            <div className="text-center py-10 text-[#484f58]">
               <Fuel className="w-12 h-12 mx-auto mb-4 opacity-20" />
               <p className="text-sm font-medium text-gray-400">No IFTA data for {QUARTERS[quarter-1]} {year}</p>
-              <p className="text-xs mt-1 text-gray-600">Capture fuel purchases on each load to populate this report.</p>
+              <p className="text-xs mt-1 text-[#484f58]">Capture fuel purchases on each load to populate this report.</p>
             </div>
             <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-5 max-w-xl mx-auto">
               <p className="text-sm font-semibold text-yellow-300 mb-3">📋 How to populate IFTA data</p>
@@ -86,7 +86,7 @@ export default function IFTAPage() {
                 <li><span className="text-yellow-400 font-semibold">3.</span> State miles are auto-calculated via OpenRoute Service when the load has pickup/delivery stops</li>
                 <li><span className="text-yellow-400 font-semibold">4.</span> IFTA report aggregates all loads in the quarter automatically</li>
               </ol>
-              <p className="text-xs text-gray-600 mt-3">Miles per state: set automatically from route. Fuel per state: captured manually from fuel receipts.</p>
+              <p className="text-xs text-[#484f58] mt-3">Miles per state: set automatically from route. Fuel per state: captured manually from fuel receipts.</p>
             </div>
           </div>
         ) : (
@@ -96,7 +96,7 @@ export default function IFTAPage() {
               {[
                 { label: 'Total Miles', value: fmt1(totals.total_miles), unit: 'mi', color: 'text-white' },
                 { label: 'Total Gallons', value: fmt1(totals.total_gallons_purchased), unit: 'gal', color: 'text-yellow-400' },
-                { label: 'Avg MPG', value: fmt2(totals.avg_mpg), unit: 'mpg', color: 'text-blue-400' },
+                { label: 'Avg MPG', value: fmt2(totals.avg_mpg), unit: 'mpg', color: 'text-[#58a6ff]' },
                 {
                   label: netOwed >= 0 ? 'Tax Owed' : 'Net Credit',
                   value: `$${Math.abs(netOwed).toFixed(2)}`,
@@ -104,10 +104,10 @@ export default function IFTAPage() {
                   color: netOwed >= 0 ? 'text-red-400' : 'text-emerald-400',
                 },
               ].map(s => (
-                <div key={s.label} className="bg-gray-900 border border-gray-800 rounded-xl px-5 py-4">
+                <div key={s.label} className="bg-[#0d1117] border border-[#21262d] rounded-xl px-5 py-4">
                   <p className="text-xs text-gray-500 mb-1">{s.label}</p>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-xs text-gray-600 mt-0.5">{s.unit}</p>
+                  <p className="text-xs text-[#484f58] mt-0.5">{s.unit}</p>
                 </div>
               ))}
             </div>
@@ -159,13 +159,13 @@ export default function IFTAPage() {
             )}
 
             {/* Full state table */}
-            <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-800 flex items-center gap-2">
+            <div className="bg-[#0d1117] border border-[#21262d] rounded-xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-[#21262d] flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gray-500" />
                 <p className="text-sm font-semibold text-gray-300">State Breakdown</p>
               </div>
               <table className="w-full text-sm">
-                <thead className="border-b border-gray-800">
+                <thead className="border-b border-[#21262d]">
                   <tr>
                     {['State','Miles','Gal Purchased','Gal Consumed','Rate (¢/gal)','Tax Paid','Tax Owed','Net'].map(h => (
                       <th key={h} className="text-left text-xs font-medium text-gray-500 px-4 py-3 whitespace-nowrap">{h}</th>
@@ -174,7 +174,7 @@ export default function IFTAPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-800/60">
                   {states.map((s: any) => (
-                    <tr key={s.state} className="hover:bg-gray-800/30 transition-colors">
+                    <tr key={s.state} className="hover:bg-[#161b22]/30 transition-colors">
                       <td className="px-4 py-3 font-mono font-bold text-white">{s.state}</td>
                       <td className="px-4 py-3 text-gray-300">{fmt1(s.miles)}</td>
                       <td className="px-4 py-3 text-gray-400">{s.gallons_purchased.toFixed(3)}</td>
@@ -190,7 +190,7 @@ export default function IFTAPage() {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="border-t-2 border-gray-700">
+                <tfoot className="border-t-2 border-[#30363d]">
                   <tr>
                     <td className="px-4 py-3 font-bold text-white">TOTAL</td>
                     <td className="px-4 py-3 font-bold text-white">{fmt1(totals.total_miles)}</td>
@@ -207,7 +207,7 @@ export default function IFTAPage() {
               </table>
             </div>
 
-            <p className="text-xs text-gray-700 mt-4 text-center">
+            <p className="text-xs text-[#30363d] mt-4 text-center">
               State miles calculated via OpenRoute Service (auto) · Tax rates updated Q1 2024 · Verify current rates at <span className="text-gray-500">iftach.org</span>
             </p>
           </>

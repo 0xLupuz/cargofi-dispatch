@@ -108,14 +108,14 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
     setLoading(false)
   }
 
-  const input = "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
+  const input = "w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors"
   const label = "block text-xs text-gray-400 mb-1"
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0d1117] border border-[#30363d] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d]">
           <h2 className="text-white font-semibold">New Load</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
             <X className="w-5 h-5" />
@@ -126,10 +126,10 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
           {/* Load # auto-generated + WO # + Broker */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={label}>Work Order # <span className="text-gray-600">(broker ref)</span></label>
+              <label className={label}>Work Order # <span className="text-[#484f58]">(broker ref)</span></label>
               <input className={input} placeholder="WO-12345, TQL-98765..." value={form.work_order_number}
                 onChange={e => set('work_order_number', e.target.value)} />
-              <p className="text-[10px] text-gray-600 mt-1">Load # CF-XXXX se genera automáticamente</p>
+              <p className="text-[10px] text-[#484f58] mt-1">Load # CF-XXXX se genera automáticamente</p>
             </div>
             <div>
               <label className={label}>Broker / Customer *</label>
@@ -196,7 +196,7 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
 
           {/* Fee preview */}
           {form.rate && (
-            <div className="bg-gray-800/50 rounded-lg p-3 text-xs space-y-1">
+            <div className="bg-[#161b22]/50 rounded-lg p-3 text-xs space-y-1">
               {(() => {
                 const rate = parseFloat(form.rate) || 0
                 const dispatchFee = rate * parseFloat(form.dispatch_fee_pct) / 100
@@ -210,7 +210,7 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
                     </div>
                     <div className="flex justify-between text-gray-400">
                       <span>Dispatch fee ({form.dispatch_fee_pct}%)</span>
-                      <span className="text-orange-400">-${dispatchFee.toFixed(2)}</span>
+                      <span className="text-[#3ab690]">-${dispatchFee.toFixed(2)}</span>
                     </div>
                     {factoringFee > 0 && (
                       <div className="flex justify-between text-gray-400">
@@ -218,7 +218,7 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
                         <span className="text-red-400">-${factoringFee.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between font-semibold border-t border-gray-700 pt-1 mt-1">
+                    <div className="flex justify-between font-semibold border-t border-[#30363d] pt-1 mt-1">
                       <span className="text-gray-300">OO Net (before deductions)</span>
                       <span className="text-green-400">${ooNet.toFixed(2)}</span>
                     </div>
@@ -279,11 +279,11 @@ export default function NewLoadModal({ onClose, onCreated }: Props) {
           {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose}
-              className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">
+              className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22] transition-colors">
               Cancel
             </button>
             <button type="submit" disabled={loading}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+              className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {loading ? 'Creating...' : 'Create Load'}
             </button>
           </div>

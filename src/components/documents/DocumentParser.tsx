@@ -24,7 +24,7 @@ interface Props {
 const SEV = {
   critical: { icon: AlertCircle, cls: 'text-red-400 bg-red-400/10 border-red-400/20' },
   warning:  { icon: AlertTriangle, cls: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20' },
-  info:     { icon: Info, cls: 'text-blue-400 bg-blue-400/10 border-blue-400/20' },
+  info:     { icon: Info, cls: 'text-[#58a6ff] bg-[#58a6ff]/10 border-[#58a6ff]/20' },
 }
 
 // Fuzzy match: does extracted name contain any word from db name (or vice versa)?
@@ -215,9 +215,9 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
             onDrop={handleDrop}
             onClick={() => document.getElementById('doc-file')?.click()}
             className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors
-              ${dragging ? 'border-orange-500 bg-orange-500/5' : 'border-gray-700 hover:border-gray-500'}`}
+              ${dragging ? 'border-[#3ab690] bg-[#3ab690]/5' : 'border-[#30363d] hover:border-gray-500'}`}
           >
-            <Upload className="w-10 h-10 text-gray-600 mx-auto mb-3" />
+            <Upload className="w-10 h-10 text-[#484f58] mx-auto mb-3" />
             <p className="text-white font-medium mb-1">Drop BOL, Rate Con, or POD here</p>
             <p className="text-gray-500 text-sm">PDF · JPG · PNG — Claude AI extrae todo automáticamente</p>
             <input id="doc-file" type="file" className="hidden"
@@ -230,7 +230,7 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
       {/* STEP 2 — Parsing */}
       {step === 'parsing' && (
         <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <Loader2 className="w-10 h-10 text-orange-400 animate-spin" />
+          <Loader2 className="w-10 h-10 text-[#3ab690] animate-spin" />
           <div className="text-center">
             <p className="text-white font-medium">Leyendo documento con Claude AI...</p>
             <p className="text-gray-500 text-sm mt-1">{fileName}</p>
@@ -243,11 +243,11 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
         <form onSubmit={handleCreate} className="space-y-5">
           {/* DX Assignment banner */}
           {result.doc_type === 'dx_assignment' && (
-            <div className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/30 rounded-lg px-3 py-2.5 text-xs text-blue-300">
+            <div className="flex items-start gap-2.5 bg-[#58a6ff]/10 border border-[#58a6ff]/30 rounded-lg px-3 py-2.5 text-xs text-[#93c5fd]">
               <FileText className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold text-blue-200">DX Xpress — Asignación de viaje detectada</span>
-                <span className="ml-2 text-blue-400">Rate no incluido en el doc — ingresar manualmente (pago semanal DX)</span>
+                <span className="font-bold text-[#bae6fd]">DX Xpress — Asignación de viaje detectada</span>
+                <span className="ml-2 text-[#58a6ff]">Rate no incluido en el doc — ingresar manualmente (pago semanal DX)</span>
               </div>
             </div>
           )}
@@ -361,7 +361,7 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
 
           {/* Fee preview */}
           {form.rate && (
-            <div className="bg-gray-800/50 rounded-lg p-3 text-xs grid grid-cols-3 gap-4">
+            <div className="bg-[#161b22]/50 rounded-lg p-3 text-xs grid grid-cols-3 gap-4">
               {(() => {
                 const r = parseFloat(form.rate) || 0
                 const df = r * parseFloat(form.dispatch_fee_pct) / 100
@@ -370,7 +370,7 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
                   <>
                     <div className="text-center">
                       <p className="text-gray-500">CargoFi fee</p>
-                      <p className="text-orange-400 font-semibold text-base">${df.toFixed(0)}</p>
+                      <p className="text-[#3ab690] font-semibold text-base">${df.toFixed(0)}</p>
                     </div>
                     <div className="text-center">
                       <p className="text-gray-500">OO neto</p>
@@ -436,11 +436,11 @@ export default function DocumentParser({ onClose, onLoadCreated }: Props) {
           {/* Actions */}
           <div className="flex gap-3 pt-1">
             <button type="button" onClick={() => { setStep('upload'); setResult(null) }}
-              className="border border-gray-700 text-gray-300 rounded-lg px-4 py-2.5 text-sm hover:bg-gray-800 transition-colors">
+              className="border border-[#30363d] text-gray-300 rounded-lg px-4 py-2.5 text-sm hover:bg-[#161b22] transition-colors">
               ← Volver
             </button>
             <button type="submit" disabled={creating}
-              className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+              className="flex-1 flex items-center justify-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {creating
                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Creando load...</>
                 : <><CheckCircle className="w-4 h-4" /> Crear Load</>

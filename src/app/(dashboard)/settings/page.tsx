@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { Settings, Building2, FileText, Truck, CheckCircle, Loader2, Image, Globe } from 'lucide-react'
 
-const inp  = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp  = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl  = 'block text-xs text-gray-500 mb-1 font-medium'
-const card = 'bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4'
+const card = 'bg-[#0d1117] border border-[#21262d] rounded-xl p-5 space-y-4'
 
 function Section({ icon: Icon, color, title, children }: { icon: any; color: string; title: string; children: React.ReactNode }) {
   return (
@@ -13,7 +13,7 @@ function Section({ icon: Icon, color, title, children }: { icon: any; color: str
         <Icon className={`w-4 h-4 ${color}`} />
         <h2 className="text-sm font-semibold text-white">{title}</h2>
       </div>
-      <div className="border-t border-gray-800 pt-4 space-y-4">
+      <div className="border-t border-[#21262d] pt-4 space-y-4">
         {children}
       </div>
     </div>
@@ -63,7 +63,7 @@ export default function SettingsPage() {
 
   if (loading) return (
     <div className="flex items-center gap-2 text-gray-500 px-6 py-12 text-sm">
-      <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" /> Loading...
+      <div className="w-4 h-4 rounded-full border-2 border-[#3ab690] border-t-transparent animate-spin" /> Loading...
     </div>
   )
 
@@ -72,11 +72,11 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Settings className="w-5 h-5 text-orange-400" />
+          <Settings className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Settings</h1>
         </div>
         <button onClick={save} disabled={saving}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+          className="flex items-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <CheckCircle className="w-4 h-4" /> : null}
           {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
         </button>
@@ -89,19 +89,19 @@ export default function SettingsPage() {
       <div className="space-y-5 pb-10">
 
         {/* ── COMPANY PROFILE ── */}
-        <Section icon={Building2} color="text-orange-400" title="Company Profile">
+        <Section icon={Building2} color="text-[#3ab690]" title="Company Profile">
           {/* Logo */}
           <div>
             <label className={lbl}>Logo</label>
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-700 flex items-center justify-center bg-gray-800 overflow-hidden flex-shrink-0">
+              <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[#30363d] flex items-center justify-center bg-[#161b22] overflow-hidden flex-shrink-0">
                 {logoPreview
                   ? <img src={logoPreview} alt="Logo" className="w-full h-full object-contain p-1" />
-                  : <Image className="w-7 h-7 text-gray-600" />}
+                  : <Image className="w-7 h-7 text-[#484f58]" />}
               </div>
               <div className="flex-1 space-y-2">
                 <button onClick={() => fileRef.current?.click()}
-                  className="text-sm border border-gray-700 text-gray-300 hover:border-orange-500 hover:text-orange-400 rounded-lg px-4 py-2 transition-colors w-full">
+                  className="text-sm border border-[#30363d] text-gray-300 hover:border-[#3ab690] hover:text-[#3ab690] rounded-lg px-4 py-2 transition-colors w-full">
                   Upload Logo
                 </button>
                 <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={handleLogoFile} />
@@ -173,7 +173,7 @@ export default function SettingsPage() {
         </Section>
 
         {/* ── CARRIER INFO ── */}
-        <Section icon={Truck} color="text-blue-400" title="Carrier Info">
+        <Section icon={Truck} color="text-[#58a6ff]" title="Carrier Info">
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className={lbl}>DOT Number</label>
@@ -199,7 +199,7 @@ export default function SettingsPage() {
                   type="number" step="0.5" min="0" max="30" className={`${inp} pr-6`} />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
               </div>
-              <p className="text-xs text-gray-600 mt-1">Applied by default to new OOs</p>
+              <p className="text-xs text-[#484f58] mt-1">Applied by default to new OOs</p>
             </div>
             <div>
               <label className={lbl}>Timezone</label>
@@ -224,7 +224,7 @@ export default function SettingsPage() {
                 <input value={form.invoice_prefix ?? 'INV'} onChange={e => set('invoice_prefix', e.target.value.toUpperCase())}
                   maxLength={6} placeholder="INV" className={`${inp} uppercase`} />
               </div>
-              <p className="text-xs text-gray-600 mt-1">e.g. INV-0001, CF-0001</p>
+              <p className="text-xs text-[#484f58] mt-1">e.g. INV-0001, CF-0001</p>
             </div>
             <div>
               <label className={lbl}>Default Payment Terms</label>
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                     className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors
                       ${(form.default_payment_terms ?? 30) === d
                         ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
-                        : 'bg-gray-800 border-gray-700 text-gray-500 hover:text-gray-300'}`}>
+                        : 'bg-[#161b22] border-[#30363d] text-gray-500 hover:text-gray-300'}`}>
                     Net {d}
                   </button>
                 ))}
@@ -260,7 +260,7 @@ export default function SettingsPage() {
               )}
               <div className="flex-1">
                 <p className="font-bold text-lg text-gray-900">{form.name || 'Company Name'}</p>
-                {form.address && <p className="text-sm text-gray-600">{form.address}{form.city ? `, ${form.city}` : ''}{form.state ? `, ${form.state}` : ''} {form.zip ?? ''}</p>}
+                {form.address && <p className="text-sm text-[#484f58]">{form.address}{form.city ? `, ${form.city}` : ''}{form.state ? `, ${form.state}` : ''} {form.zip ?? ''}</p>}
                 <div className="flex gap-4 mt-1">
                   {form.phone && <p className="text-xs text-gray-500">{form.phone}</p>}
                   {form.email && <p className="text-xs text-gray-500">{form.email}</p>}
@@ -277,7 +277,7 @@ export default function SettingsPage() {
         {/* Save button (bottom) */}
         <div className="flex justify-end pt-2">
           <button onClick={save} disabled={saving}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors">
+            className="flex items-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white text-sm font-medium px-6 py-2.5 rounded-lg transition-colors">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <CheckCircle className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
             {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save Changes'}
           </button>

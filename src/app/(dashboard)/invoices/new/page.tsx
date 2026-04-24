@@ -68,7 +68,7 @@ export default function NewInvoicePage() {
     else { const d = await r.json(); setError(d.error ?? 'Error saving'); setSaving(false) }
   }
 
-  const inp = "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 transition-colors"
+  const inp = "w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#3ab690] transition-colors"
   const label = "block text-xs text-gray-500 mb-1 font-medium"
 
   return (
@@ -79,13 +79,13 @@ export default function NewInvoicePage() {
           <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-300 transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <FileText className="w-5 h-5 text-orange-400" />
+          <FileText className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">New Invoice</h1>
         </div>
 
         <form onSubmit={submit} className="space-y-6">
           {/* Link to load (optional) */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-4">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Link to Load (optional)</p>
             <div className="relative">
               <select value={form.load_id} onChange={e => handleLoadSelect(e.target.value)}
@@ -100,12 +100,12 @@ export default function NewInvoicePage() {
               <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
             </div>
             {form.load_id && (
-              <p className="text-xs text-orange-400/80 mt-1.5">✓ Load linked — broker info auto-filled</p>
+              <p className="text-xs text-[#3ab690]/80 mt-1.5">✓ Load linked — broker info auto-filled</p>
             )}
           </div>
 
           {/* Bill to */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+          <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-4 space-y-3">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Bill To</p>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
@@ -132,7 +132,7 @@ export default function NewInvoicePage() {
           </div>
 
           {/* Amounts */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+          <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-4 space-y-3">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Amounts</p>
             <div className="grid grid-cols-3 gap-3">
               <div>
@@ -162,15 +162,15 @@ export default function NewInvoicePage() {
             </div>
             {/* Total preview */}
             <div className="flex justify-end pt-1">
-              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg px-4 py-2 text-right">
+              <div className="bg-[rgba(58,182,144,0.1)] border border-[#3ab690]/20 rounded-lg px-4 py-2 text-right">
                 <p className="text-xs text-gray-500">Invoice Total</p>
-                <p className="text-xl font-bold text-orange-400">${fmt(total)}</p>
+                <p className="text-xl font-bold text-[#3ab690]">${fmt(total)}</p>
               </div>
             </div>
           </div>
 
           {/* Payment Terms */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-4">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Payment Terms</p>
             <div className="grid grid-cols-3 gap-3">
               <div>
@@ -181,8 +181,8 @@ export default function NewInvoicePage() {
                       onClick={() => setForm(f => ({ ...f, payment_terms: d }))}
                       className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors
                         ${form.payment_terms === d
-                          ? 'bg-orange-500/20 border-orange-500/40 text-orange-400'
-                          : 'bg-gray-800 border-gray-700 text-gray-500 hover:text-gray-300'}`}>
+                          ? 'bg-[rgba(58,182,144,0.2)] border-[#3ab690]/40 text-[#3ab690]'
+                          : 'bg-[#161b22] border-[#30363d] text-gray-500 hover:text-gray-300'}`}>
                       Net {d}
                     </button>
                   ))}
@@ -205,7 +205,7 @@ export default function NewInvoicePage() {
             <div className="flex items-center gap-2 mt-3">
               <button type="button" onClick={() => setForm(f => ({ ...f, use_factoring: !f.use_factoring }))}
                 className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors
-                  ${form.use_factoring ? 'bg-orange-500 border-orange-500' : 'border-gray-600'}`}>
+                  ${form.use_factoring ? 'bg-[#3ab690] border-[#3ab690]' : 'border-gray-600'}`}>
                 {form.use_factoring && <span className="text-white text-xs font-bold">✓</span>}
               </button>
               <span className="text-sm text-gray-400">Using factoring company</span>
@@ -213,7 +213,7 @@ export default function NewInvoicePage() {
           </div>
 
           {/* Notes */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-4">
             <label className={label}>Notes (optional)</label>
             <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
               rows={2} placeholder="Any notes to include on the invoice..."
@@ -229,11 +229,11 @@ export default function NewInvoicePage() {
           {/* Actions */}
           <div className="flex gap-3 pb-6">
             <button type="button" onClick={() => router.back()}
-              className="flex-1 py-2.5 rounded-lg border border-gray-700 text-gray-400 text-sm font-medium hover:border-gray-600 hover:text-gray-300 transition-colors">
+              className="flex-1 py-2.5 rounded-lg border border-[#30363d] text-gray-400 text-sm font-medium hover:border-gray-600 hover:text-gray-300 transition-colors">
               Cancel
             </button>
             <button type="submit" disabled={saving}
-              className="flex-1 py-2.5 rounded-lg bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-semibold transition-colors">
+              className="flex-1 py-2.5 rounded-lg bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white text-sm font-semibold transition-colors">
               {saving ? 'Saving...' : 'Create Invoice'}
             </button>
           </div>

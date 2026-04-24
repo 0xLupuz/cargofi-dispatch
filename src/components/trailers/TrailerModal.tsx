@@ -12,7 +12,7 @@ const TRAILER_DOCS = [
   { value: 'other',         label: 'Other'              },
 ]
 
-const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
 const sel = inp + ' cursor-pointer'
 
@@ -87,15 +87,15 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
+      <div className="bg-[#0d1117] border border-[#30363d] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d] sticky top-0 bg-[#0d1117] z-10">
           <h2 className="text-white font-semibold">{isEdit ? `Edit Trailer #${trailer.trailer_number}` : 'New Trailer'}</h2>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 bg-gray-800 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-[#161b22] rounded-lg p-1">
               {(['info', 'docs'] as const).map(t => (
                 <button key={t} type="button"
                   onClick={() => setTab(t)}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`}>
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${tab === t ? 'bg-[#3ab690] text-white' : 'text-gray-400 hover:text-white'}`}>
                   {t === 'info' ? 'Información' : 'Documentos'}
                 </button>
               ))}
@@ -142,7 +142,7 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
           </div>
 
           {/* Plates */}
-          <div className="p-4 bg-gray-800/40 rounded-lg space-y-3">
+          <div className="p-4 bg-[#161b22]/40 rounded-lg space-y-3">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Plates</p>
             <div className="grid grid-cols-3 gap-3">
               <div><label className={lbl}>License Plate</label><input className={inp} value={form.license_plate} onChange={e => set('license_plate', e.target.value.toUpperCase())} /></div>
@@ -164,7 +164,7 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
           </div>
 
           {/* Expiry dates */}
-          <div className="p-4 bg-gray-800/40 rounded-lg space-y-3">
+          <div className="p-4 bg-[#161b22]/40 rounded-lg space-y-3">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Expiry Dates</p>
             <div className="grid grid-cols-3 gap-3">
               <div><label className={lbl}>Inspection</label><input className={inp} type="date" value={form.inspection_expiry} onChange={e => set('inspection_expiry', e.target.value)} /></div>
@@ -206,8 +206,8 @@ export default function TrailerModal({ trailer, onClose, onSaved }: Props) {
                 {deleting ? '...' : 'Eliminar'}
               </button>
             )}
-            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancel</button>
-            <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+            <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22] transition-colors">Cancel</button>
+            <button type="submit" disabled={saving} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : isEdit ? 'Save Changes' : 'Add Trailer'}
             </button>
           </div>

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { X, Loader2 } from 'lucide-react'
 
-const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
 
 const TYPES = ['Broker','Shipper','Receiver','Customer','3PL','Other']
@@ -73,18 +73,18 @@ export default function CustomerModal({ customer, onClose, onSaved }: Props) {
     setSaving(false)
   }
 
-  const tabCls = (t: string) => `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-orange-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
+  const tabCls = (t: string) => `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-[#3ab690] text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+      <div className="bg-[#0d1117] border border-[#30363d] rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d]">
           <h2 className="text-white font-semibold">{isEdit ? `Edit: ${customer.name}` : 'New Customer'}</h2>
           <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-800 flex-shrink-0">
+        <div className="flex border-b border-[#21262d] flex-shrink-0">
           <button className={tabCls('main')} onClick={() => setTab('main')}>General</button>
           <button className={tabCls('billing')} onClick={() => setTab('billing')}>Billing</button>
           <button className={tabCls('contacts')} onClick={() => setTab('contacts')}>Contacts</button>
@@ -165,7 +165,7 @@ export default function CustomerModal({ customer, onClose, onSaved }: Props) {
             </>}
           </div>
 
-          <div className="px-6 py-4 border-t border-gray-800 sticky bottom-0 bg-gray-900">
+          <div className="px-6 py-4 border-t border-[#21262d] sticky bottom-0 bg-[#0d1117]">
             {error && <p className="text-red-400 text-xs mb-3 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
             <div className="flex gap-3">
               {isEdit && (
@@ -174,8 +174,8 @@ export default function CustomerModal({ customer, onClose, onSaved }: Props) {
                   {deleting ? '...' : 'Eliminar'}
                 </button>
               )}
-              <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800">Cancel</button>
-              <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium">
+              <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22]">Cancel</button>
+              <button type="submit" disabled={saving} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : isEdit ? 'Save Changes' : 'Add Customer'}
               </button>
             </div>

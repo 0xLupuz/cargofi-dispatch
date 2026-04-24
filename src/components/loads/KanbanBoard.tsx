@@ -12,7 +12,7 @@ import LoadCard from './LoadCard'
 import type { Load, TripStatus } from '@/types'
 
 const COLUMNS: { status: TripStatus; label: string; accent: string; dot: string; border: string }[] = [
-  { status: 'open',       label: 'Open',       accent: 'border-blue-500',    dot: 'bg-blue-500',    border: 'border-blue-500/30'   },
+  { status: 'open',       label: 'Open',       accent: 'border-[#58a6ff]',    dot: 'bg-[#58a6ff]',    border: 'border-[#58a6ff]/30'   },
   { status: 'in_transit', label: 'In Transit', accent: 'border-amber-400',   dot: 'bg-amber-400',   border: 'border-amber-400/30'  },
   { status: 'delivered',  label: 'Delivered',  accent: 'border-emerald-500', dot: 'bg-emerald-500', border: 'border-emerald-500/30' },
 ]
@@ -36,10 +36,10 @@ function DroppableColumn({
         <button
           onClick={() => setCollapsed(false)}
           className={`flex flex-col items-center gap-3 py-3 px-2 rounded-xl border ${
-            dot === 'bg-blue-500'    ? 'border-blue-500/30 hover:border-blue-500/60' :
+            dot === 'bg-[#58a6ff]'    ? 'border-[#58a6ff]/30 hover:border-[#58a6ff]/60' :
             dot === 'bg-amber-400'   ? 'border-amber-400/30 hover:border-amber-400/60' :
                                        'border-emerald-500/30 hover:border-emerald-500/60'
-          } bg-gray-900/60 transition-colors h-full`}
+          } bg-[#0d1117]/60 transition-colors h-full`}
           title={`${label} (${loads.length})`}
         >
           <ChevronRight className="w-3.5 h-3.5 text-gray-500" />
@@ -51,7 +51,7 @@ function DroppableColumn({
             {label}
           </span>
           <span className={`text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 ${
-            dot === 'bg-blue-500'    ? 'bg-blue-500/20 text-blue-400' :
+            dot === 'bg-[#58a6ff]'    ? 'bg-[#58a6ff]/20 text-[#58a6ff]' :
             dot === 'bg-amber-400'   ? 'bg-amber-400/20 text-amber-400' :
                                        'bg-emerald-500/20 text-emerald-400'
           }`}>
@@ -70,10 +70,10 @@ function DroppableColumn({
       <div className={`flex items-center gap-2.5 mb-3 pb-2.5 border-b-2 ${accent}`}>
         <span className={`w-2 h-2 rounded-full ${dot}`} />
         <span className="text-sm font-semibold text-gray-100">{label}</span>
-        <span className="text-xs text-gray-500 bg-gray-800/80 rounded-full px-2 py-0.5 ml-auto">{loads.length}</span>
+        <span className="text-xs text-gray-500 bg-[#161b22]/80 rounded-full px-2 py-0.5 ml-auto">{loads.length}</span>
         <button
           onClick={() => setCollapsed(true)}
-          className="ml-1 text-gray-700 hover:text-gray-400 transition-colors"
+          className="ml-1 text-[#30363d] hover:text-gray-400 transition-colors"
           title="Colapsar columna"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@ function DroppableColumn({
       </div>
       <div
         ref={setNodeRef}
-        className={`flex-1 space-y-3 min-h-[200px] rounded-xl p-2 transition-colors ${isOver ? 'bg-gray-800/50 ring-1 ring-orange-500/40' : ''}`}
+        className={`flex-1 space-y-3 min-h-[200px] rounded-xl p-2 transition-colors ${isOver ? 'bg-[#161b22]/50 ring-1 ring-[#3ab690]/40' : ''}`}
       >
         <SortableContext items={loads.map(l => l.id)} strategy={verticalListSortingStrategy}>
           {loads.map(load => (
@@ -89,7 +89,7 @@ function DroppableColumn({
           ))}
         </SortableContext>
         {loads.length === 0 && (
-          <div className="flex items-center justify-center h-20 text-gray-700 text-xs border border-dashed border-gray-800 rounded-lg">
+          <div className="flex items-center justify-center h-20 text-[#30363d] text-xs border border-dashed border-[#21262d] rounded-lg">
             Drop here
           </div>
         )}
@@ -109,7 +109,7 @@ function MobileSection({
 }) {
   const [collapsed, setCollapsed] = useState(false)
   return (
-    <div className={`rounded-2xl border ${border} bg-gray-900/60 overflow-hidden`}>
+    <div className={`rounded-2xl border ${border} bg-[#0d1117]/60 overflow-hidden`}>
       {/* Section header — tap to collapse */}
       <button
         className="w-full flex items-center gap-2.5 px-4 py-3 text-left"
@@ -117,14 +117,14 @@ function MobileSection({
       >
         <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${dot}`} />
         <span className="text-sm font-semibold text-gray-100 flex-1">{label}</span>
-        <span className="text-xs text-gray-500 bg-gray-800 rounded-full px-2 py-0.5">{loads.length}</span>
+        <span className="text-xs text-gray-500 bg-[#161b22] rounded-full px-2 py-0.5">{loads.length}</span>
         <span className={`text-gray-500 text-xs transition-transform ${collapsed ? 'rotate-0' : 'rotate-180'}`}>▲</span>
       </button>
 
       {!collapsed && (
         <div className="px-3 pb-3 space-y-3">
           {loads.length === 0 && (
-            <p className="text-center text-gray-700 text-xs py-4">No loads here</p>
+            <p className="text-center text-[#30363d] text-xs py-4">No loads here</p>
           )}
           {loads.map(load => (
             <LoadCard key={load.id} load={load} onClick={onCardClick} onChecklistToggle={onChecklistToggle} draggable={false} />
@@ -215,7 +215,7 @@ export default function KanbanBoard({ onCardClick, refreshKey }: Props) {
   if (fetching) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">
-        <div className="w-5 h-5 rounded-full border-2 border-orange-500 border-t-transparent animate-spin mr-2" />
+        <div className="w-5 h-5 rounded-full border-2 border-[#3ab690] border-t-transparent animate-spin mr-2" />
         Loading...
       </div>
     )

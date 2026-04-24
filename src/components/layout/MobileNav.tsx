@@ -69,7 +69,7 @@ export default function MobileNav() {
   return (
     <>
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-gray-950 border-t border-gray-800 flex md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#080c12] border-t border-[#21262d] flex md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {BOTTOM_TABS.map(tab => {
           const isMore = tab.href === '__more__'
           const active = isMore ? moreOpen : isActive(tab.href)
@@ -82,7 +82,7 @@ export default function MobileNav() {
                 onClick={() => setMoreOpen(v => !v)}
                 className={clsx(
                   'flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors',
-                  active ? 'text-orange-400' : 'text-gray-500'
+                  active ? 'text-[#3ab690]' : 'text-gray-500'
                 )}
               >
                 <Icon className="w-5 h-5" />
@@ -98,7 +98,7 @@ export default function MobileNav() {
               onClick={() => setMoreOpen(false)}
               className={clsx(
                 'flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors',
-                active ? 'text-orange-400' : 'text-gray-500 hover:text-gray-300'
+                active ? 'text-[#3ab690]' : 'text-gray-500 hover:text-gray-300'
               )}
             >
               <Icon className="w-5 h-5" />
@@ -112,8 +112,8 @@ export default function MobileNav() {
       {moreOpen && (
         <>
           <div className="fixed inset-0 z-30 bg-black/60 md:hidden" onClick={() => setMoreOpen(false)} />
-          <div className="fixed bottom-[56px] inset-x-0 z-40 bg-gray-900 border-t border-gray-800 rounded-t-2xl md:hidden max-h-[75vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+          <div className="fixed bottom-[56px] inset-x-0 z-40 bg-[#0d1117] border-t border-[#21262d] rounded-t-2xl md:hidden max-h-[75vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#21262d]">
               <span className="text-white font-semibold text-sm">More</span>
               <button onClick={() => setMoreOpen(false)}>
                 <X className="w-5 h-5 text-gray-400" />
@@ -122,7 +122,7 @@ export default function MobileNav() {
             <div className="px-4 py-3 space-y-5 pb-8">
               {MORE_SECTIONS.map(section => (
                 <div key={section.header}>
-                  <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-2 mb-2">
+                  <p className="text-[10px] font-semibold text-[#484f58] uppercase tracking-widest px-2 mb-2">
                     {section.header}
                   </p>
                   <div className="space-y-0.5">
@@ -136,7 +136,7 @@ export default function MobileNav() {
                           onClick={() => setMoreOpen(false)}
                           className={clsx(
                             'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors',
-                            active ? 'bg-orange-500/10 text-orange-400' : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                            active ? 'bg-[rgba(58,182,144,0.1)] text-[#3ab690]' : 'text-gray-400 hover:bg-[#161b22] hover:text-white'
                           )}
                         >
                           <Icon className="w-4 h-4" />

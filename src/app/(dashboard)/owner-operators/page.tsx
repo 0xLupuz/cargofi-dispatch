@@ -44,13 +44,13 @@ export default function OwnerOperatorsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Truck className="w-5 h-5 text-orange-400" />
+          <Truck className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Owner Operators</h1>
-          <span className="text-xs text-gray-500 bg-gray-800 rounded-full px-2 py-0.5">{oos.length}</span>
+          <span className="text-xs text-gray-500 bg-[#161b22] rounded-full px-2 py-0.5">{oos.length}</span>
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add OO
@@ -63,11 +63,11 @@ export default function OwnerOperatorsPage() {
       {/* Empty */}
       {!loading && oos.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Truck className="w-12 h-12 text-gray-700 mb-3" />
+          <Truck className="w-12 h-12 text-[#30363d] mb-3" />
           <p className="text-gray-400 font-medium">No owner operators yet</p>
-          <p className="text-gray-600 text-sm mt-1">Add your first OO to start dispatching</p>
+          <p className="text-[#484f58] text-sm mt-1">Add your first OO to start dispatching</p>
           <button onClick={() => setShowAdd(true)}
-            className="mt-4 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            className="mt-4 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             Add first OO
           </button>
         </div>
@@ -79,7 +79,7 @@ export default function OwnerOperatorsPage() {
           {oos.map(oo => {
             const ins = insuranceStatus(oo.insurance_expiry ?? undefined)
             return (
-              <div key={oo.id} className="bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 transition-colors">
+              <div key={oo.id} className="bg-[#161b22] border border-[#30363d] rounded-xl p-4 hover:border-gray-600 transition-colors">
                 {/* Top row */}
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -89,7 +89,7 @@ export default function OwnerOperatorsPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-orange-400 text-sm font-bold">{oo.dispatch_fee_pct}%</span>
+                    <span className="text-[#3ab690] text-sm font-bold">{oo.dispatch_fee_pct}%</span>
                     <button onClick={() => setEditing(oo)}
                       className="text-gray-500 hover:text-white p-1 rounded transition-colors">
                       <Pencil className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ export default function OwnerOperatorsPage() {
                 )})()}
 
                 {/* Compliance dots + Ledger */}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#30363d]">
                   <div className="flex gap-2">
                     {[
                       ['cdl_verified', 'CDL'],
@@ -143,7 +143,7 @@ export default function OwnerOperatorsPage() {
                     ))}
                   </div>
                   <button onClick={() => router.push(`/owner-operators/${oo.id}`)}
-                    className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+                    className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3] transition-colors">
                     <BookOpen className="w-3.5 h-3.5" /> Ledger
                   </button>
                 </div>

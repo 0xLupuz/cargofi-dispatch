@@ -80,14 +80,14 @@ export default function DocUploader({ entityType, entityId, categories }: Props)
     return null
   }
 
-  const inp = 'w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+  const inp = 'w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">Documentos ({docs.length})</p>
         <button onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300 transition-colors">
+          className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3] transition-colors">
           <Plus className="w-3.5 h-3.5" />
           Subir documento
         </button>
@@ -123,7 +123,7 @@ export default function DocUploader({ entityType, entityId, categories }: Props)
               Cancelar
             </button>
             <button type="submit" disabled={uploading || !file}
-              className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-1.5 text-xs font-medium transition-colors">
+              className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-1.5 text-xs font-medium transition-colors">
               {uploading ? 'Subiendo...' : 'Subir'}
             </button>
           </div>
@@ -131,9 +131,9 @@ export default function DocUploader({ entityType, entityId, categories }: Props)
       )}
 
       {/* Docs list */}
-      {loading && <p className="text-gray-600 text-xs">Cargando...</p>}
+      {loading && <p className="text-[#484f58] text-xs">Cargando...</p>}
       {!loading && docs.length === 0 && !showForm && (
-        <p className="text-gray-600 text-xs">Sin documentos. Sube el primero →</p>
+        <p className="text-[#484f58] text-xs">Sin documentos. Sube el primero →</p>
       )}
       <div className="space-y-1.5">
         {docs.map(doc => {
@@ -158,7 +158,7 @@ export default function DocUploader({ entityType, entityId, categories }: Props)
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
               <button onClick={() => handleDelete(doc)}
-                className="text-gray-600 hover:text-red-400 p-1 transition-colors">
+                className="text-[#484f58] hover:text-red-400 p-1 transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>

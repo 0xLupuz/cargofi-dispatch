@@ -38,7 +38,7 @@ export default function SettlementDetailPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 className="w-8 h-8 text-orange-400 animate-spin" />
+      <Loader2 className="w-8 h-8 text-[#3ab690] animate-spin" />
     </div>
   )
   if (!load) return (
@@ -65,18 +65,18 @@ export default function SettlementDetailPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar — hidden on print */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0 print:hidden">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d] flex-shrink-0 print:hidden">
         <div className="flex items-center gap-3">
           <Link href="/settlements" className="text-gray-400 hover:text-white">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <DollarSign className="w-5 h-5 text-orange-400" />
+          <DollarSign className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold">Settlement — {load.load_number}</h1>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-2 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 rounded-lg px-4 py-2 text-sm transition-colors"
+            className="flex items-center gap-2 border border-[#30363d] text-gray-300 hover:text-white hover:border-gray-500 rounded-lg px-4 py-2 text-sm transition-colors"
           >
             <Printer className="w-4 h-4" /> Print / Save PDF
           </button>
@@ -99,35 +99,35 @@ export default function SettlementDetailPage() {
       </div>
 
       {/* Settlement document — printable */}
-      <div className="flex-1 overflow-auto bg-gray-950 print:bg-white py-8 px-6">
-        <div className="max-w-2xl mx-auto bg-gray-900 print:bg-white rounded-xl border border-gray-800 print:border-0 print:shadow-none overflow-hidden">
+      <div className="flex-1 overflow-auto bg-[#080c12] print:bg-white py-8 px-6">
+        <div className="max-w-2xl mx-auto bg-[#0d1117] print:bg-white rounded-xl border border-[#21262d] print:border-0 print:shadow-none overflow-hidden">
 
           {/* Header */}
-          <div className="px-8 py-6 border-b border-gray-800 print:border-gray-200">
+          <div className="px-8 py-6 border-b border-[#21262d] print:border-gray-200">
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-white print:text-black">CargoFi</h1>
-                <p className="text-sm text-gray-400 print:text-gray-600 mt-0.5">Settlement Statement</p>
+                <p className="text-sm text-gray-400 print:text-[#484f58] mt-0.5">Settlement Statement</p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-gray-500 print:text-gray-500">Settlement Date</p>
                 <p className="text-sm text-white print:text-black font-semibold">{settlementDate}</p>
                 <p className="text-xs text-gray-500 print:text-gray-500 mt-1">Load #</p>
-                <p className="text-sm font-mono font-bold text-orange-400 print:text-orange-600">{load.load_number}</p>
+                <p className="text-sm font-mono font-bold text-[#3ab690] print:text-[#1a9d75]">{load.load_number}</p>
               </div>
             </div>
           </div>
 
           {/* OO Info */}
-          <div className="px-8 py-5 border-b border-gray-800 print:border-gray-200">
+          <div className="px-8 py-5 border-b border-[#21262d] print:border-gray-200">
             <p className="text-xs text-gray-500 print:text-gray-500 font-semibold uppercase tracking-wide mb-2">Owner Operator</p>
             <p className="text-white print:text-black font-semibold text-base">{oo?.company_name || oo?.name || '—'}</p>
-            {oo?.name && oo?.company_name && <p className="text-sm text-gray-400 print:text-gray-600">{oo.name}</p>}
-            {oo?.phone_whatsapp && <p className="text-sm text-gray-400 print:text-gray-600">{oo.phone_whatsapp}</p>}
+            {oo?.name && oo?.company_name && <p className="text-sm text-gray-400 print:text-[#484f58]">{oo.name}</p>}
+            {oo?.phone_whatsapp && <p className="text-sm text-gray-400 print:text-[#484f58]">{oo.phone_whatsapp}</p>}
           </div>
 
           {/* Load Details */}
-          <div className="px-8 py-5 border-b border-gray-800 print:border-gray-200">
+          <div className="px-8 py-5 border-b border-[#21262d] print:border-gray-200">
             <p className="text-xs text-gray-500 print:text-gray-500 font-semibold uppercase tracking-wide mb-3">Load Details</p>
             <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
               <div className="flex justify-between">
@@ -180,28 +180,28 @@ export default function SettlementDetailPage() {
           </div>
 
           {/* Pay Breakdown */}
-          <div className="px-8 py-5 border-b border-gray-800 print:border-gray-200">
+          <div className="px-8 py-5 border-b border-[#21262d] print:border-gray-200">
             <p className="text-xs text-gray-500 print:text-gray-500 font-semibold uppercase tracking-wide mb-4">Pay Breakdown</p>
             <div className="space-y-2.5">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-300 print:text-gray-700">Gross Rate</span>
+                <span className="text-gray-300 print:text-[#30363d]">Gross Rate</span>
                 <span className="text-white print:text-black font-semibold">${fmt(rate)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400 print:text-gray-600">Dispatch Fee ({dspPct}%)</span>
+                <span className="text-gray-400 print:text-[#484f58]">Dispatch Fee ({dspPct}%)</span>
                 <span className="text-red-400 print:text-red-600">- ${fmt(dspFee)}</span>
               </div>
               {facFee > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400 print:text-gray-600">Factoring Fee ({facPct}%)</span>
+                  <span className="text-gray-400 print:text-[#484f58]">Factoring Fee ({facPct}%)</span>
                   <span className="text-red-400 print:text-red-600">- ${fmt(facFee)}</span>
                 </div>
               )}
               {drivers.map((d: any) => (
                 <div key={d.id} className="flex justify-between text-sm">
-                  <span className="text-gray-400 print:text-gray-600">
+                  <span className="text-gray-400 print:text-[#484f58]">
                     Driver Pay — {d.driver_name}
-                    <span className="text-gray-600 print:text-gray-400 ml-1">
+                    <span className="text-[#484f58] print:text-gray-400 ml-1">
                       ({Number(d.miles).toLocaleString()} mi × ${Number(d.rate_per_mile).toFixed(2)})
                     </span>
                   </span>
@@ -210,13 +210,13 @@ export default function SettlementDetailPage() {
               ))}
               {fuel > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400 print:text-gray-600">Fuel Cost</span>
+                  <span className="text-gray-400 print:text-[#484f58]">Fuel Cost</span>
                   <span className="text-red-400 print:text-red-600">- ${fmt(fuel)}</span>
                 </div>
               )}
               {deds.map((d: any) => (
                 <div key={d.id} className="flex justify-between text-sm">
-                  <span className="text-gray-400 print:text-gray-600 capitalize">{d.description}</span>
+                  <span className="text-gray-400 print:text-[#484f58] capitalize">{d.description}</span>
                   <span className="text-red-400 print:text-red-600">- ${fmt(d.amount)}</span>
                 </div>
               ))}
@@ -231,7 +231,7 @@ export default function SettlementDetailPage() {
 
           {/* Footer */}
           <div className="px-8 py-4 text-center">
-            <p className="text-xs text-gray-600 print:text-gray-400">
+            <p className="text-xs text-[#484f58] print:text-gray-400">
               This settlement statement was generated by CargoFi Dispatch on {settlementDate}.
               For questions, contact dispatch@cargofi.io
             </p>

@@ -25,7 +25,7 @@ const STATUS_LABELS: Record<string, string> = {
 function MonthTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs shadow-xl">
+    <div className="bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-xs shadow-xl">
       <p className="text-gray-400 font-semibold mb-1">{label}</p>
       {payload.map((p: any) => (
         <p key={p.dataKey} style={{ color: p.fill ?? p.color }}>
@@ -39,9 +39,9 @@ function MonthTooltip({ active, payload, label }: any) {
 function OOTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs shadow-xl">
+    <div className="bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-xs shadow-xl">
       <p className="text-gray-300 font-semibold mb-1 truncate max-w-[160px]">{label}</p>
-      <p className="text-orange-400">Revenue: ${fmtFull(payload[0]?.value)}</p>
+      <p className="text-[#3ab690]">Revenue: ${fmtFull(payload[0]?.value)}</p>
       {payload[1] && <p className="text-emerald-400">Fees: ${fmtFull(payload[1]?.value)}</p>}
     </div>
   )
@@ -67,7 +67,7 @@ export default function ReportsPage() {
 
   if (loading) return (
     <div className="flex items-center gap-2 text-gray-500 px-6 py-12 text-sm">
-      <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+      <div className="w-4 h-4 rounded-full border-2 border-[#3ab690] border-t-transparent animate-spin" />
       Loading reports...
     </div>
   )
@@ -86,21 +86,21 @@ export default function ReportsPage() {
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BarChart2 className="w-5 h-5 text-orange-400" />
+          <BarChart2 className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Reports</h1>
         </div>
         <div className="flex items-center gap-2">
           {/* Period selector */}
-          <div className="flex items-center gap-1 bg-gray-800/60 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-[#161b22]/60 rounded-lg p-1">
             {[3, 6, 12].map(m => (
               <button key={m} onClick={() => setMonths(m)}
                 className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors
-                  ${months === m ? 'bg-orange-500/20 text-orange-400' : 'text-gray-500 hover:text-gray-300'}`}>
+                  ${months === m ? 'bg-[rgba(58,182,144,0.2)] text-[#3ab690]' : 'text-gray-500 hover:text-gray-300'}`}>
                 {m}M
               </button>
             ))}
           </div>
-          <button onClick={load} className="p-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-gray-200 transition-colors">
+          <button onClick={load} className="p-2 rounded-lg bg-[#161b22] border border-[#30363d] text-gray-400 hover:text-gray-200 transition-colors">
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
@@ -109,9 +109,9 @@ export default function ReportsPage() {
       {/* ── Summary cards ───────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Revenue',     value: `$${fmtFull(summary?.totalRevenue)}`, sub: `${summary?.totalLoads} loads`,                icon: DollarSign, color: 'text-orange-400', border: 'border-orange-500/20', bg: 'bg-orange-500/5' },
+          { label: 'Total Revenue',     value: `$${fmtFull(summary?.totalRevenue)}`, sub: `${summary?.totalLoads} loads`,                icon: DollarSign, color: 'text-[#3ab690]', border: 'border-[#3ab690]/20', bg: 'bg-[#3ab690]/5' },
           { label: 'Dispatch Fees',     value: `$${fmtFull(summary?.totalFees)}`,    sub: `${((summary?.totalFees/summary?.totalRevenue)*100 || 0).toFixed(1)}% of rev`,icon: TrendingUp, color: 'text-emerald-400', border: 'border-emerald-500/20', bg: 'bg-emerald-500/5' },
-          { label: 'Avg Rate / Load',   value: `$${fmtFull(summary?.avgRate)}`,      sub: `${summary?.totalLoads} loads total`,          icon: Truck,      color: 'text-blue-400',   border: 'border-blue-500/20',   bg: 'bg-blue-500/5' },
+          { label: 'Avg Rate / Load',   value: `$${fmtFull(summary?.avgRate)}`,      sub: `${summary?.totalLoads} loads total`,          icon: Truck,      color: 'text-[#58a6ff]',   border: 'border-[#58a6ff]/20',   bg: 'bg-[#58a6ff]/5' },
           { label: 'Accounts Receivable', value: `$${fmtFull(totalAR)}`,             sub: `${(agingChart ?? []).reduce((s: number, b: any) => s + b.count, 0)} invoices open`,icon: AlertCircle, color: 'text-yellow-400', border: 'border-yellow-500/20', bg: 'bg-yellow-500/5' },
         ].map(c => (
           <div key={c.label} className={`rounded-xl border ${c.border} ${c.bg} px-4 py-3`}>
@@ -120,13 +120,13 @@ export default function ReportsPage() {
               <p className="text-xs text-gray-500">{c.label}</p>
             </div>
             <p className={`text-xl font-bold ${c.color}`}>{c.value}</p>
-            <p className="text-xs text-gray-600 mt-0.5">{c.sub}</p>
+            <p className="text-xs text-[#484f58] mt-0.5">{c.sub}</p>
           </div>
         ))}
       </div>
 
       {/* ── Monthly Revenue ──────────────────────────────────────── */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+      <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-5">
         <p className="text-sm font-semibold text-gray-300 mb-4">Monthly Revenue vs Dispatch Fees</p>
         {monthly?.length > 0 ? (
           <ResponsiveContainer width="100%" height={220}>
@@ -140,10 +140,10 @@ export default function ReportsPage() {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-[220px] flex items-center justify-center text-gray-600 text-sm">No load data yet</div>
+          <div className="h-[220px] flex items-center justify-center text-[#484f58] text-sm">No load data yet</div>
         )}
         <div className="flex items-center gap-4 mt-3">
-          <span className="flex items-center gap-1.5 text-xs text-gray-500"><span className="w-2.5 h-2.5 rounded bg-orange-500 inline-block" />Revenue</span>
+          <span className="flex items-center gap-1.5 text-xs text-gray-500"><span className="w-2.5 h-2.5 rounded bg-[#3ab690] inline-block" />Revenue</span>
           <span className="flex items-center gap-1.5 text-xs text-gray-500"><span className="w-2.5 h-2.5 rounded bg-emerald-500 inline-block" />Dispatch Fees</span>
         </div>
       </div>
@@ -152,9 +152,9 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         {/* Top OOs */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+        <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="w-4 h-4 text-orange-400" />
+            <Users className="w-4 h-4 text-[#3ab690]" />
             <p className="text-sm font-semibold text-gray-300">Top OOs by Revenue</p>
           </div>
           {topOOs?.length > 0 ? (
@@ -169,12 +169,12 @@ export default function ReportsPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[220px] flex items-center justify-center text-gray-600 text-sm">No OO data yet</div>
+            <div className="h-[220px] flex items-center justify-center text-[#484f58] text-sm">No OO data yet</div>
           )}
         </div>
 
         {/* Aging AR */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+        <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-4 h-4 text-yellow-400" />
             <p className="text-sm font-semibold text-gray-300">Aging Accounts Receivable</p>
@@ -189,7 +189,7 @@ export default function ReportsPage() {
                   <Tooltip
                     content={({ active, payload, label }) =>
                       active && payload?.length ? (
-                        <div className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-xs shadow-xl">
+                        <div className="bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-xs shadow-xl">
                           <p className="text-gray-400 font-semibold">{label}</p>
                           <p style={{ color: payload[0]?.payload?.color }}>
                             ${fmtFull(payload[0]?.value)} · {payload[0]?.payload?.count} inv
@@ -223,13 +223,13 @@ export default function ReportsPage() {
               </div>
             </>
           ) : (
-            <div className="h-[220px] flex items-center justify-center text-gray-600 text-sm">No open invoices</div>
+            <div className="h-[220px] flex items-center justify-center text-[#484f58] text-sm">No open invoices</div>
           )}
         </div>
       </div>
 
       {/* ── Load Status Breakdown ────────────────────────────────── */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+      <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-5">
         <p className="text-sm font-semibold text-gray-300 mb-4">Loads by Status — All Time</p>
         {loadsByStatus?.length > 0 ? (
           <div className="flex flex-wrap gap-3">
@@ -238,10 +238,10 @@ export default function ReportsPage() {
               .map((s: any) => {
                 const colors: Record<string, string> = {
                   available: 'bg-gray-700 text-gray-300',
-                  rate_con: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                  rate_con: 'bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/20',
                   confirmed: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
                   in_transit: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-                  delivered: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+                  delivered: 'bg-[rgba(58,182,144,0.1)] text-[#3ab690] border-[#3ab690]/20',
                   pod_received: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
                   invoiced: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
                   paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -249,7 +249,7 @@ export default function ReportsPage() {
                 }
                 const pct = ((s.count / (summary?.totalLoads || 1)) * 100).toFixed(0)
                 return (
-                  <div key={s.status} className={`rounded-lg border px-4 py-2.5 ${colors[s.status] ?? 'bg-gray-800 text-gray-400 border-gray-700'}`}>
+                  <div key={s.status} className={`rounded-lg border px-4 py-2.5 ${colors[s.status] ?? 'bg-[#161b22] text-gray-400 border-[#30363d]'}`}>
                     <p className="text-xs font-medium">{STATUS_LABELS[s.status] ?? s.status}</p>
                     <p className="text-xl font-bold">{s.count}</p>
                     <p className="text-xs opacity-60">{pct}% of total</p>
@@ -258,17 +258,17 @@ export default function ReportsPage() {
               })}
           </div>
         ) : (
-          <div className="h-20 flex items-center justify-center text-gray-600 text-sm">No loads yet</div>
+          <div className="h-20 flex items-center justify-center text-[#484f58] text-sm">No loads yet</div>
         )}
       </div>
 
       {/* ── Pipeline (last 30d) ──────────────────────────────────── */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+      <div className="bg-[#0d1117] border border-[#21262d] rounded-xl p-5">
         <p className="text-sm font-semibold text-gray-300 mb-4">30-Day Pipeline</p>
         <div className="flex items-center gap-1">
           {[
             { key: 'in_transit', label: 'In Transit', color: 'bg-yellow-500' },
-            { key: 'delivered',  label: 'Delivered',  color: 'bg-orange-500' },
+            { key: 'delivered',  label: 'Delivered',  color: 'bg-[#3ab690]' },
             { key: 'invoiced',   label: 'Invoiced',   color: 'bg-cyan-500'   },
             { key: 'paid',       label: 'Paid',        color: 'bg-emerald-500'},
           ].map((step, i) => {
@@ -279,14 +279,14 @@ export default function ReportsPage() {
                   <p className="text-xs text-gray-500">{step.label}</p>
                   <p className={`text-2xl font-bold ${step.color.replace('bg-','text-')}`}>{count}</p>
                 </div>
-                {i < 3 && <span className="text-gray-700 text-lg">→</span>}
+                {i < 3 && <span className="text-[#30363d] text-lg">→</span>}
               </div>
             )
           })}
         </div>
       </div>
 
-      <p className="text-xs text-gray-700 text-center pb-2">
+      <p className="text-xs text-[#30363d] text-center pb-2">
         Data pulled live from CargoFi Dispatch · {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
       </p>
     </div>

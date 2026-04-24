@@ -70,7 +70,7 @@ function Field({
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="bg-gray-800 border border-gray-700 rounded-md px-2.5 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-orange-500"
+        className="bg-[#161b22] border border-[#30363d] rounded-md px-2.5 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#3ab690]"
       />
     </label>
   )
@@ -79,7 +79,7 @@ function Field({
 // ── Section divider ────────────────────────────────────────────────────────────
 function Section({ title }: { title: string }) {
   return (
-    <p className="text-[9px] font-bold uppercase tracking-widest text-gray-600 border-t border-gray-800 pt-3 mt-1">
+    <p className="text-[9px] font-bold uppercase tracking-widest text-[#484f58] border-t border-[#21262d] pt-3 mt-1">
       {title}
     </p>
   )
@@ -138,7 +138,7 @@ function LetterPreview({ f }: { f: FormState }) {
       <div className="space-y-0.5 text-sm">
         <div className="border-b border-gray-300 w-56 mb-3" />
         <p className="font-semibold">{f.signatoryName || '________________________'}</p>
-        {f.signatoryTitle && <p className="text-gray-600">{f.signatoryTitle}</p>}
+        {f.signatoryTitle && <p className="text-[#484f58]">{f.signatoryTitle}</p>}
         {f.company && <p className="font-bold uppercase mt-1">{f.company}</p>}
         {f.companyLine2 && <p className="text-xs">{f.companyLine2}</p>}
         {f.companyCity && <p className="text-xs">{f.companyCity}</p>}
@@ -223,9 +223,9 @@ export default function CartaB1Page() {
 
       <div className="flex h-full">
         {/* ── Left: Form ─────────────────────────────────────────────────────── */}
-        <div className="no-print w-72 xl:w-80 flex-shrink-0 flex flex-col bg-gray-950 border-r border-gray-800 overflow-y-auto">
+        <div className="no-print w-72 xl:w-80 flex-shrink-0 flex flex-col bg-[#080c12] border-r border-[#21262d] overflow-y-auto">
           {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-800">
+          <div className="px-4 py-3 border-b border-[#21262d]">
             <h1 className="text-sm font-bold text-white">Carta de Permisos B1</h1>
             <p className="text-xs text-gray-500">Authorization letter for border crossing</p>
           </div>
@@ -249,7 +249,7 @@ export default function CartaB1Page() {
               <select
                 onChange={e => handleDriverSelect(e.target.value)}
                 defaultValue=""
-                className="bg-gray-800 border border-gray-700 rounded-md px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-orange-500"
+                className="bg-[#161b22] border border-[#30363d] rounded-md px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-[#3ab690]"
               >
                 <option value="">— select driver —</option>
                 {drivers.map((d: any) => (
@@ -275,7 +275,7 @@ export default function CartaB1Page() {
               <select
                 onChange={e => handleCustomerSelect(e.target.value)}
                 defaultValue=""
-                className="bg-gray-800 border border-gray-700 rounded-md px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-orange-500"
+                className="bg-[#161b22] border border-[#30363d] rounded-md px-2.5 py-1.5 text-sm text-white focus:outline-none focus:border-[#3ab690]"
               >
                 <option value="">— select customer —</option>
                 {customers.map((c: any) => (
@@ -395,10 +395,10 @@ export default function CartaB1Page() {
           </div>
 
           {/* Footer actions */}
-          <div className="px-4 py-3 border-t border-gray-800 space-y-2">
+          <div className="px-4 py-3 border-t border-[#21262d] space-y-2">
             <button
               onClick={() => window.print()}
-              className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] text-white font-semibold text-sm px-4 py-2.5 rounded-lg transition-colors"
             >
               <Printer className="w-4 h-4" />
               Print / Save PDF
@@ -414,7 +414,7 @@ export default function CartaB1Page() {
         </div>
 
         {/* ── Right: Preview ─────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto bg-gray-900 p-6">
+        <div className="flex-1 overflow-y-auto bg-[#0d1117] p-6">
           <div className="no-print flex items-center justify-between mb-4">
             <div>
               <h2 className="text-white font-semibold text-sm">Preview</h2>
@@ -422,7 +422,7 @@ export default function CartaB1Page() {
             </div>
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-1.5 text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 text-xs bg-[#3ab690] hover:bg-[#1a9d75] text-white px-3 py-1.5 rounded-lg transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
               Print

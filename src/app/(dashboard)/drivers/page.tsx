@@ -42,13 +42,13 @@ export default function DriversPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <UserCheck className="w-5 h-5 text-orange-400" />
+          <UserCheck className="w-5 h-5 text-[#3ab690]" />
           <h1 className="text-white font-semibold text-lg">Drivers</h1>
-          <span className="text-xs text-gray-500 bg-gray-800 rounded-full px-2 py-0.5">{drivers.length}</span>
+          <span className="text-xs text-gray-500 bg-[#161b22] rounded-full px-2 py-0.5">{drivers.length}</span>
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Driver
@@ -59,11 +59,11 @@ export default function DriversPage() {
 
       {!loading && drivers.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <UserCheck className="w-12 h-12 text-gray-700 mb-3" />
+          <UserCheck className="w-12 h-12 text-[#30363d] mb-3" />
           <p className="text-gray-400 font-medium">No drivers yet</p>
-          <p className="text-gray-600 text-sm mt-1">Add drivers to assign them to loads</p>
+          <p className="text-[#484f58] text-sm mt-1">Add drivers to assign them to loads</p>
           <button onClick={() => setShowAdd(true)}
-            className="mt-4 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            className="mt-4 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
             Add first driver
           </button>
         </div>
@@ -75,7 +75,7 @@ export default function DriversPage() {
             const cdl = expiryStatus(driver.cdl_expiry, 'CDL')
             const med = expiryStatus(driver.medical_card_expiry, 'Medical')
             return (
-              <div key={driver.id} className="bg-gray-800 border border-gray-700 rounded-xl p-4 hover:border-gray-600 transition-colors">
+              <div key={driver.id} className="bg-[#161b22] border border-[#30363d] rounded-xl p-4 hover:border-gray-600 transition-colors">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div>

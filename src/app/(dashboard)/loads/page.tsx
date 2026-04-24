@@ -41,22 +41,22 @@ export default function LoadsPage() {
   const tabClass = (t: Tab) =>
     `flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
       tab === t
-        ? 'bg-gray-800 text-white'
-        : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50'
+        ? 'bg-[#161b22] text-white'
+        : 'text-gray-500 hover:text-gray-300 hover:bg-[#161b22]/50'
     }`
 
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-gray-800 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 border-b border-[#21262d] flex-shrink-0">
         <div className="flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2">
-            <Package className="w-5 h-5 text-orange-400" />
+            <Package className="w-5 h-5 text-[#3ab690]" />
             <h1 className="text-white font-semibold text-base md:text-lg">Loads</h1>
           </div>
 
           {/* Tab switcher */}
-          <div className="flex items-center gap-1 bg-gray-900 border border-gray-800 rounded-xl p-1">
+          <div className="flex items-center gap-1 bg-[#0d1117] border border-[#21262d] rounded-xl p-1">
             <button className={tabClass('board')} onClick={() => switchTab('board')}>
               <LayoutGrid className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Board</span>
@@ -72,7 +72,7 @@ export default function LoadsPage() {
           {tab === 'board' && (
             <button
               onClick={() => setRefreshKey(k => k + 1)}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+              className="p-2 text-gray-400 hover:text-white hover:bg-[#161b22] rounded-lg transition-colors"
               title="Refresh"
             >
               <RefreshCw className="w-4 h-4" />
@@ -80,14 +80,14 @@ export default function LoadsPage() {
           )}
           <button
             onClick={() => setShowParser(true)}
-            className="flex items-center gap-1.5 md:gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-3 md:px-4 py-2 rounded-lg transition-colors shadow-sm shadow-orange-900/30"
+            className="flex items-center gap-1.5 md:gap-2 bg-[#3ab690] hover:bg-[#1a9d75] text-white text-sm font-semibold px-3 md:px-4 py-2 rounded-lg transition-colors shadow-sm shadow-orange-900/30"
           >
             <Zap className="w-4 h-4" />
             <span className="hidden sm:inline">Quick Load</span>
           </button>
           <button
             onClick={() => setShowNew(true)}
-            className="flex items-center gap-1.5 md:gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 md:gap-2 bg-[#161b22] hover:bg-gray-700 border border-[#30363d] text-gray-200 text-sm font-medium px-3 md:px-4 py-2 rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Manual</span>

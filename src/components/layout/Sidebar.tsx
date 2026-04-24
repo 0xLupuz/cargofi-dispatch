@@ -79,12 +79,12 @@ const sections: NavSection[] = [
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   if (item.soon) {
     return (
-      <div className="flex items-center justify-between rounded-md px-3 py-1.5 text-sm text-gray-600 cursor-default select-none">
+      <div className="flex items-center justify-between rounded-md px-3 py-1.5 text-sm text-[#484f58] cursor-default select-none">
         <div className="flex items-center gap-2.5">
           <item.icon className="w-4 h-4 flex-shrink-0" />
           {item.label}
         </div>
-        <span className="text-[9px] font-medium text-gray-700 bg-gray-800 rounded px-1.5 py-0.5 uppercase tracking-wide">
+        <span className="text-[9px] font-medium text-[#30363d] bg-[#161b22] rounded px-1.5 py-0.5 uppercase tracking-wide">
           Soon
         </span>
       </div>
@@ -97,8 +97,8 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       className={clsx(
         'flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors group',
         active
-          ? 'bg-orange-500/10 text-orange-400'
-          : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+          ? 'bg-[rgba(58,182,144,0.1)] text-[#3ab690]'
+          : 'text-gray-400 hover:bg-[#161b22] hover:text-white'
       )}
     >
       <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -135,15 +135,15 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="flex h-screen w-56 flex-col bg-gray-950 border-r border-gray-800 flex-shrink-0">
+    <aside className="flex h-screen w-56 flex-col bg-[#080c12] border-r border-[#21262d] flex-shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 py-4 border-b border-gray-800">
-        <div className="w-7 h-7 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
-          <Truck className="w-4 h-4 text-white" />
+      <div className="flex items-center gap-2.5 px-4 py-4 border-b border-[#21262d]">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-black text-[11px] tracking-tight" style={{ background: 'linear-gradient(135deg, #3ab690, #1a9d75)' }}>
+          CF
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-white font-bold text-sm leading-tight">CargoFi</p>
-          <p className="text-gray-600 text-[10px] leading-tight">Dispatch</p>
+          <p className="text-white font-bold text-sm leading-tight">Cargo<span className="text-[#3ab690]">Fi</span></p>
+          <p className="text-[#484f58] text-[10px] leading-tight">Dispatch</p>
         </div>
         <NotificationBell />
       </div>
@@ -165,13 +165,13 @@ export default function Sidebar() {
                     section.collapsible ? 'cursor-pointer hover:text-gray-400 transition-colors' : 'cursor-default'
                   )}
                 >
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-600">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#484f58]">
                     {section.header}
                   </p>
                   {section.collapsible && (
                     <ChevronDown
                       className={clsx(
-                        'w-3 h-3 text-gray-700 transition-transform duration-200',
+                        'w-3 h-3 text-[#30363d] transition-transform duration-200',
                         isCollapsed ? '-rotate-90' : 'rotate-0'
                       )}
                     />
@@ -192,10 +192,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-2 py-3 border-t border-gray-800 space-y-0.5">
+      <div className="px-2 py-3 border-t border-[#21262d] space-y-0.5">
         <Link
           href="/settings"
-          className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-white transition-colors"
+          className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-[#161b22] hover:text-white transition-colors"
         >
           <Settings className="w-4 h-4" />
           Settings
@@ -203,7 +203,7 @@ export default function Sidebar() {
         <form action="/api/auth/logout" method="POST">
           <button
             type="submit"
-            className="w-full flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-white transition-colors"
+            className="w-full flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-[#161b22] hover:text-white transition-colors"
           >
             <LogOut className="w-4 h-4" />
             Logout

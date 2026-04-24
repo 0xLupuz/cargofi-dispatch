@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { X, Plus, Trash2, Loader2, ChevronDown } from 'lucide-react'
 
-const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
 const STATUSES = ['estimate','in_progress','delivered_complete','delivered_incomplete','cancelled']
 const STATUS_LABELS: Record<string,string> = { estimate:'1 - Estimate', in_progress:'2 - In Progress', delivered_complete:'3 - Delivered - Complete', delivered_incomplete:'4 - Delivered - Incomplete', cancelled:'5 - Cancelled' }
@@ -92,23 +92,23 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
     setSaving(false)
   }
 
-  const tabCls = (t: string) => `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab===t ? 'border-orange-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
-  const cellInp = 'w-full bg-transparent border-0 text-white text-xs placeholder-gray-600 focus:outline-none focus:bg-gray-800 rounded px-1 py-0.5'
+  const tabCls = (t: string) => `px-4 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab===t ? 'border-[#3ab690] text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
+  const cellInp = 'w-full bg-transparent border-0 text-white text-xs placeholder-gray-600 focus:outline-none focus:bg-[#161b22] rounded px-1 py-0.5'
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-3">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-5xl max-h-[95vh] flex flex-col">
+      <div className="bg-[#0d1117] border border-[#30363d] rounded-xl w-full max-w-5xl max-h-[95vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d] flex-shrink-0">
           <h2 className="text-white font-semibold">{isEdit ? `Repair Order #${ro.ro_number}` : 'New Repair Order'}</h2>
           <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
         </div>
 
         <form onSubmit={save} className="flex-1 overflow-y-auto">
           {/* TOP PANELS: JOB + EQUIPMENT */}
-          <div className="grid grid-cols-2 gap-0 border-b border-gray-800">
+          <div className="grid grid-cols-2 gap-0 border-b border-[#21262d]">
             {/* JOB */}
-            <div className="p-5 border-r border-gray-800 space-y-3">
+            <div className="p-5 border-r border-[#21262d] space-y-3">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Job</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -148,7 +148,7 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Equipment</p>
               <div className="flex gap-2">
                 {['truck','trailer'].map(t => (
-                  <button key={t} type="button" onClick={() => setF('equipment_type', t)} className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${form.equipment_type===t ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>{t}</button>
+                  <button key={t} type="button" onClick={() => setF('equipment_type', t)} className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${form.equipment_type===t ? 'bg-[#3ab690] text-white' : 'bg-[#161b22] text-gray-400 hover:text-white'}`}>{t}</button>
                 ))}
               </div>
               <div className="grid grid-cols-3 gap-3">
@@ -178,7 +178,7 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
           </div>
 
           {/* TABS */}
-          <div className="flex border-b border-gray-800 flex-shrink-0">
+          <div className="flex border-b border-[#21262d] flex-shrink-0">
             <button type="button" className={tabCls('parts')} onClick={() => setActiveTab('parts')}>Parts & Labor</button>
             <button type="button" className={tabCls('history')} onClick={() => setActiveTab('history')}>Status History</button>
           </div>
@@ -189,16 +189,16 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Parts</p>
-                  <button type="button" onClick={() => setParts(p => [...p, emptyPart()])} className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300"><Plus className="w-3.5 h-3.5" /> Add Row</button>
+                  <button type="button" onClick={() => setParts(p => [...p, emptyPart()])} className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3]"><Plus className="w-3.5 h-3.5" /> Add Row</button>
                 </div>
-                <div className="rounded-lg border border-gray-800 overflow-hidden">
+                <div className="rounded-lg border border-[#21262d] overflow-hidden">
                   <table className="w-full text-xs">
-                    <thead className="bg-gray-800/60">
+                    <thead className="bg-[#161b22]/60">
                       <tr>{['Code','Item','Sub-Item','Description','Tax','Qty','Unit $','Amount',''].map(h => <th key={h} className="text-left text-gray-500 font-medium px-2 py-2">{h}</th>)}</tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800/50">
                       {parts.map((p, i) => (
-                        <tr key={i} className="hover:bg-gray-800/30">
+                        <tr key={i} className="hover:bg-[#161b22]/30">
                           <td className="px-1 py-1 w-20"><input className={cellInp} value={p.code} onChange={e => updatePart(i,'code',e.target.value)} placeholder="CODE" /></td>
                           <td className="px-1 py-1 w-32"><input className={cellInp} value={p.item} onChange={e => updatePart(i,'item',e.target.value)} placeholder="Item" /></td>
                           <td className="px-1 py-1 w-28"><input className={cellInp} value={p.sub_item} onChange={e => updatePart(i,'sub_item',e.target.value)} placeholder="Sub-item" /></td>
@@ -207,11 +207,11 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
                           <td className="px-1 py-1 w-16"><input className={cellInp + ' text-right'} type="number" step="0.001" value={p.quantity} onChange={e => updatePart(i,'quantity',parseFloat(e.target.value)||0)} /></td>
                           <td className="px-1 py-1 w-20"><input className={cellInp + ' text-right'} type="number" step="0.01" value={p.unit_price} onChange={e => updatePart(i,'unit_price',parseFloat(e.target.value)||0)} /></td>
                           <td className="px-2 py-1 w-20 text-right text-gray-300 font-medium">${(p.quantity*p.unit_price).toFixed(2)}</td>
-                          <td className="px-1 py-1 w-6"><button type="button" onClick={() => removePart(i)} className="text-gray-700 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button></td>
+                          <td className="px-1 py-1 w-6"><button type="button" onClick={() => removePart(i)} className="text-[#30363d] hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button></td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-800/40 border-t border-gray-700">
+                    <tfoot className="bg-[#161b22]/40 border-t border-[#30363d]">
                       <tr><td colSpan={7} className="px-3 py-2 text-xs text-gray-400 text-right font-semibold">Parts Total:</td><td className="px-2 py-2 text-right text-white font-bold">${partsTotal.toFixed(2)}</td><td /></tr>
                     </tfoot>
                   </table>
@@ -222,16 +222,16 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Labor</p>
-                  <button type="button" onClick={() => setLabor(l => [...l, emptyLabor()])} className="flex items-center gap-1 text-xs text-orange-400 hover:text-orange-300"><Plus className="w-3.5 h-3.5" /> Add Row</button>
+                  <button type="button" onClick={() => setLabor(l => [...l, emptyLabor()])} className="flex items-center gap-1 text-xs text-[#3ab690] hover:text-[#72d2b3]"><Plus className="w-3.5 h-3.5" /> Add Row</button>
                 </div>
-                <div className="rounded-lg border border-gray-800 overflow-hidden">
+                <div className="rounded-lg border border-[#21262d] overflow-hidden">
                   <table className="w-full text-xs">
-                    <thead className="bg-gray-800/60">
+                    <thead className="bg-[#161b22]/60">
                       <tr>{['Code','Item','Sub-Item','Description','Hours','$/Hr','Amount',''].map(h => <th key={h} className="text-left text-gray-500 font-medium px-2 py-2">{h}</th>)}</tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800/50">
                       {labor.map((l, i) => (
-                        <tr key={i} className="hover:bg-gray-800/30">
+                        <tr key={i} className="hover:bg-[#161b22]/30">
                           <td className="px-1 py-1 w-20"><input className={cellInp} value={l.code} onChange={e => updateLabor(i,'code',e.target.value)} placeholder="CODE" /></td>
                           <td className="px-1 py-1 w-32"><input className={cellInp} value={l.item} onChange={e => updateLabor(i,'item',e.target.value)} placeholder="Item" /></td>
                           <td className="px-1 py-1 w-28"><input className={cellInp} value={l.sub_item} onChange={e => updateLabor(i,'sub_item',e.target.value)} placeholder="Sub-item" /></td>
@@ -239,11 +239,11 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
                           <td className="px-1 py-1 w-16"><input className={cellInp + ' text-right'} type="number" step="0.25" value={l.hours} onChange={e => updateLabor(i,'hours',parseFloat(e.target.value)||0)} /></td>
                           <td className="px-1 py-1 w-20"><input className={cellInp + ' text-right'} type="number" step="0.01" value={l.unit_price} onChange={e => updateLabor(i,'unit_price',parseFloat(e.target.value)||0)} /></td>
                           <td className="px-2 py-1 w-20 text-right text-gray-300 font-medium">${(l.hours*l.unit_price).toFixed(2)}</td>
-                          <td className="px-1 py-1 w-6"><button type="button" onClick={() => removeLabor(i)} className="text-gray-700 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button></td>
+                          <td className="px-1 py-1 w-6"><button type="button" onClick={() => removeLabor(i)} className="text-[#30363d] hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button></td>
                         </tr>
                       ))}
                     </tbody>
-                    <tfoot className="bg-gray-800/40 border-t border-gray-700">
+                    <tfoot className="bg-[#161b22]/40 border-t border-[#30363d]">
                       <tr><td colSpan={6} className="px-3 py-2 text-xs text-gray-400 text-right font-semibold">Labor Total:</td><td className="px-2 py-2 text-right text-white font-bold">${laborTotal.toFixed(2)}</td><td /></tr>
                     </tfoot>
                   </table>
@@ -252,7 +252,7 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
 
               {/* TOTALS */}
               <div className="flex justify-end">
-                <div className="bg-gray-800/50 rounded-xl border border-gray-700 p-4 w-72 space-y-2 text-sm">
+                <div className="bg-[#161b22]/50 rounded-xl border border-[#30363d] p-4 w-72 space-y-2 text-sm">
                   <div className="flex justify-between text-gray-400"><span>Subtotal Taxable</span><span>${taxableSub.toFixed(2)}</span></div>
                   <div className="flex justify-between text-gray-400"><span>Subtotal No Taxable</span><span>${noTaxSub.toFixed(2)}</span></div>
                   <div className="flex justify-between items-center text-gray-400">
@@ -273,27 +273,27 @@ export default function RepairOrderModal({ ro, onClose, onSaved }: Props) {
           )}
 
           {activeTab === 'history' && (
-            <div className="p-5 text-gray-600 text-sm text-center py-16">Status history — coming soon</div>
+            <div className="p-5 text-[#484f58] text-sm text-center py-16">Status history — coming soon</div>
           )}
 
           {/* NOTES */}
-          <div className="grid grid-cols-2 gap-4 px-5 pb-5 border-t border-gray-800 pt-4">
+          <div className="grid grid-cols-2 gap-4 px-5 pb-5 border-t border-[#21262d] pt-4">
             <div>
-              <label className={lbl}>Internal Notes <span className="text-gray-700">(1600 chars)</span></label>
+              <label className={lbl}>Internal Notes <span className="text-[#30363d]">(1600 chars)</span></label>
               <textarea className={inp} rows={3} maxLength={1600} value={form.internal_notes} onChange={e => setF('internal_notes', e.target.value)} />
             </div>
             <div>
-              <label className={lbl}>Printed Notes <span className="text-gray-700">(1600 chars)</span></label>
+              <label className={lbl}>Printed Notes <span className="text-[#30363d]">(1600 chars)</span></label>
               <textarea className={inp} rows={3} maxLength={1600} value={form.printed_notes} onChange={e => setF('printed_notes', e.target.value)} />
             </div>
           </div>
 
           {/* FOOTER */}
-          <div className="px-6 py-4 border-t border-gray-800 bg-gray-900 sticky bottom-0">
+          <div className="px-6 py-4 border-t border-[#21262d] bg-[#0d1117] sticky bottom-0">
             {error && <p className="text-red-400 text-xs mb-3 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
             <div className="flex gap-3">
-              <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800">Cancel</button>
-              <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2">
+              <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22]">Cancel</button>
+              <button type="submit" disabled={saving} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2">
                 {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : isEdit ? 'Save Changes' : 'Create Repair Order'}
               </button>
             </div>

@@ -70,7 +70,7 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
   }
 
   const tabCls = (t: string) =>
-    `px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`
+    `px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${tab === t ? 'bg-[#3ab690] text-white' : 'text-gray-400 hover:text-white'}`
 
   return (
     <Modal title={isEdit ? `Driver — ${driver.name}` : 'Agregar Driver'} onClose={onClose} width="max-w-2xl">
@@ -126,8 +126,8 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
                 {deleting ? '...' : 'Eliminar'}
               </button>
             )}
-            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
-            <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+            <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22] transition-colors">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Agregar Driver'}
             </button>
           </div>
@@ -156,7 +156,7 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
           <Field label="Lic. Federal MX — vence">
             <input className={inputCls} type="date" value={form.federal_license_expiry ?? ''} onChange={e => set('federal_license_expiry', e.target.value)} />
           </Field>
-          <div className="border-t border-gray-700 pt-4">
+          <div className="border-t border-[#30363d] pt-4">
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Pasaporte</p>
             <div className="grid grid-cols-2 gap-4">
               <Field label="# Pasaporte MX">
@@ -167,7 +167,7 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
               </Field>
             </div>
           </div>
-          <div className="border-t border-gray-700 pt-4">
+          <div className="border-t border-[#30363d] pt-4">
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Visa USA</p>
             <div className="grid grid-cols-3 gap-4">
               <Field label="Tipo">
@@ -183,8 +183,8 @@ export default function DriverModal({ driver, onClose, onSaved }: Props) {
           </div>
           {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
-            <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+            <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22] transition-colors">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {loading ? 'Guardando...' : 'Guardar cambios'}
             </button>
           </div>

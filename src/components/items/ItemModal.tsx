@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { X, Loader2 } from 'lucide-react'
 
-const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
 
 interface Props { item?: any; onClose: () => void; onSaved: () => void }
@@ -45,9 +45,9 @@ export default function ItemModal({ item, onClose, onSaved }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0d1117] border border-[#30363d] rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d]">
           <h2 className="text-white font-semibold">{isEdit ? 'Edit Item' : 'New Item/Service'}</h2>
           <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
         </div>
@@ -117,8 +117,8 @@ export default function ItemModal({ item, onClose, onSaved }: Props) {
           {error && <p className="text-red-400 text-xs bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800">Cancel</button>
-            <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2">
+            <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22]">Cancel</button>
+            <button type="submit" disabled={saving} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : isEdit ? 'Save' : 'Add Item'}
             </button>
           </div>

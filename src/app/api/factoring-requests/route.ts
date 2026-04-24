@@ -3,8 +3,10 @@ import { createServiceClient } from '@/lib/supabase'
 import { randomUUID } from 'crypto'
 
 const TENANT = '00000000-0000-0000-0000-000000000001'
-const ADVANCE_RATE_BPS = 9700 // 97%
-const FEE_BPS = 300           // 3%
+const ADVANCE_RATE_BPS   = 9700 // 97% advance to carrier
+const FEE_BPS            = 300  // 3% total fee
+const INVESTOR_FEE_BPS   = 200  // 2% → investor yield
+const PLATFORM_FEE_BPS   = 100  // 1% → CargoFi revenue
 
 /** GET /api/factoring-requests?load_id=xxx */
 export async function GET(req: NextRequest) {
@@ -45,8 +47,10 @@ export async function POST(req: NextRequest) {
       tenant_id: TENANT,
       invoice_id_hex,
       gross_amount_usdc: parseFloat(gross_amount_usdc),
-      advance_rate_bps: ADVANCE_RATE_BPS,
-      fee_bps: FEE_BPS,
+      advance_rate_bps:  ADVANCE_RATE_BPS,
+      fee_bps:           FEE_BPS,
+      investor_fee_bps:  INVESTOR_FEE_BPS,
+      platform_fee_bps:  PLATFORM_FEE_BPS,
       carrier_wallet: carrier_wallet ?? null,
       carrier_usdc_account: carrier_usdc_account ?? null,
       status: 'pending',

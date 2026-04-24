@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { X, Loader2 } from 'lucide-react'
 
-const inp = 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors'
+const inp = 'w-full bg-[#161b22] border border-[#30363d] rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors'
 const lbl = 'block text-xs text-gray-400 mb-1'
 
 interface Props { company?: any; onClose: () => void; onSaved: () => void }
@@ -64,17 +64,17 @@ export default function FactoringModal({ company, onClose, onSaved }: Props) {
     setSaving(false)
   }
 
-  const tabCls = (t: string) => `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-orange-500 text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
+  const tabCls = (t: string) => `px-4 py-2 text-sm font-medium transition-colors border-b-2 ${tab === t ? 'border-[#3ab690] text-white' : 'border-transparent text-gray-500 hover:text-gray-300'}`
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+      <div className="bg-[#0d1117] border border-[#30363d] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#21262d]">
           <h2 className="text-white font-semibold">{isEdit ? `Edit: ${company.name}` : 'New Factoring Company'}</h2>
           <button onClick={onClose}><X className="w-5 h-5 text-gray-400 hover:text-white" /></button>
         </div>
 
-        <div className="flex border-b border-gray-800 flex-shrink-0">
+        <div className="flex border-b border-[#21262d] flex-shrink-0">
           <button className={tabCls('info')} onClick={() => setTab('info')}>Info</button>
           <button className={tabCls('contacts')} onClick={() => setTab('contacts')}>Contacts</button>
           <button className={tabCls('terms')} onClick={() => setTab('terms')}>Terms</button>
@@ -125,16 +125,16 @@ export default function FactoringModal({ company, onClose, onSaved }: Props) {
                 <div><label className={lbl}>Days to Pay *</label><input className={inp} type="number" value={form.days_to_pay} onChange={e => set('days_to_pay', e.target.value)} /></div>
               </div>
               <div><label className={lbl}>Federal ID (EIN)</label><input className={inp} value={form.federal_id} onChange={e => set('federal_id', e.target.value)} /></div>
-              <div><label className={lbl}>Internal Notes <span className="text-gray-600">(255 chars)</span></label>
+              <div><label className={lbl}>Internal Notes <span className="text-[#484f58]">(255 chars)</span></label>
                 <textarea className={inp} rows={3} maxLength={255} value={form.internal_notes} onChange={e => set('internal_notes', e.target.value)} />
               </div>
-              <div><label className={lbl}>Notes on Invoice <span className="text-gray-600">(600 chars)</span></label>
+              <div><label className={lbl}>Notes on Invoice <span className="text-[#484f58]">(600 chars)</span></label>
                 <textarea className={inp} rows={4} maxLength={600} value={form.notes_on_invoice} onChange={e => set('notes_on_invoice', e.target.value)} />
               </div>
             </>}
           </div>
 
-          <div className="px-6 py-4 border-t border-gray-800 sticky bottom-0 bg-gray-900">
+          <div className="px-6 py-4 border-t border-[#21262d] sticky bottom-0 bg-[#0d1117]">
             {error && <p className="text-red-400 text-xs mb-3 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">⚠️ {error}</p>}
             <div className="flex gap-3">
               {isEdit && (
@@ -143,8 +143,8 @@ export default function FactoringModal({ company, onClose, onSaved }: Props) {
                   {deleting ? '...' : 'Eliminar'}
                 </button>
               )}
-              <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800">Cancel</button>
-              <button type="submit" disabled={saving} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium">
+              <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22]">Cancel</button>
+              <button type="submit" disabled={saving} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : isEdit ? 'Save Changes' : 'Add Company'}
               </button>
             </div>

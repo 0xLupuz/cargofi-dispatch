@@ -37,7 +37,7 @@ function DateRow({ load }: { load: Load }) {
 
   if (load.trip_status === 'open') return (
     <div className="flex items-center justify-between text-xs">
-      <span className="flex items-center gap-1 text-gray-600"><ArrowUpFromLine className="w-3 h-3" />Departed: <span className="text-gray-600 ml-0.5">N/A</span></span>
+      <span className="flex items-center gap-1 text-[#484f58]"><ArrowUpFromLine className="w-3 h-3" />Departed: <span className="text-[#484f58] ml-0.5">N/A</span></span>
       <span className="flex items-center gap-1 text-gray-500"><Clock className="w-3 h-3" />Appt: <span className="text-gray-400 ml-0.5">{fmt(expectedAt)}</span></span>
     </div>
   )
@@ -83,19 +83,19 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
   // ── Compact / collapsed view ────────────────────────────────────────────────
   if (collapsed) {
     return (
-      <div className={`bg-gray-900 border rounded-lg px-3 py-2 select-none transition-all ${
-        allDone ? 'border-emerald-700/60' : 'border-gray-700/60'
+      <div className={`bg-[#0d1117] border rounded-lg px-3 py-2 select-none transition-all ${
+        allDone ? 'border-emerald-700/60' : 'border-[#30363d]/60'
       } ${isDragging ? 'opacity-35' : ''}`}>
         <div className="flex items-center gap-2 min-w-0">
 
           {/* Load # */}
-          <span className="text-xs font-mono font-bold text-orange-400 flex-shrink-0">
+          <span className="text-xs font-mono font-bold text-[#3ab690] flex-shrink-0">
             {load.load_number}
           </span>
 
           {/* WO# */}
           {load.work_order_number && (
-            <span className="text-[10px] text-gray-600 flex-shrink-0">
+            <span className="text-[10px] text-[#484f58] flex-shrink-0">
               WO# {load.work_order_number}
             </span>
           )}
@@ -139,7 +139,7 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
             title="Expandir"
             onPointerDown={e => e.stopPropagation()}
             onClick={e => { e.stopPropagation(); setCollapsed(false) }}
-            className="ml-1 flex-shrink-0 text-gray-600 hover:text-gray-300 transition-colors"
+            className="ml-1 flex-shrink-0 text-[#484f58] hover:text-gray-300 transition-colors"
           >
             <ChevronDown className="w-3.5 h-3.5" />
           </button>
@@ -150,15 +150,15 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
 
   // ── Full / expanded view ────────────────────────────────────────────────────
   return (
-    <div className={`bg-gray-900 border rounded-xl p-3.5 select-none transition-all group ${
-      allDone ? 'border-emerald-700/60' : 'border-gray-700/80'
+    <div className={`bg-[#0d1117] border rounded-xl p-3.5 select-none transition-all group ${
+      allDone ? 'border-emerald-700/60' : 'border-[#30363d]/80'
     } ${isDragging ? 'shadow-2xl opacity-35' : ''}`}>
 
       {/* Top: Load # + rate + collapse toggle */}
       <div className="flex items-start justify-between mb-2.5">
         <div>
-          <span className="text-xs font-mono font-semibold text-orange-400">{load.load_number}</span>
-          {load.work_order_number && <span className="text-xs text-gray-600 ml-2">WO# {load.work_order_number}</span>}
+          <span className="text-xs font-mono font-semibold text-[#3ab690]">{load.load_number}</span>
+          {load.work_order_number && <span className="text-xs text-[#484f58] ml-2">WO# {load.work_order_number}</span>}
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-0.5 text-sm font-bold text-white">
@@ -169,7 +169,7 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
             title="Colapsar"
             onPointerDown={e => e.stopPropagation()}
             onClick={e => { e.stopPropagation(); setCollapsed(true) }}
-            className="text-gray-700 hover:text-gray-400 transition-colors"
+            className="text-[#30363d] hover:text-gray-400 transition-colors"
           >
             <ChevronUp className="w-3.5 h-3.5" />
           </button>
@@ -182,7 +182,7 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
           <MapPin className="w-3 h-3 text-gray-500 flex-shrink-0" />
           <span className="truncate font-medium">
             {origin?.city ?? '—'}, {origin?.state ?? ''}
-            <span className="text-gray-600 mx-1.5">→</span>
+            <span className="text-[#484f58] mx-1.5">→</span>
             {dest?.city ?? '—'}, {dest?.state ?? ''}
           </span>
         </div>
@@ -192,7 +192,7 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
       {load.broker_name && <p className="text-xs text-gray-500 truncate mb-1.5">{load.broker_name}</p>}
 
       {/* Date row */}
-      <div className="mb-3 bg-gray-800/50 rounded-md px-2 py-1.5">
+      <div className="mb-3 bg-[#161b22]/50 rounded-md px-2 py-1.5">
         <DateRow load={load} />
       </div>
 
@@ -214,7 +214,7 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
 
       {/* Checklist */}
       <div
-        className="flex items-center gap-1 pt-2.5 border-t border-gray-800"
+        className="flex items-center gap-1 pt-2.5 border-t border-[#21262d]"
         onPointerDown={e => e.stopPropagation()}
         onClick={e => e.stopPropagation()}
       >
@@ -226,7 +226,7 @@ function CardBody({ load, isDragging = false, onChecklistToggle }: CardBodyProps
               title={label}
               onClick={e => { e.stopPropagation(); onChecklistToggle(load.id, field, !done) }}
               className={`flex-1 flex flex-col items-center gap-1 py-1 rounded-md transition-colors ${
-                done ? 'text-emerald-400 hover:text-emerald-300' : 'text-gray-600 hover:text-gray-400'
+                done ? 'text-emerald-400 hover:text-emerald-300' : 'text-[#484f58] hover:text-gray-400'
               }`}
             >
               <span className={`w-2 h-2 rounded-full transition-colors ${done ? 'bg-emerald-400' : 'bg-gray-700'}`} />

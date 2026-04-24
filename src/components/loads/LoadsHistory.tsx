@@ -11,7 +11,7 @@ const TRIP_LABELS: Record<string, string> = {
 }
 
 const TRIP_COLORS: Record<string, string> = {
-  open:       'bg-blue-500/10 text-blue-400',
+  open:       'bg-[#58a6ff]/10 text-[#58a6ff]',
   in_transit: 'bg-amber-500/10 text-amber-400',
   delivered:  'bg-emerald-500/10 text-emerald-400',
 }
@@ -45,7 +45,7 @@ export default function LoadsHistory({ onCardClick }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* Search bar */}
-      <div className="px-6 py-3 border-b border-gray-800 flex-shrink-0">
+      <div className="px-6 py-3 border-b border-[#21262d] flex-shrink-0">
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input
@@ -53,7 +53,7 @@ export default function LoadsHistory({ onCardClick }: Props) {
             placeholder="Load #, Work Order #, broker, BOL..."
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-[#161b22] border border-[#30363d] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors"
           />
         </div>
       </div>
@@ -65,12 +65,12 @@ export default function LoadsHistory({ onCardClick }: Props) {
             Loading...
           </div>
         ) : loads.length === 0 ? (
-          <div className="flex items-center justify-center h-40 text-gray-600 text-sm">
+          <div className="flex items-center justify-center h-40 text-[#484f58] text-sm">
             {debouncedQuery ? 'No results found' : 'No loads yet'}
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-gray-950 border-b border-gray-800 z-10">
+            <thead className="sticky top-0 bg-[#080c12] border-b border-[#21262d] z-10">
               <tr>
                 <th className="text-left text-xs font-medium text-gray-500 px-6 py-3">Load #</th>
                 <th className="text-left text-xs font-medium text-gray-500 px-3 py-3">WO #</th>
@@ -95,17 +95,17 @@ export default function LoadsHistory({ onCardClick }: Props) {
                   <tr
                     key={load.id}
                     onClick={() => onCardClick(load)}
-                    className="hover:bg-gray-800/40 cursor-pointer transition-colors group"
+                    className="hover:bg-[#161b22]/40 cursor-pointer transition-colors group"
                   >
                     <td className="px-6 py-3">
-                      <span className="font-mono text-orange-400 font-medium">{load.load_number}</span>
+                      <span className="font-mono text-[#3ab690] font-medium">{load.load_number}</span>
                     </td>
                     <td className="px-3 py-3 text-gray-400">{load.work_order_number ?? '—'}</td>
                     <td className="px-3 py-3 text-gray-300">
                       {origin && dest ? (
                         <span>
                           {origin.city}, {origin.state}
-                          <span className="text-gray-600 mx-1">→</span>
+                          <span className="text-[#484f58] mx-1">→</span>
                           {dest.city}, {dest.state}
                         </span>
                       ) : '—'}
@@ -139,7 +139,7 @@ export default function LoadsHistory({ onCardClick }: Props) {
                             }`}
                           />
                         ))}
-                        <span className="text-xs text-gray-600 ml-1">{doneCount}/5</span>
+                        <span className="text-xs text-[#484f58] ml-1">{doneCount}/5</span>
                       </div>
                     </td>
                     <td className="px-3 py-3 text-gray-500 text-xs">
@@ -147,7 +147,7 @@ export default function LoadsHistory({ onCardClick }: Props) {
                         ? new Date(load.pickup_date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' })
                         : '—'}
                     </td>
-                    <td className="px-3 py-3 text-gray-600 group-hover:text-gray-400 transition-colors">
+                    <td className="px-3 py-3 text-[#484f58] group-hover:text-gray-400 transition-colors">
                       <ChevronRight className="w-4 h-4" />
                     </td>
                   </tr>
@@ -160,7 +160,7 @@ export default function LoadsHistory({ onCardClick }: Props) {
 
       {/* Footer count */}
       {!fetching && loads.length > 0 && (
-        <div className="px-6 py-2 border-t border-gray-800 text-xs text-gray-600 flex-shrink-0">
+        <div className="px-6 py-2 border-t border-[#21262d] text-xs text-[#484f58] flex-shrink-0">
           {loads.length} load{loads.length !== 1 ? 's' : ''}
           {debouncedQuery ? ` matching "${debouncedQuery}"` : ' total'}
         </div>

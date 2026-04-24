@@ -103,7 +103,7 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
   }
 
   const tabCls = (t: string) =>
-    `px-4 py-2 text-sm font-medium rounded-lg transition-colors ${tab === t ? 'bg-orange-500 text-white' : 'text-gray-400 hover:text-white'}`
+    `px-4 py-2 text-sm font-medium rounded-lg transition-colors ${tab === t ? 'bg-[#3ab690] text-white' : 'text-gray-400 hover:text-white'}`
 
   return (
     <Modal title={isEdit ? `Unidad ${unit.unit_number}` : 'Nueva Unidad'} onClose={onClose} width="max-w-2xl">
@@ -201,7 +201,7 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
           </div>
 
           {/* Expiry dates */}
-          <div className="border-t border-gray-700 pt-4">
+          <div className="border-t border-[#30363d] pt-4">
             <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Vencimientos</p>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Aseguradora">
@@ -257,8 +257,8 @@ export default function UnitModal({ unit, onClose, onSaved, onDelete }: Props) {
                 Eliminar
               </button>
             )}
-            <button type="button" onClick={onClose} className="flex-1 border border-gray-700 text-gray-300 rounded-lg py-2.5 text-sm hover:bg-gray-800 transition-colors">Cancelar</button>
-            <button type="submit" disabled={loading} className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
+            <button type="button" onClick={onClose} className="flex-1 border border-[#30363d] text-gray-300 rounded-lg py-2.5 text-sm hover:bg-[#161b22] transition-colors">Cancelar</button>
+            <button type="submit" disabled={loading} className="flex-1 bg-[#3ab690] hover:bg-[#1a9d75] disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-medium transition-colors">
               {loading ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear unidad'}
             </button>
           </div>
