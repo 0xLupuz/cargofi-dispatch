@@ -138,9 +138,8 @@ export default function Sidebar() {
     <aside className="flex h-screen w-56 flex-col bg-[#080c12] border-r border-[#21262d] flex-shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-4 border-b border-[#21262d]">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-black text-[11px] tracking-tight" style={{ background: 'linear-gradient(135deg, #3ab690, #1a9d75)' }}>
-          CF
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icon-192x192.png" alt="CargoFi" className="w-8 h-8 object-contain flex-shrink-0" />
         <div className="min-w-0 flex-1">
           <p className="text-white font-bold text-sm leading-tight">Cargo<span className="text-[#3ab690]">Fi</span></p>
           <p className="text-[#484f58] text-[10px] leading-tight">Dispatch</p>
