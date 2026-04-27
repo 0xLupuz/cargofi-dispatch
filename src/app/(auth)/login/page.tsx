@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Truck, Lock } from 'lucide-react'
+import { Lock } from 'lucide-react'
 
 export default function LoginPage() {
   const [password, setPassword] = useState('')
@@ -34,9 +34,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-[#3ab690] flex items-center justify-center mb-3">
-            <Truck className="w-6 h-6 text-white" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon-192x192.png" alt="CargoFi" className="w-20 h-20 object-contain mb-1" />
           <h1 className="text-white text-xl font-semibold">CargoFi Dispatch</h1>
           <p className="text-gray-500 text-sm mt-1">Fleet management portal</p>
         </div>
