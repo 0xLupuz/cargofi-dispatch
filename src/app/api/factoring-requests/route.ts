@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       platform_fee_bps:  PLATFORM_FEE_BPS,
       carrier_wallet: carrier_wallet ?? null,
       carrier_usdc_account: carrier_usdc_account ?? null,
-      status: 'pending',
+      status: 'approved',
     })
     .select()
     .single()
