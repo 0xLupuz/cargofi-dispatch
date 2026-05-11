@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 const TENANT_ID = '00000000-0000-0000-0000-000000000001'
 
 // Called daily by Vercel Cron (see vercel.json)
