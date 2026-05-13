@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { getSupabaseAuthConfig, LEGACY_AUTH_COOKIE } from '@/lib/auth/constants'
 
-export async function POST(req: NextRequest) {
+async function logout(req: NextRequest) {
   const res = NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'))
   const supabaseConfig = getSupabaseAuthConfig()
 
@@ -29,4 +29,12 @@ export async function POST(req: NextRequest) {
 
   res.cookies.delete(LEGACY_AUTH_COOKIE)
   return res
+}
+
+export async function GET(req: NextRequest) {
+  return logout(req)
+}
+
+export async function POST(req: NextRequest) {
+  return logout(req)
 }
