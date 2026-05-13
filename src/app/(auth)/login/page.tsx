@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Lock } from 'lucide-react'
+import { Lock, Mail } from 'lucide-react'
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,13 +19,14 @@ export default function LoginPage() {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ email: email.trim() || undefined, password }),
     })
 
     if (res.ok) {
       router.push('/loads')
     } else {
-      setError('Invalid password')
+      const data = await res.json().catch(() => null)
+      setError(data?.error ?? 'Invalid credentials')
       setLoading(false)
     }
   }
@@ -43,13 +45,26 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              autoComplete="email"
+              autoFocus
+              className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 pl-10 text-white placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors"
+            />
+          </div>
+
+          <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              autoFocus
+              autoComplete="current-password"
               className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 pl-10 text-white placeholder-gray-500 focus:outline-none focus:border-[#3ab690] transition-colors"
             />
           </div>

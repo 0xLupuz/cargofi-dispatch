@@ -1,17 +1,16 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/layout/Sidebar'
 import MobileNav from '@/components/layout/MobileNav'
+import { getServerAuthContext } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = await cookies()
-  const auth = cookieStore.get('dispatch_auth')
+  const auth = await getServerAuthContext()
 
-  if (!auth || auth.value !== 'authenticated') {
+  if (!auth) {
     redirect('/login')
   }
 
