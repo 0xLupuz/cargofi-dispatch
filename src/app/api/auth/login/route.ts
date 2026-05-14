@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Supabase Auth is not configured' }, { status: 503 })
     }
 
-    const res = NextResponse.json({ ok: true, auth: 'supabase' })
+    let redirectTo = '/loads'
+    const res = NextResponse.json({ ok: true, auth: 'supabase', redirectTo })
     const supabase = createServerClient(
       supabaseConfig.url,
       supabaseConfig.anonKey,
@@ -57,14 +58,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Account is inactive or not provisioned' }, { status: 403 })
     }
 
+    if (profile.role === 'driver') {
+      redirectTo = '/driver/current-trip'
+    }
+
+    const finalRes = NextResponse.json({ ok: true, auth: 'supabase', redirectTo })
+    res.cookies.getAll().forEach(cookie => {
+      finalRes.cookies.set(cookie)
+    })
+
     res.cookies.delete(LEGACY_AUTH_COOKIE)
-    return res
+    finalRes.cookies.delete(LEGACY_AUTH_COOKIE)
+    return finalRes
   }
 
   // Temporary migration fallback. This keeps existing dispatch access working
   // until all admin users have Supabase Auth accounts and active profiles.
   if (password === process.env.DISPATCH_PASSWORD) {
-    const res = NextResponse.json({ ok: true, auth: 'legacy' })
+    const res = NextResponse.json({ ok: true, auth: 'legacy', redirectTo: '/loads' })
     setLegacyAuthCookie(res)
     return res
   }
