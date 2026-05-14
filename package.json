@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:dev": "node scripts/seed-dev-accounts.mjs",
+    "seed:dev:reset": "node scripts/seed-dev-accounts.mjs --reset"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
