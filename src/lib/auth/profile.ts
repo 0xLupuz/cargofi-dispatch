@@ -11,6 +11,10 @@ export interface UserProfile {
   active: boolean
 }
 
+export function isAdminProfile(profile: UserProfile | null | undefined) {
+  return profile?.active === true && profile.role === 'admin'
+}
+
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   const { data, error } = await createServiceClient()
     .from('user_profiles')
