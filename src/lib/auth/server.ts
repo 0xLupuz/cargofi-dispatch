@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import type { User } from '@supabase/supabase-js'
-import { getActiveUserProfile, type UserProfile } from '@/lib/auth/profile'
+import { getActiveUserProfile, isAdminProfile, type UserProfile } from '@/lib/auth/profile'
 import { getSupabaseAuthConfig, LEGACY_AUTH_COOKIE, LEGACY_AUTH_VALUE } from '@/lib/auth/constants'
 
 export type ServerAuthContext =
@@ -49,4 +49,11 @@ export async function getServerAuthContext(): Promise<ServerAuthContext | null> 
   }
 
   return null
+}
+
+export async function getAdminAuthContext(): Promise<ServerAuthContext | null> {
+  const auth = await getServerAuthContext()
+  if (!auth) return null
+  if (auth.strategy === 'legacy') return auth
+  return isAdminProfile(auth.profile) ? auth : null
 }

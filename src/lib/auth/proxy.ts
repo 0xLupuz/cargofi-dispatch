@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import { getActiveUserProfile } from '@/lib/auth/profile'
+import { getActiveUserProfile, isAdminProfile } from '@/lib/auth/profile'
 import { getSupabaseAuthConfig, LEGACY_AUTH_COOKIE, LEGACY_AUTH_VALUE } from '@/lib/auth/constants'
 
 export function unauthorized() {
@@ -42,7 +42,7 @@ export async function requireApiAuth(request: NextRequest) {
 
     if (!error && data.user) {
       const profile = await getActiveUserProfile(data.user.id)
-      return profile ? response : unauthorized()
+      return isAdminProfile(profile) ? response : unauthorized()
     }
   }
 

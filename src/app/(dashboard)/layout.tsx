@@ -1,14 +1,14 @@
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/layout/Sidebar'
 import MobileNav from '@/components/layout/MobileNav'
-import { getServerAuthContext } from '@/lib/auth/server'
+import { getAdminAuthContext } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const auth = await getServerAuthContext()
+  const auth = await getAdminAuthContext()
 
   if (!auth) {
     redirect('/login')
