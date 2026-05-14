@@ -2,11 +2,19 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import type { User } from '@supabase/supabase-js'
 import { getActiveUserProfile, isAdminProfile, type UserProfile } from '@/lib/auth/profile'
+import { resolveProfileOwnership, type ProfileOwnership } from '@/lib/auth/ownership'
 import { getSupabaseAuthConfig, LEGACY_AUTH_COOKIE, LEGACY_AUTH_VALUE } from '@/lib/auth/constants'
 
 export type ServerAuthContext =
   | { strategy: 'supabase'; user: User; profile: UserProfile }
   | { strategy: 'legacy'; user: null; profile: null }
+
+export type DriverAuthContext = {
+  strategy: 'supabase'
+  user: User
+  profile: UserProfile
+  ownership: ProfileOwnership
+}
 
 export async function getServerAuthContext(): Promise<ServerAuthContext | null> {
   const cookieStore = await cookies()
@@ -56,4 +64,22 @@ export async function getAdminAuthContext(): Promise<ServerAuthContext | null> {
   if (!auth) return null
   if (auth.strategy === 'legacy') return auth
   return isAdminProfile(auth.profile) ? auth : null
+}
+
+export async function getDriverAuthContext(
+  authContext?: ServerAuthContext | null,
+): Promise<DriverAuthContext | null> {
+  const auth = authContext ?? await getServerAuthContext()
+  if (!auth || auth.strategy !== 'supabase') return null
+  if (auth.profile.role !== 'driver') return null
+
+  const ownership = await resolveProfileOwnership(auth.profile)
+  if (!ownership.driverId) return null
+
+  return {
+    strategy: 'supabase',
+    user: auth.user,
+    profile: auth.profile,
+    ownership,
+  }
 }

@@ -23,7 +23,8 @@ export default function LoginPage() {
     })
 
     if (res.ok) {
-      router.push('/loads')
+      const data = await res.json().catch(() => null)
+      router.push(data?.redirectTo ?? '/loads')
     } else {
       const data = await res.json().catch(() => null)
       setError(data?.error ?? 'Invalid credentials')
